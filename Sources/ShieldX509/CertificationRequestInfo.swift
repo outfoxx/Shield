@@ -16,10 +16,10 @@ public struct CertificationRequestInfo: Equatable, Hashable, Codable {
     case v1 = 0
   }
 
-  public let version: Version
-  public let subject: Name
-  public let subjectPKInfo: SubjectPublicKeyInfo
-  public let attributes: CRAttributes
+  public var version: Version
+  public var subject: Name
+  public var subjectPKInfo: SubjectPublicKeyInfo
+  public var attributes: CRAttributes
 
   public init(version: Version, subject: Name, subjectPKInfo: SubjectPublicKeyInfo, attributes: CRAttributes) {
     self.version = version

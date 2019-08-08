@@ -13,9 +13,9 @@ import ShieldOID
 
 public struct CertificationRequest: Equatable, Hashable, Codable {
 
-  public let certificationRequestInfo: CertificationRequestInfo
-  public let signatureAlgorithm: AlgorithmIdentifier
-  public let signature: Data
+  public var certificationRequestInfo: CertificationRequestInfo
+  public var signatureAlgorithm: AlgorithmIdentifier
+  public var signature: Data
 
   public init(certificationRequestInfo: CertificationRequestInfo, signatureAlgorithm: AlgorithmIdentifier, signature: Data) {
     self.certificationRequestInfo = certificationRequestInfo

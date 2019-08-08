@@ -18,8 +18,8 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
 
   typealias ATV = AttributeTypeAndValue<Mapper>
 
-  let style: NamingStyle
-  let separators: String
+  public let style: NamingStyle
+  public let separators: String
 
   public init(style: NamingStyle = .rfc4519, separators: String = ",") {
     self.style = style

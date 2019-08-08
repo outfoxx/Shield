@@ -16,8 +16,8 @@ public struct BasicConstraints: Equatable, Hashable, Codable, ExtensionValue {
   public static let asn1Schema = Schemas.BasicConstraints
   public var isCritical: Bool { true }
 
-  public let ca: Bool
-  public let pathLenConstraint: Int?
+  public var ca: Bool
+  public var pathLenConstraint: Int?
 
   public init(ca: Bool, pathLenConstraint: Int? = nil) {
     self.ca = ca

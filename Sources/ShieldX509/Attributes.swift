@@ -19,8 +19,8 @@ public struct Attribute {
     case attrValues
   }
 
-  public let attrType: ObjectIdentifier
-  public let attrValues: [Any]
+  public var attrType: ObjectIdentifier
+  public var attrValues: [Any]
 
   public init(attrType: ObjectIdentifier, attrValues: [Any]) {
     self.attrType = attrType
