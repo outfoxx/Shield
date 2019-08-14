@@ -103,7 +103,7 @@ public extension Schemas {
       "issuer": Name,
       "validity": Validity,
       "subject": Name,
-      "subjectPublicKeyInfo": SubjectPublicKeyInfo(PKInfoAlgorithms),
+      "subjectPublicKeyInfo": SubjectPublicKeyInfo,
       "issuerUniqueID": .versioned(range: 1...2, .implicit(1, UniqueIdentifier)),
       "subjectUniqueID": .versioned(range: 1...2, .implicit(2, UniqueIdentifier)),
       "extensions": .versioned(range: 2...2, .explicit(3, Extensions))

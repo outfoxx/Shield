@@ -12,6 +12,7 @@ import Foundation
 import Security
 import ShieldX500
 import ShieldX509
+import PotentASN1
 
 
 public enum SecIdentityError: Int, Error {
@@ -92,10 +93,10 @@ public extension SecIdentity {
 
 public class SecIdentityBuilder {
 
-  public let certificateSigningRequest: Data
+  public let certificateSigningRequest: CertificationRequest
   public let keyPair: SecKeyPair
 
-  private init(certificateSigningRequest: Data, keyPair: SecKeyPair) {
+  private init(certificateSigningRequest: CertificationRequest, keyPair: SecKeyPair) {
     self.certificateSigningRequest = certificateSigningRequest
     self.keyPair = keyPair
   }
@@ -104,12 +105,10 @@ public class SecIdentityBuilder {
 
     let keyPair = try SecKeyPairFactory(type: .RSA, keySize: keySize).generate()
 
-    let certificateSigningRequestFactory = SecCertificateRequestFactory()
-    certificateSigningRequestFactory.subject = subject
-    certificateSigningRequestFactory.publicKey = try keyPair.encodedPublicKey() as Data
-
-    let certificateSigningRequest = try certificateSigningRequestFactory.build(signingKey: keyPair.privateKey,
-                                                                               digestAlgorithm: .sha256)
+    let certificateSigningRequest = try CertificationRequest.Builder()
+      .subject(name: subject)
+      .publicKey(keyPair: keyPair)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
 
     return SecIdentityBuilder(certificateSigningRequest: certificateSigningRequest, keyPair: keyPair)
   }

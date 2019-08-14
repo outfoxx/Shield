@@ -52,7 +52,7 @@ public extension Schemas {
     .sequence([
       "version": .version(.integer(allowed: 0 ..< 1)),
       "subject": Name,
-      "subjectPKInfo": SubjectPublicKeyInfo(PKInfoAlgorithms),
+      "subjectPKInfo": SubjectPublicKeyInfo,
       "attributes": .implicit(0, Attributes(CRIAttributes))
     ])
 

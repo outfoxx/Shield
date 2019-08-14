@@ -29,11 +29,11 @@ public enum GeneralName: Equatable, Hashable, TaggedValue {
       guard let value = value as? OtherName else { return nil }
       self = .otherName(value)
     case 1:
-      guard let value = value as? String else { return nil }
-      self = .rfc822Name(value)
+      guard let value = value as? AnyString else { return nil }
+      self = .rfc822Name(value.storage)
     case 2:
-      guard let value = value as? String else { return nil }
-      self = .dnsName(value)
+      guard let value = value as? AnyString else { return nil }
+      self = .dnsName(value.storage)
     case 3:
       guard let value = value as? ASN1 else { return nil }
       self = .x400Address(value)
@@ -44,8 +44,8 @@ public enum GeneralName: Equatable, Hashable, TaggedValue {
       guard let value = value as? EDIPartyName else { return nil }
       self = .ediPartyName(value)
     case 6:
-      guard let value = value as? String else { return nil }
-      self = .uniformResourceIdentifier(value)
+      guard let value = value as? AnyString else { return nil }
+      self = .uniformResourceIdentifier(value.storage)
     case 7:
       guard let value = value as? Data else { return nil }
       self = .ipAddress(value)

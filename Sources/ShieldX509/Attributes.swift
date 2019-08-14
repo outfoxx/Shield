@@ -120,20 +120,43 @@ public struct Attributes<Handler: AttributeValuesHandler>: Equatable, Hashable, 
     return nil
   }
 
-  public mutating func append<AV: AttributeValue>(_ values: [AV]) {
-    storage.append(Attribute(attrType: AV.attributeType, attrValues: values))
+  public mutating func append<AV: AttributeValue>(multiValued values: [AV]) {
+    append(Attribute(attrType: AV.attributeType, attrValues: values))
   }
 
-  public mutating func append<AV: SingleAttributeValue>(_ value: AV) {
-    storage.append(Attribute(attrType: AV.attributeType, attrValues: [value]))
+  public mutating func append<AV: SingleAttributeValue>(singleValued value: AV) {
+    append(Attribute(attrType: AV.attributeType, attrValues: [value]))
   }
 
   public mutating func append(type: ObjectIdentifier, values: [ASN1]) {
-    storage.append(Attribute(attrType: type, attrValues: values))
+    append(Attribute(attrType: type, attrValues: values))
+  }
+
+  public mutating func append(_ element: Attribute) {
+    storage.append(element)
   }
 
   public mutating func remove<AV: AttributeValue>(_ type: AV.Type) {
-    storage = storage.filter { $0.attrType != AV.attributeType }
+    remove(type: AV.attributeType)
+  }
+
+  public mutating func remove(type: ObjectIdentifier) {
+    storage = storage.filter { $0.attrType != type }
+  }
+
+  public mutating func replace<AV: AttributeValue>(multiValued values: [AV]) {
+    remove(AV.self)
+    append(multiValued: values)
+  }
+
+  public mutating func replace<AV: SingleAttributeValue>(singleValued value: AV) {
+    remove(AV.self)
+    append(singleValued: value)
+  }
+
+  public mutating func replace(type: ObjectIdentifier, values: [ASN1]) {
+    remove(type: type)
+    storage.append(Attribute(attrType: type, attrValues: values))
   }
 
 }

@@ -129,9 +129,9 @@ public class SecKeyPair: Codable {
     return try privateKey.encode(class: kSecAttrKeyClassPrivate) as Data
   }
 
-  public struct ExportedKey: Codable {
+  public struct ExportedKey: Codable, SchemaSpecified {
 
-    static let asn1Schema: Schema =
+    public static let asn1Schema: Schema =
       .sequence([
         "keyType": .integer(),
         "exportKeyLength": .integer(),
@@ -164,36 +164,18 @@ public class SecKeyPair: Codable {
     let encryptedKeyMaterial = try Cryptor.encrypt(data: keyMaterial, using: .aes, options: [.pkcs7Padding],
                                                    key: exportKey, iv: exportKeySalt)
 
-    let keyType: SecKeyType
+    let keyType = try privateKey.keyType(class: kSecAttrKeyClassPrivate)
 
-    let attrs = try privateKey.attributes(class: kSecAttrKeyClassPrivate)
-
-    // iOS 10 SecKeyCopyAttributes returns string values, SecItemCopyMatching returns number values
-    let type =
-      (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ??
-      attrs[kSecAttrKeyType as String] as! String
-
-    if type == kSecAttrKeyTypeRSA as String {
-      keyType = .RSA
-    }
-    else if type == kSecAttrKeyTypeEC as String {
-      keyType = .EC
-    }
-    else {
-      fatalError("Unsupported key type")
-    }
-
-    return try ASN1Encoder(schema: ExportedKey.asn1Schema)
-      .encode(ExportedKey(keyType: keyType,
-                          exportKeyLength: UInt64(keyExportKeyLength),
-                          exportKeyRounds: UInt64(exportKeyRounds),
-                          exportKeySalt: exportKeySalt,
-                          keyMaterial: encryptedKeyMaterial))
+    return try ASN1Encoder.encode(ExportedKey(keyType: keyType,
+                                              exportKeyLength: UInt64(keyExportKeyLength),
+                                              exportKeyRounds: UInt64(exportKeyRounds),
+                                              exportKeySalt: exportKeySalt,
+                                              keyMaterial: encryptedKeyMaterial))
   }
 
   public static func importKeys(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
-    let info = try ASN1Decoder(schema: ExportedKey.asn1Schema).decode(ExportedKey.self, from: data)
+    let info = try ASN1Decoder.decode(ExportedKey.self, from: data)
 
     let exportKey = try PBKDF.derive(length: Int(info.exportKeyLength),
                                      from: password.data(using: .utf8)!, salt: info.exportKeySalt,
@@ -207,11 +189,12 @@ public class SecKeyPair: Codable {
                                           class: kSecAttrKeyClassPrivate)
 
     // Assemble DER public key from private key material
-    let privateKey = try ASN1Decoder(schema: Schemas.RSAPrivateKey).decode(RSAPrivateKey.self, from: keyMaterial)
+    let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: keyMaterial)
     let publicKey = RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent)
-    let pubKeyMaterial = try ASN1Encoder(schema: Schemas.RSAPublicKey).encode(publicKey)
+    let publicKeyTree = try ASN1Encoder.encodeTree(publicKey)
+    let publicKeyMaterial = try DERWriter.write(publicKeyTree)
 
-    let secPublicKey = try SecKey.decode(fromData: pubKeyMaterial,
+    let secPublicKey = try SecKey.decode(fromData: publicKeyMaterial,
                                          type: info.keyType.systemValue,
                                          class: kSecAttrKeyClassPublic)
 

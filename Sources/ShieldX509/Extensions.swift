@@ -54,7 +54,11 @@ public struct Extensions: Equatable, Hashable, Codable, SingleAttributeValue {
   }
 
   public mutating func append(id: ObjectIdentifier, isCritical: Bool, value: Data) {
-    storage.append(Extension(extnId: id, critical: isCritical, extnValue: value))
+    append(Extension(extnId: id, critical: isCritical, extnValue: value))
+  }
+
+  public mutating func append(_ element: Extension) {
+    storage.append(element)
   }
 
   public mutating func append<Value: ExtensionValue>(value: Value) throws {
@@ -63,7 +67,27 @@ public struct Extensions: Equatable, Hashable, Codable, SingleAttributeValue {
   }
 
   public mutating func remove<Value: ExtensionValue>(_ type: Value.Type) {
-    storage = storage.filter { $0.extnID != Value.extensionID }
+    remove(id: Value.extensionID)
+  }
+
+  public mutating func remove(id: ObjectIdentifier) {
+    storage = storage.filter { $0.extnID != id }
+  }
+
+  public mutating func replace(_ element: Extension) {
+    remove(id: element.extnID)
+    append(element)
+  }
+
+  public mutating func replace<Value: ExtensionValue>(value: Value) throws {
+    remove(id: Value.extensionID)
+    append(id: Value.extensionID, isCritical: value.isCritical, value: try ASN1Encoder.encode(value))
+  }
+
+  public mutating func replaceAll<S>(_ elements: S) where S: Sequence, S.Element == Extension {
+    for element in elements {
+      replace(element)
+    }
   }
 
 }

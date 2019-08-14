@@ -10,7 +10,7 @@ import PotentASN1
 import ShieldOID
 
 
-public struct SubjectKeyIdentifier: Equatable, Hashable, Codable, ExtensionValue {
+public struct SubjectKeyIdentifier: Equatable, Hashable, ExtensionValue {
 
   public static let extensionID = iso_itu.ds.certificateExtension.subjectKeyIdentifier.oid
   public static let asn1Schema = Schemas.SubjectKeyIdentifier
@@ -23,6 +23,19 @@ public struct SubjectKeyIdentifier: Equatable, Hashable, Codable, ExtensionValue
   }
 }
 
+extension SubjectKeyIdentifier: Codable {
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    self.value = try container.decode(KeyIdentifier.self)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+
+}
 
 
 // MARK: Schemas

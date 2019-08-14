@@ -16,13 +16,13 @@ public struct AuthorityKeyIdentifier: Equatable, Hashable, Codable, ExtensionVal
   public static let asn1Schema: Schema = Schemas.AuthorityKeyIdentifier
   public var isCritical: Bool { false }
 
-  public var keyIdentifier: KeyIdentifier
-  public var authorityCertIssuer: GeneralName
-  public var authorityCertSerialNumber: TBSCertificate.SerialNumber
+  public var keyIdentifier: KeyIdentifier?
+  public var authorityCertIssuer: GeneralNames?
+  public var authorityCertSerialNumber: TBSCertificate.SerialNumber?
 
-  public init(keyIdentifier: KeyIdentifier,
-              authorityCertIssuer: GeneralName,
-              authorityCertSerialNumber: TBSCertificate.SerialNumber) {
+  public init(keyIdentifier: KeyIdentifier? = nil,
+              authorityCertIssuer: GeneralNames? = nil,
+              authorityCertSerialNumber: TBSCertificate.SerialNumber? = nil) {
     self.keyIdentifier = keyIdentifier
     self.authorityCertIssuer = authorityCertIssuer
     self.authorityCertSerialNumber = authorityCertSerialNumber
@@ -37,9 +37,9 @@ public extension Schemas {
 
   static let AuthorityKeyIdentifier: Schema =
     .sequence([
-      "keyIdentifier":                .implicit(0, .optional(KeyIdentifier)),
-      "authorityCertIssuer":          .implicit(1, .optional(GeneralName)),
-      "authorityCertSerialNumber":    .implicit(2, .optional(CertificateSerialNumber))
+      "keyIdentifier":                .optional(.implicit(0, KeyIdentifier)),
+      "authorityCertIssuer":          .optional(.implicit(1, GeneralNames)),
+      "authorityCertSerialNumber":    .optional(.implicit(2, CertificateSerialNumber))
     ])
 
 }

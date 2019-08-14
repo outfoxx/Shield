@@ -31,13 +31,18 @@ class SecKeyPairTests: XCTestCase {
 
   func testCertificateMatching() throws {
 
-    let certFactory = SecCertificateFactory()
-//    certFactory.subject = [X501NameEntry("CN", "Unit Testing")]
-    certFactory.issuer = certFactory.subject
-//    certFactory.publicKey = try keyPair.encodedPublicKey()
-    certFactory.keyUsage = [.keyEncipherment]
+    let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
 
-    let certData = try certFactory.build(signingKey: keyPair.privateKey, signingAlgorithm: .sha256)
+    let certData =
+      try Certificate.Builder()
+        .subject(name: name)
+        .issuer(name: name)
+        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .valid(for: 86400 * 5)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    print(certData.base64EncodedString())
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 

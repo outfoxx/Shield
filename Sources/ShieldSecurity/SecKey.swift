@@ -285,11 +285,24 @@ public extension SecKey {
 
   }
 
-  func type(class keyClass: CFString) throws -> CFString {
+  func keyType(class keyClass: CFString) throws -> SecKeyType {
+    let type = try self.type(class: kSecAttrKeyClassPrivate) as CFString
+    switch type {
+    case kSecAttrKeyTypeRSA:
+      return .RSA
+    case kSecAttrKeyTypeEC:
+      return .EC
+    default:
+      fatalError("Unsupported key type")
+    }
+  }
+
+  func type(class keyClass: CFString) throws -> String {
 
     let attrs = try attributes(class: keyClass)
 
-    return (attrs[kSecAttrKeyType as String] as! NSNumber).stringValue as CFString
+    // iOS 10 SecKeyCopyAttributes returns string values, SecItemCopyMatching returns number values
+    return (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ?? (attrs[kSecAttrKeyType as String] as! String)
   }
 
   func save(class keyClass: CFString) throws {

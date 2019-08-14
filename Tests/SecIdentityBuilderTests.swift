@@ -16,24 +16,26 @@ class SecIdentityBuilderTests: XCTestCase {
 
   func testBuildAndFetch() throws {
 
-    let subject: Name = [
-      [AttributeTypeAndValue<DirectoryNameAttributeMapper>(type: "CN", value: "Test Guy")],
-      [AttributeTypeAndValue<DirectoryNameAttributeMapper>(type: "O", value: "Some Corp")],
-      [AttributeTypeAndValue<DirectoryNameAttributeMapper>(type: "C", value: "USA")],
-    ]
+    let subject: Name = try NameBuilder()
+      .add("Test Guy", forTypeName: "CN")
+      .add("Test Corp", forTypeName: "O")
+      .add("TC", forTypeName: "C")
+      .name
 
     let builder = try SecIdentityBuilder.generate(subject: subject,
                                                   keySize: 2048,
                                                   usage: .nonRepudiation)
 
     // Build a self-signed certificate for importing
-    let certFactory = SecCertificateFactory()
-    certFactory.subject = subject
-    certFactory.issuer = certFactory.subject
-//    certFactory.publicKey = try builder.keyPair.encodedPublicKey()
-    certFactory.keyUsage = [.nonRepudiation]
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subject)
+        .issuer(name: subject)
+        .publicKey(keyPair: builder.keyPair, usage: [.nonRepudiation])
+        .valid(for: 86400 * 5)
+        .build(signingKey: builder.keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
 
-    let certData = try certFactory.build(signingKey: builder.keyPair.privateKey, signingAlgorithm: .sha256)
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
     // Save the certificate to finish out the identity

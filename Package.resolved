@@ -15,8 +15,17 @@
         "repositoryURL": "https://github.com/lukaskubanek/OrderedDictionary.git",
         "state": {
           "branch": null,
-          "revision": "e7adba0cb9c88b840d2813b9b720575e8e091226",
-          "version": "2.2.2"
+          "revision": "69ed90dcfc8cf380c81fd16c7a6d699e74870ad9",
+          "version": "2.3.0"
+        }
+      },
+      {
+        "package": "PotentCodables",
+        "repositoryURL": "https://github.com/outfoxx/PotentCodables.git",
+        "state": {
+          "branch": null,
+          "revision": "3c1f4828870a3ccb94b18ada3ad129d9d6b46892",
+          "version": "1.4.2"
         }
       },
       {

@@ -12,6 +12,11 @@
 import XCTest
 
 
+
+// Keys are comparatively slow to generate... so we do it once
+private let keyPair = try! SecKeyPairFactory(type: .RSA, keySize: 2048).generate()
+
+
 class SecKeyTests: XCTestCase {
 
   var publicKey: SecKey!
@@ -20,10 +25,8 @@ class SecKeyTests: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    let pair = try! SecKeyPairFactory(type: .RSA, keySize: 2048).generate()
-
-    publicKey = pair.publicKey
-    privateKey = pair.privateKey
+    publicKey = keyPair.publicKey
+    privateKey = keyPair.privateKey
   }
 
 

@@ -22,16 +22,22 @@ public struct SubjectPublicKeyInfo: Equatable, Hashable, Codable {
 }
 
 
+extension SubjectPublicKeyInfo: SchemaSpecified {
+
+  public static var asn1Schema: Schema { Schemas.SubjectPublicKeyInfo }
+
+}
+
+
 
 // MARK: Schemas
 
 public extension Schemas {
 
-  static func SubjectPublicKeyInfo(_ ioSet: Schema.DynamicMap) -> Schema {
+  static let SubjectPublicKeyInfo: Schema =
     .sequence([
-      "algorithm": AlgorithmIdentifier(ioSet),
+      "algorithm": AlgorithmIdentifier(PKInfoAlgorithms),
       "subjectPublicKey": .bitString()
     ])
-  }
 
 }

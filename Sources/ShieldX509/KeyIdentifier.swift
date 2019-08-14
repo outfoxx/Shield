@@ -9,7 +9,7 @@ import Foundation
 import PotentASN1
 
 
-public typealias KeyIdentifier = OctetString
+public typealias KeyIdentifier = Data
 
 
 
