@@ -15,36 +15,51 @@ import ShieldX500
 import ShieldX509
 
 
-public enum SecIdentityError: Int, Error {
-
-  case loadFailed
-  case saveFailed
-  case copyPrivateKeyFailed
-  case copyCertificateFailed
-
-  public static func build(error: SecIdentityError, message: String, status: OSStatus? = nil, underlyingError: Error? = nil) -> NSError {
-
-    let error = error as NSError
-
-    var userInfo = [
-      NSLocalizedDescriptionKey: message,
-    ] as [String: Any]
-
-    if let status = status {
-      userInfo["status"] = Int(status) as NSNumber
-    }
-
-    if let underlyingError = underlyingError {
-      userInfo[NSUnderlyingErrorKey] = underlyingError as NSError
-    }
-
-    return NSError(domain: error.domain, code: error.code, userInfo: userInfo)
-  }
-
-}
-
 
 public extension SecIdentity {
+
+  enum Error: Int, Swift.Error {
+    case loadFailed
+    case saveFailed
+    case copyPrivateKeyFailed
+    case copyCertificateFailed
+  }
+
+  static func create(certificate: SecCertificate, keyPair: SecKeyPair) throws -> SecIdentity {
+
+    return try create(certificate: certificate, privateKey: keyPair.privateKey)
+  }
+
+  static func create(certificate: SecCertificate, privateKey: SecKey) throws -> SecIdentity {
+
+    do {
+      try privateKey.save(class: kSecAttrKeyClassPrivate)
+    }
+    catch SecKeyError.saveDuplicate {
+      // Allowable...
+    }
+    catch {
+      throw Error.saveFailed
+    }
+
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassCertificate,
+      kSecAttrLabel as String: UUID().uuidString,
+      kSecValueRef as String: certificate,
+    ]
+
+    var data: CFTypeRef?
+
+    let status = SecItemAdd(query as CFDictionary, &data)
+
+    if status != errSecSuccess {
+      do { try privateKey.delete() } catch {}
+      throw Error.saveFailed
+    }
+
+    return try load(certificate: certificate)
+  }
+
 
   static func load(certificate: SecCertificate) throws -> SecIdentity {
 
@@ -61,7 +76,7 @@ public extension SecIdentity {
     let status = SecItemCopyMatching(query as CFDictionary, &result)
 
     if status != errSecSuccess || result == nil {
-      throw SecIdentityError.loadFailed
+      throw Error.loadFailed
     }
 
     return result as! SecIdentity
@@ -72,7 +87,7 @@ public extension SecIdentity {
     var key: SecKey?
     let status = SecIdentityCopyPrivateKey(self, &key)
     if status != errSecSuccess {
-      throw SecIdentityError.copyPrivateKeyFailed
+      throw Error.copyPrivateKeyFailed
     }
 
     return key!
@@ -83,63 +98,9 @@ public extension SecIdentity {
     var crt: SecCertificate?
     let status = SecIdentityCopyCertificate(self, &crt)
     if status != errSecSuccess {
-      throw SecIdentityError.copyCertificateFailed
+      throw Error.copyCertificateFailed
     }
     return crt!
-  }
-
-}
-
-
-public class SecIdentityBuilder {
-
-  public let certificateSigningRequest: CertificationRequest
-  public let keyPair: SecKeyPair
-
-  private init(certificateSigningRequest: CertificationRequest, keyPair: SecKeyPair) {
-    self.certificateSigningRequest = certificateSigningRequest
-    self.keyPair = keyPair
-  }
-
-  public static func generate(subject: Name, keySize: Int, usage: SecKeyUsage) throws -> SecIdentityBuilder {
-
-    let keyPair = try SecKeyPairFactory(type: .RSA, keySize: keySize).generate()
-
-    let certificateSigningRequest = try CertificationRequest.Builder()
-      .subject(name: subject)
-      .publicKey(keyPair: keyPair)
-      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
-
-    return SecIdentityBuilder(certificateSigningRequest: certificateSigningRequest, keyPair: keyPair)
-  }
-
-  public func save(withCertificate certificate: SecCertificate) throws {
-
-    do {
-      try keyPair.save()
-    }
-    catch SecKeyError.saveDuplicate {
-      // Allowable...
-    }
-    catch {
-      throw SecIdentityError.build(error: .saveFailed, message: "Unable to save key pair")
-    }
-
-    let query: [String: Any] = [
-      kSecClass as String: kSecClassCertificate,
-      kSecAttrLabel as String: UUID().uuidString,
-      kSecValueRef as String: certificate,
-    ]
-
-    var data: CFTypeRef?
-
-    let status = SecItemAdd(query as CFDictionary, &data)
-
-    if status != errSecSuccess {
-      do { try keyPair.delete() } catch {}
-      throw SecIdentityError.build(error: .saveFailed, message: "Unable to add certificate", status: status)
-    }
-
   }
 
 }

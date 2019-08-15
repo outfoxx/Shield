@@ -211,6 +211,7 @@ public struct _Digester<Engine: DigestEngine>: AnyDigester {
   private var context = Engine.Context()
 
   public init() {
+    // swiftformat:disable:next redundantInit,redundantBackticks
     _ = Engine.`init`(&context)
   }
 

@@ -40,9 +40,9 @@ public extension Schemas {
 
   static let AuthorityKeyIdentifier: Schema =
     .sequence([
-      "keyIdentifier":                .optional(.implicit(0, KeyIdentifier)),
-      "authorityCertIssuer":          .optional(.implicit(1, GeneralNames)),
-      "authorityCertSerialNumber":    .optional(.implicit(2, CertificateSerialNumber))
+      "keyIdentifier": .optional(.implicit(0, KeyIdentifier)),
+      "authorityCertIssuer": .optional(.implicit(1, GeneralNames)),
+      "authorityCertSerialNumber": .optional(.implicit(2, CertificateSerialNumber)),
     ])
 
 }

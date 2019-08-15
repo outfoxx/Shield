@@ -41,3 +41,12 @@ public extension Certificate.Builder {
   }
 
 }
+
+
+public extension Certificate {
+
+  func sec() throws -> SecCertificate? {
+    return try SecCertificateCreateWithData(nil, encoded() as CFData)
+  }
+
+}

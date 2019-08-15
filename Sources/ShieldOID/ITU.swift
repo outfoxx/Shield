@@ -11,6 +11,7 @@
 import Foundation
 import PotentASN1
 
+// swiftformat:disable consecutiveSpaces
 
 /// International Telecommunication Union - Telecommunication standardization sector (ITU-T)
 ///
@@ -46,8 +47,8 @@ public struct itu: OIDBranch {
             public static let names = ["pilotAttributeType"]
             private static let children: [OIDNode.Type] = []
 
-            case userId =           "0.9.2342.19200300.100.1.1"
-            case domainComponent =  "0.9.2342.19200300.100.1.25"
+            case userId =                           "0.9.2342.19200300.100.1.1"
+            case domainComponent =                  "0.9.2342.19200300.100.1.25"
           }
         }
       }

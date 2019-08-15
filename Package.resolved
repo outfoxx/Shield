@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/outfoxx/PotentCodables.git",
         "state": {
           "branch": null,
-          "revision": "3c1f4828870a3ccb94b18ada3ad129d9d6b46892",
-          "version": "1.4.2"
+          "revision": "0b9c89233ce351d4cf73ecb1639e928efa0685b2",
+          "version": "1.4.4"
         }
       },
       {
@@ -35,15 +35,6 @@
           "branch": null,
           "revision": "a819aed0e9555268c29a62500fe6fb781ae7f57d",
           "version": "2.1.0"
-        }
-      },
-      {
-        "package": "SwiftFormat",
-        "repositoryURL": "https://github.com/nicklockwood/SwiftFormat.git",
-        "state": {
-          "branch": null,
-          "revision": "0708f1eefe0a2ce2aa42fc3ff86125cdb751e63c",
-          "version": "0.40.10"
         }
       }
     ]

@@ -12,9 +12,8 @@
 import XCTest
 
 
-
 // Keys are comparatively slow to generate... so we do it once
-private let keyPair = try! SecKeyPairFactory(type: .RSA, keySize: 2048).generate()
+private let keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
 
 
 class SecKeyTests: XCTestCase {

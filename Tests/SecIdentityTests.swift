@@ -12,7 +12,7 @@
 import XCTest
 
 
-class SecIdentityBuilderTests: XCTestCase {
+class SecIdentityTests: XCTestCase {
 
   func testBuildAndFetch() throws {
 
@@ -22,27 +22,20 @@ class SecIdentityBuilderTests: XCTestCase {
       .add("TC", forTypeName: "C")
       .name
 
-    let builder = try SecIdentityBuilder.generate(subject: subject,
-                                                  keySize: 2048,
-                                                  usage: .nonRepudiation)
+    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
 
     // Build a self-signed certificate for importing
-    let certData =
+    let cert =
       try Certificate.Builder()
         .subject(name: subject)
         .issuer(name: subject)
-        .publicKey(keyPair: builder.keyPair, usage: [.nonRepudiation])
+        .publicKey(keyPair: keyPair, usage: [.nonRepudiation])
         .valid(for: 86400 * 5)
-        .build(signingKey: builder.keyPair.privateKey, digestAlgorithm: .sha256)
-        .encoded()
-
-    let cert = SecCertificateCreateWithData(nil, certData as CFData)!
-
-    // Save the certificate to finish out the identity
-    try builder.save(withCertificate: cert)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .sec()!
 
     // Ensure all went well
-    let ident = try SecIdentity.load(certificate: cert)
+    let ident = try SecIdentity.create(certificate: cert, keyPair: keyPair)
 
     XCTAssertNotNil(ident)
     XCTAssertNotNil(try ident.certificate())

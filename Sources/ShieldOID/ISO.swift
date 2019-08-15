@@ -11,6 +11,7 @@
 import Foundation
 import PotentASN1
 
+// swiftformat:disable consecutiveSpaces
 
 /// International Organization for Standardization (ISO)
 ///
@@ -45,15 +46,15 @@ public struct iso: OIDBranch {
             public static let id: UInt64 = 1
             public static let names = ["pkcs-1"]
 
-            case rsaEncryption =                "1.2.840.113549.1.1.1"
-            case md2WithRSAEncryption =         "1.2.840.113549.1.1.2"
-            case md4WithRSAEncryption =         "1.2.840.113549.1.1.3"
-            case md5WithRSAEncryption =         "1.2.840.113549.1.1.4"
-            case sha1WithRSASignature =         "1.2.840.113549.1.1.5"
-            case sha256WithRSAEncryption =      "1.2.840.113549.1.1.11"
-            case sha384WithRSAEncryption =      "1.2.840.113549.1.1.12"
-            case sha512WithRSAEncryption =      "1.2.840.113549.1.1.13"
-            case sha224WithRSAEncryption =      "1.2.840.113549.1.1.14"
+            case rsaEncryption =                    "1.2.840.113549.1.1.1"
+            case md2WithRSAEncryption =             "1.2.840.113549.1.1.2"
+            case md4WithRSAEncryption =             "1.2.840.113549.1.1.3"
+            case md5WithRSAEncryption =             "1.2.840.113549.1.1.4"
+            case sha1WithRSASignature =             "1.2.840.113549.1.1.5"
+            case sha256WithRSAEncryption =          "1.2.840.113549.1.1.11"
+            case sha384WithRSAEncryption =          "1.2.840.113549.1.1.12"
+            case sha512WithRSAEncryption =          "1.2.840.113549.1.1.13"
+            case sha224WithRSAEncryption =          "1.2.840.113549.1.1.14"
           }
 
           public enum pkcs9: OID, CaseIterable, OIDLeaf {
@@ -83,7 +84,7 @@ public struct iso: OIDBranch {
           public static let id: UInt64 = 2
           public static let names = ["keyType"]
 
-          case ecPublicKey =                    "1.2.840.10045.2.1"
+          case ecPublicKey =                        "1.2.840.10045.2.1"
         }
 
         public struct curves: OIDBranch {
@@ -95,39 +96,39 @@ public struct iso: OIDBranch {
             public static let id: UInt64 = 0
             public static let names = ["characteristicTwo"]
 
-            case c2pnb163v1 = "1.2.840.10045.3.0.1"
-            case c2pnb163v2 = "1.2.840.10045.3.0.2"
-            case c2pnb163v3 = "1.2.840.10045.3.0.3"
-            case c2pnb176w1 = "1.2.840.10045.3.0.4"
-            case c2tnb191v1 = "1.2.840.10045.3.0.5"
-            case c2tnb191v2 = "1.2.840.10045.3.0.6"
-            case c2tnb191v3 = "1.2.840.10045.3.0.7"
-            case c2onb191v4 = "1.2.840.10045.3.0.8"
-            case c2onb191v5 = "1.2.840.10045.3.0.9"
-            case c2pnb208w1 = "1.2.840.10045.3.0.10"
-            case c2tnb239v1 = "1.2.840.10045.3.0.11"
-            case c2tnb239v2 = "1.2.840.10045.3.0.12"
-            case c2tnb239v3 = "1.2.840.10045.3.0.13"
-            case c2onb239v4 = "1.2.840.10045.3.0.14"
-            case c2onb239v5 = "1.2.840.10045.3.0.15"
-            case c2pnb272W1 = "1.2.840.10045.3.0.16"
-            case c2pnb304W1 = "1.2.840.10045.3.0.17"
-            case c2tnb359v1 = "1.2.840.10045.3.0.18"
-            case c2pnb368w1 = "1.2.840.10045.3.0.19"
-            case c2tnb431r1 = "1.2.840.10045.3.0.20"
+            case c2pnb163v1 =                       "1.2.840.10045.3.0.1"
+            case c2pnb163v2 =                       "1.2.840.10045.3.0.2"
+            case c2pnb163v3 =                       "1.2.840.10045.3.0.3"
+            case c2pnb176w1 =                       "1.2.840.10045.3.0.4"
+            case c2tnb191v1 =                       "1.2.840.10045.3.0.5"
+            case c2tnb191v2 =                       "1.2.840.10045.3.0.6"
+            case c2tnb191v3 =                       "1.2.840.10045.3.0.7"
+            case c2onb191v4 =                       "1.2.840.10045.3.0.8"
+            case c2onb191v5 =                       "1.2.840.10045.3.0.9"
+            case c2pnb208w1 =                       "1.2.840.10045.3.0.10"
+            case c2tnb239v1 =                       "1.2.840.10045.3.0.11"
+            case c2tnb239v2 =                       "1.2.840.10045.3.0.12"
+            case c2tnb239v3 =                       "1.2.840.10045.3.0.13"
+            case c2onb239v4 =                       "1.2.840.10045.3.0.14"
+            case c2onb239v5 =                       "1.2.840.10045.3.0.15"
+            case c2pnb272W1 =                       "1.2.840.10045.3.0.16"
+            case c2pnb304W1 =                       "1.2.840.10045.3.0.17"
+            case c2tnb359v1 =                       "1.2.840.10045.3.0.18"
+            case c2pnb368w1 =                       "1.2.840.10045.3.0.19"
+            case c2tnb431r1 =                       "1.2.840.10045.3.0.20"
           }
 
           public enum prime: OID, CaseIterable, OIDLeaf {
             public static let id: UInt64 = 1
             public static let names = ["prime"]
 
-            case prime192v1 = "1.2.840.10045.3.1.1"
-            case prime192v2 = "1.2.840.10045.3.1.2"
-            case prime192v3 = "1.2.840.10045.3.1.3"
-            case prime239v1 = "1.2.840.10045.3.1.4"
-            case prime239v2 = "1.2.840.10045.3.1.5"
-            case prime239v3 = "1.2.840.10045.3.1.6"
-            case prime256v1 = "1.2.840.10045.3.1.7"
+            case prime192v1 =                       "1.2.840.10045.3.1.1"
+            case prime192v2 =                       "1.2.840.10045.3.1.2"
+            case prime192v3 =                       "1.2.840.10045.3.1.3"
+            case prime239v1 =                       "1.2.840.10045.3.1.4"
+            case prime239v2 =                       "1.2.840.10045.3.1.5"
+            case prime239v3 =                       "1.2.840.10045.3.1.6"
+            case prime256v1 =                       "1.2.840.10045.3.1.7"
           }
         }
       }
@@ -168,35 +169,35 @@ public struct iso: OIDBranch {
                 public static let id: UInt64 = 3
                 public static let names = ["kp"]
 
-                case serverAuth =             "1.3.6.1.5.5.7.3.1"
-                case clientAuth =             "1.3.6.1.5.5.7.3.2"
-                case codeSigning =            "1.3.6.1.5.5.7.3.3"
-                case emailProtection =        "1.3.6.1.5.5.7.3.4"
-                case ipsecEndSystem =         "1.3.6.1.5.5.7.3.5"
-                case ipsecTunnel =            "1.3.6.1.5.5.7.3.6"
-                case ipsecUser =              "1.3.6.1.5.5.7.3.7"
-                case timeStamping =           "1.3.6.1.5.5.7.3.8"
-                case ocspSigning =            "1.3.6.1.5.5.7.3.9"
-                case dvcs =                   "1.3.6.1.5.5.7.3.10"
-                case sbgpCertAAServerAuth =   "1.3.6.1.5.5.7.3.11"
-                case idKpScvpResponder =      "1.3.6.1.5.5.7.3.12"
-                case idKpEapOverPPP =         "1.3.6.1.5.5.7.3.13"
-                case idKpEapOverLAN =         "1.3.6.1.5.5.7.3.14"
-                case idKpScvpServer =         "1.3.6.1.5.5.7.3.15"
-                case idKpScvpClient =         "1.3.6.1.5.5.7.3.16"
-                case idKpIpsecIKE =           "1.3.6.1.5.5.7.3.17"
-                case idKpCapwapAC =           "1.3.6.1.5.5.7.3.18"
-                case idKpCapwapWTP =          "1.3.6.1.5.5.7.3.19"
-                case idKpSipDomain =          "1.3.6.1.5.5.7.3.20"
-                case secureShellClient =      "1.3.6.1.5.5.7.3.21"
-                case secureShellServer =      "1.3.6.1.5.5.7.3.22"
-                case idKpSendRouter =         "1.3.6.1.5.5.7.3.23"
-                case idKpSendProxy =          "1.3.6.1.5.5.7.3.24"
-                case idKpSendOwner =          "1.3.6.1.5.5.7.3.25"
-                case idKpSendProxiedOwner =   "1.3.6.1.5.5.7.3.26"
-                case idKpCmcCA =              "1.3.6.1.5.5.7.3.27"
-                case idKpCmcRA =              "1.3.6.1.5.5.7.3.28"
-                case idKpCmcArchive =         "1.3.6.1.5.5.7.3.29"
+                case serverAuth =                   "1.3.6.1.5.5.7.3.1"
+                case clientAuth =                   "1.3.6.1.5.5.7.3.2"
+                case codeSigning =                  "1.3.6.1.5.5.7.3.3"
+                case emailProtection =              "1.3.6.1.5.5.7.3.4"
+                case ipsecEndSystem =               "1.3.6.1.5.5.7.3.5"
+                case ipsecTunnel =                  "1.3.6.1.5.5.7.3.6"
+                case ipsecUser =                    "1.3.6.1.5.5.7.3.7"
+                case timeStamping =                 "1.3.6.1.5.5.7.3.8"
+                case ocspSigning =                  "1.3.6.1.5.5.7.3.9"
+                case dvcs =                         "1.3.6.1.5.5.7.3.10"
+                case sbgpCertAAServerAuth =         "1.3.6.1.5.5.7.3.11"
+                case idKpScvpResponder =            "1.3.6.1.5.5.7.3.12"
+                case idKpEapOverPPP =               "1.3.6.1.5.5.7.3.13"
+                case idKpEapOverLAN =               "1.3.6.1.5.5.7.3.14"
+                case idKpScvpServer =               "1.3.6.1.5.5.7.3.15"
+                case idKpScvpClient =               "1.3.6.1.5.5.7.3.16"
+                case idKpIpsecIKE =                 "1.3.6.1.5.5.7.3.17"
+                case idKpCapwapAC =                 "1.3.6.1.5.5.7.3.18"
+                case idKpCapwapWTP =                "1.3.6.1.5.5.7.3.19"
+                case idKpSipDomain =                "1.3.6.1.5.5.7.3.20"
+                case secureShellClient =            "1.3.6.1.5.5.7.3.21"
+                case secureShellServer =            "1.3.6.1.5.5.7.3.22"
+                case idKpSendRouter =               "1.3.6.1.5.5.7.3.23"
+                case idKpSendProxy =                "1.3.6.1.5.5.7.3.24"
+                case idKpSendOwner =                "1.3.6.1.5.5.7.3.25"
+                case idKpSendProxiedOwner =         "1.3.6.1.5.5.7.3.26"
+                case idKpCmcCA =                    "1.3.6.1.5.5.7.3.27"
+                case idKpCmcRA =                    "1.3.6.1.5.5.7.3.28"
+                case idKpCmcArchive =               "1.3.6.1.5.5.7.3.29"
               }
 
             }
@@ -218,37 +219,37 @@ public struct iso: OIDBranch {
         public static let id: UInt64 = 0
         public static let names = ["curve"]
 
-        case ansit163k1 =   "1.3.132.0.1"
-        case ansit163r1 =   "1.3.132.0.2"
-        case ansit239k1 =   "1.3.132.0.3"
-        case sect113r1 =    "1.3.132.0.4"
-        case sect113r2 =    "1.3.132.0.5"
-        case secp112r1 =    "1.3.132.0.6"
-        case secp112r2 =    "1.3.132.0.7"
-        case ansip160r1 =   "1.3.132.0.8"
-        case ansip160k1 =   "1.3.132.0.9"
-        case ansip256k1 =   "1.3.132.0.10"
-        case ansit163r2 =   "1.3.132.0.15"
-        case ansit283k1 =   "1.3.132.0.16"
-        case ansit283r1 =   "1.3.132.0.17"
-        case sect131r1 =    "1.3.132.0.22"
-        case sect131r2 =    "1.3.132.0.23"
-        case ansit193r1 =   "1.3.132.0.24"
-        case ansit193r2 =   "1.3.132.0.25"
-        case ansit233k1 =   "1.3.132.0.26"
-        case ansit233r1 =   "1.3.132.0.27"
-        case secp128r1 =    "1.3.132.0.28"
-        case secp128r2 =    "1.3.132.0.29"
-        case ansip160r2 =   "1.3.132.0.30"
-        case ansip192k1 =   "1.3.132.0.31"
-        case ansip224k1 =   "1.3.132.0.32"
-        case ansip224r1 =   "1.3.132.0.33"
-        case ansip384r1 =   "1.3.132.0.34"
-        case ansip521r1 =   "1.3.132.0.35"
-        case ansit409k1 =   "1.3.132.0.36"
-        case ansit409r1 =   "1.3.132.0.37"
-        case ansit571k1 =   "1.3.132.0.38"
-        case ansit571r1 =   "1.3.132.0.39"
+        case ansit163k1 =                           "1.3.132.0.1"
+        case ansit163r1 =                           "1.3.132.0.2"
+        case ansit239k1 =                           "1.3.132.0.3"
+        case sect113r1 =                            "1.3.132.0.4"
+        case sect113r2 =                            "1.3.132.0.5"
+        case secp112r1 =                            "1.3.132.0.6"
+        case secp112r2 =                            "1.3.132.0.7"
+        case ansip160r1 =                           "1.3.132.0.8"
+        case ansip160k1 =                           "1.3.132.0.9"
+        case ansip256k1 =                           "1.3.132.0.10"
+        case ansit163r2 =                           "1.3.132.0.15"
+        case ansit283k1 =                           "1.3.132.0.16"
+        case ansit283r1 =                           "1.3.132.0.17"
+        case sect131r1 =                            "1.3.132.0.22"
+        case sect131r2 =                            "1.3.132.0.23"
+        case ansit193r1 =                           "1.3.132.0.24"
+        case ansit193r2 =                           "1.3.132.0.25"
+        case ansit233k1 =                           "1.3.132.0.26"
+        case ansit233r1 =                           "1.3.132.0.27"
+        case secp128r1 =                            "1.3.132.0.28"
+        case secp128r2 =                            "1.3.132.0.29"
+        case ansip160r2 =                           "1.3.132.0.30"
+        case ansip192k1 =                           "1.3.132.0.31"
+        case ansip224k1 =                           "1.3.132.0.32"
+        case ansip224r1 =                           "1.3.132.0.33"
+        case ansip384r1 =                           "1.3.132.0.34"
+        case ansip521r1 =                           "1.3.132.0.35"
+        case ansit409k1 =                           "1.3.132.0.36"
+        case ansit409r1 =                           "1.3.132.0.37"
+        case ansit571k1 =                           "1.3.132.0.38"
+        case ansit571r1 =                           "1.3.132.0.39"
       }
 
       public enum schemes: OID, CaseIterable, OIDLeaf {

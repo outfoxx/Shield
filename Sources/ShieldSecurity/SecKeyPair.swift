@@ -15,79 +15,64 @@ import ShieldCrypto
 import ShieldPKCS
 
 
-public enum SecKeyPairError: Error {
-  case generateFailed
-  case noMatchingKey
-  case itemAddFailed
-  case itemDeleteFailed
+public struct SecKeyPair {
 
-  public static func build(error: SecKeyPairError, message: String, status: OSStatus) -> NSError {
-    let error = error as NSError
-    return NSError(domain: error.domain, code: error.code, userInfo: [
-      NSLocalizedDescriptionKey: message,
-      "status": Int(status) as NSNumber,
-    ])
-  }
-}
+  public static let exportDerivedKeyLengthDefault = 32
+  public static let exportKeyDerivationTimingDefault = TimeInterval(0.5)
 
-
-public enum SecKeyType: UInt32, CaseIterable, Codable {
-
-  case RSA
-  case EC
-
-  var systemValue: CFString {
-    switch self {
-    case .RSA:
-      return kSecAttrKeyTypeRSA
-    case .EC:
-      return kSecAttrKeyTypeEC
-    }
-  }
-}
-
-
-private let keyExportKeyLength = 32
-private let keyExportTiming = TimeInterval(0.5)
-
-
-public class SecKeyPairFactory {
-
-  public let type: SecKeyType
-  public let keySize: Int
-
-  public init(type: SecKeyType, keySize: Int) {
-    self.type = type
-    self.keySize = keySize
+  public enum Error: Swift.Error {
+    case generateFailed
+    case noMatchingKey
+    case itemAddFailed
+    case itemDeleteFailed
   }
 
-  public func generate() throws -> SecKeyPair {
 
-    let attrs: [String: Any] = [
-      kSecAttrKeyType as String: type.systemValue,
-      kSecAttrKeySizeInBits as String: keySize,
-    ]
+  public class Builder {
 
-    var publicKey: SecKey?, privateKey: SecKey?
-    let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
-    if status != errSecSuccess {
-      throw SecKeyPairError.build(error: .generateFailed, message: "Generate failed", status: status)
+    public let type: SecKeyType?
+    public let keySize: Int?
+
+    public init(type: SecKeyType? = nil, keySize: Int? = nil) {
+      self.type = type
+      self.keySize = keySize
     }
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
+    public func type(_ type: SecKeyType) -> Builder {
+      return Builder(type: type, keySize: keySize)
+    }
 
-      try publicKey!.save(class: kSecAttrKeyClassPublic)
-      try privateKey!.save(class: kSecAttrKeyClassPrivate)
+    public func keySize(_ keySize: Int) -> Builder {
+      return Builder(type: type, keySize: keySize)
+    }
 
-    #endif
+    public func generate() throws -> SecKeyPair {
+      guard let type = type else { fatalError("missing key type") }
+      guard let keySize = keySize else { fatalError("missing key size") }
 
-    return SecKeyPair(privateKey: privateKey!, publicKey: publicKey!)
+      let attrs: [String: Any] = [
+        kSecAttrKeyType as String: type.systemValue,
+        kSecAttrKeySizeInBits as String: keySize,
+      ]
+
+      var publicKey: SecKey?, privateKey: SecKey?
+      let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
+      if status != errSecSuccess {
+        throw SecKeyPair.Error.generateFailed
+      }
+
+      #if os(iOS) || os(watchOS) || os(tvOS)
+
+        try publicKey!.save(class: kSecAttrKeyClassPublic)
+        try privateKey!.save(class: kSecAttrKeyClassPrivate)
+
+      #endif
+
+      return SecKeyPair(privateKey: privateKey!, publicKey: publicKey!)
+    }
+
   }
 
-}
-
-
-public class SecKeyPair: Codable {
 
   public let privateKey: SecKey
   public let publicKey: SecKey
@@ -97,12 +82,28 @@ public class SecKeyPair: Codable {
     self.publicKey = publicKey
   }
 
-  public convenience init(privateKeyRef: Data, publicKeyRef: Data) throws {
+  public init(privateKeyRef: Data, publicKeyRef: Data) throws {
 
     let privateKey = try SecKey.load(persistentReference: privateKeyRef)
     let publicKey = try SecKey.load(persistentReference: publicKeyRef)
 
     self.init(privateKey: privateKey, publicKey: publicKey)
+  }
+
+  public init(type: SecKeyType, privateKeyData: Data) throws {
+
+    privateKey = try SecKey.decode(fromData: privateKeyData,
+                                   type: type.systemValue,
+                                   class: kSecAttrKeyClassPrivate)
+
+    // Assemble public key from private key
+    let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: privateKeyData)
+    let publicKeyData =
+      try ASN1Encoder.encode(RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent))
+
+    publicKey = try SecKey.decode(fromData: publicKeyData,
+                                  type: type.systemValue,
+                                  class: kSecAttrKeyClassPublic)
   }
 
   public func save() throws {
@@ -129,6 +130,14 @@ public class SecKeyPair: Codable {
     return try privateKey.encode(class: kSecAttrKeyClassPrivate) as Data
   }
 
+  public func matchesCertificate(certificate: SecCertificate, trustedCertificates: [SecCertificate]) throws -> Bool {
+
+    let keyData =
+      try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode(class: kSecAttrKeyClassPublic)
+
+    return try encodedPublicKey() == keyData
+  }
+
   public struct ExportedKey: Codable, SchemaSpecified {
 
     public static let asn1Schema: Schema =
@@ -147,17 +156,20 @@ public class SecKeyPair: Codable {
     let keyMaterial: Data
   }
 
-  public func export(password: String) throws -> Data {
+  public func export(password: String,
+                     derivedKeyLength: Int = exportDerivedKeyLengthDefault,
+                     keyDerivationTiming: TimeInterval = exportKeyDerivationTimingDefault) throws -> Data {
 
     let passwordData = password.data(using: String.Encoding.utf8)!
 
-    let exportKeySalt = try Random.generate(count: keyExportKeyLength)
+    let exportKeySalt = try Random.generate(count: derivedKeyLength)
 
     let exportKeyRounds =
-      try PBKDF.calibrate(passwordLength: passwordData.count, saltLength: exportKeySalt.count, keyLength: keyExportKeyLength,
-                          using: .pbkdf2, psuedoRandomAlgorithm: .sha512, taking: keyExportTiming)
+      try PBKDF.calibrate(passwordLength: passwordData.count, saltLength: exportKeySalt.count,
+                          keyLength: derivedKeyLength, using: .pbkdf2, psuedoRandomAlgorithm: .sha512,
+                          taking: keyDerivationTiming)
 
-    let exportKey = try PBKDF.derive(length: keyExportKeyLength, from: passwordData, salt: exportKeySalt,
+    let exportKey = try PBKDF.derive(length: derivedKeyLength, from: passwordData, salt: exportKeySalt,
                                      using: .pbkdf2, psuedoRandomAlgorithm: .sha512, rounds: exportKeyRounds)
 
     let keyMaterial = try encodedPrivateKey()
@@ -167,13 +179,13 @@ public class SecKeyPair: Codable {
     let keyType = try privateKey.keyType(class: kSecAttrKeyClassPrivate)
 
     return try ASN1Encoder.encode(ExportedKey(keyType: keyType,
-                                              exportKeyLength: UInt64(keyExportKeyLength),
+                                              exportKeyLength: UInt64(derivedKeyLength),
                                               exportKeyRounds: UInt64(exportKeyRounds),
                                               exportKeySalt: exportKeySalt,
                                               keyMaterial: encryptedKeyMaterial))
   }
 
-  public static func importKeys(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
+  public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
     let info = try ASN1Decoder.decode(ExportedKey.self, from: data)
 
@@ -184,36 +196,20 @@ public class SecKeyPair: Codable {
     let keyMaterial = try Cryptor.decrypt(data: info.keyMaterial, using: .aes, options: .pkcs7Padding,
                                           key: exportKey, iv: info.exportKeySalt)
 
-    let secPrivateKey = try SecKey.decode(fromData: keyMaterial,
-                                          type: info.keyType.systemValue,
-                                          class: kSecAttrKeyClassPrivate)
-
-    // Assemble DER public key from private key material
-    let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: keyMaterial)
-    let publicKey = RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent)
-    let publicKeyTree = try ASN1Encoder.encodeTree(publicKey)
-    let publicKeyMaterial = try DERWriter.write(publicKeyTree)
-
-    let secPublicKey = try SecKey.decode(fromData: publicKeyMaterial,
-                                         type: info.keyType.systemValue,
-                                         class: kSecAttrKeyClassPublic)
-
-    return SecKeyPair(privateKey: secPrivateKey, publicKey: secPublicKey)
+    return try Self(type: info.keyType, privateKeyData: keyMaterial)
   }
 
-  public func matchesCertificate(certificate: SecCertificate, trustedCertificates: [SecCertificate]) throws -> Bool {
+}
 
-    let keyData = try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode(class: kSecAttrKeyClassPublic)
 
-    return try encodedPublicKey() == keyData
-  }
+extension SecKeyPair: Codable {
 
   enum CodingKeys: CodingKey {
     case `public`
     case `private`
   }
 
-  public required init(from decoder: Decoder) throws {
+  public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: Self.CodingKeys.self)
     privateKey = try SecKey.load(persistentReference: container.decode(Data.self, forKey: .private))
     publicKey = try SecKey.load(persistentReference: container.decode(Data.self, forKey: .public))
