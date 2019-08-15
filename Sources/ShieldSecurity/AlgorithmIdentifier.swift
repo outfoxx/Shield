@@ -42,7 +42,7 @@ public extension AlgorithmIdentifier {
 
   init(publicKey: SecKey) throws {
     switch try publicKey.keyType(class: kSecAttrKeyClassPublic) {
-    case .RSA:
+    case .rsa:
       self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid, parameters: nil)
 
     default:

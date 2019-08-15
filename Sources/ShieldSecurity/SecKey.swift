@@ -101,7 +101,7 @@ public extension SecKey {
         kSecClass as String: kSecClassKey,
         kSecAttrKeyClass as String: keyClass,
         kSecAttrKeyType as String: Int(type as String)! as CFNumber,
-        kSecAttrApplicationTag as String: try Random.generateBytes(ofSize: 32),
+        kSecAttrApplicationTag as String: try Random.generate(count: 32),
         kSecReturnRef as String: kCFBooleanTrue!,
         kSecReturnPersistentRef as String: kCFBooleanTrue!,
         kSecValueData as String: data,
@@ -286,15 +286,11 @@ public extension SecKey {
   }
 
   func keyType(class keyClass: CFString) throws -> SecKeyType {
-    let type = try self.type(class: kSecAttrKeyClassPrivate) as CFString
-    switch type {
-    case kSecAttrKeyTypeRSA:
-      return .RSA
-    case kSecAttrKeyTypeEC:
-      return .EC
-    default:
+    let secType = try self.type(class: kSecAttrKeyClassPrivate) as CFString
+    guard let type = SecKeyType(systemValue: secType) else {
       fatalError("Unsupported key type")
     }
+    return type
   }
 
   func type(class keyClass: CFString) throws -> String {
@@ -408,7 +404,7 @@ public extension SecKey {
         cipherText.withUnsafeBytes { cipherTextPtr in
           plainText.withUnsafeMutableBytes { plainTextPtr in
             SecKeyDecrypt(self,
-                          padding == .OAEP ? .OAEP : .PKCS1,
+                          padding == .oaep ? .OAEP : .PKCS1,
                           cipherTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
                           cipherTextPtr.count,
                           plainTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
@@ -459,21 +455,22 @@ public extension SecKey {
   }
 
   #if os(iOS) || os(watchOS) || os(tvOS)
-    private static func paddingOf(digestAlgorithm: DigestAlgorithm) -> SecPadding {
-
+    private static func paddingOf(digestAlgorithm: Digester.Algorithm) -> SecPadding {
       switch digestAlgorithm {
-      case .SHA1:
+      case .md2, .md4:
+        return .PKCS1MD2
+      case .md5:
+        return .PKCS1MD5
+      case .sha1:
         return .PKCS1SHA1
-      case .SHA224:
+      case .sha224:
         return .PKCS1SHA224
-      case .SHA256:
+      case .sha256:
         return .PKCS1SHA256
-      case .SHA384:
+      case .sha384:
         return .PKCS1SHA384
-      case .SHA512:
+      case .sha512:
         return .PKCS1SHA512
-      @unknown default:
-        fatalError("unsupported digest algorithm")
       }
     }
   #endif

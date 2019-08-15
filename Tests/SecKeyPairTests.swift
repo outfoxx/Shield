@@ -19,7 +19,7 @@ class SecKeyPairTests: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    keyPair = try! SecKeyPairFactory(type: .RSA, keySize: 2048).generate()
+    keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
   }
 
   func testPersistentLoad() throws {
@@ -55,7 +55,7 @@ class SecKeyPairTests: XCTestCase {
 
     try keyPair.delete()
 
-    let importedKeyPair = try SecKeyPair.importKeys(fromData: exportedKeyData, withPassword: "123")
+    let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 
     let plainText = try Random.generate(count: 171)
 
