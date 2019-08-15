@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  AttributeTypeAndValue.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -84,7 +87,7 @@ extension AttributeTypeAndValue: Equatable, Hashable, Codable {
     handler.hash(value, into: &hasher)
   }
 
-  public static func ==(lhs: AttributeTypeAndValue, rhs: AttributeTypeAndValue) -> Bool {
+  public static func == (lhs: AttributeTypeAndValue, rhs: AttributeTypeAndValue) -> Bool {
     guard lhs.type == rhs.type else { return false }
     guard let handler = Mapper.handler(forType: lhs.type) else { fatalError("Unsupported attribute type") }
     return handler.equals(lhs.value, rhs.value)
@@ -99,7 +102,7 @@ public extension Schemas {
   static func AttributeTypeAndValue(_ ioSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
     .sequence([
       "type": .type(.objectIdentifier()),
-      "value": .dynamic(allowUnknownTypes: allowUnknownTypes, ioSet)
+      "value": .dynamic(allowUnknownTypes: allowUnknownTypes, ioSet),
     ])
   }
 

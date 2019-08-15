@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  CertificateBuilder.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 8/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -223,7 +226,7 @@ public extension Certificate {
       guard let notAfter = self.notAfter else { throw Error.missingParameter("notAfter/period") }
       let serialNumber = try self.serialNumber ?? Self.randomSerialNumber()
       let notBefore = self.notBefore ?? time(of: Date().addingTimeInterval(-Self.defaultValidityBeforeAllowance))
-      let version = self.recommendedVersion
+      let version = recommendedVersion
       return TBSCertificate(version: version, serialNumber: serialNumber, signature: signatureAlgorithm,
                             issuer: issuer,
                             validity: .init(notBefore: notBefore, notAfter: notAfter),
@@ -247,7 +250,7 @@ public extension Certificate {
     }
 
     public static func randomSerialNumber() throws -> Integer {
-      var data = (0..<20).map { _ in UInt8.random(in: 0...UInt8.max) }  // max is 20 octets
+      var data = (0 ..< 20).map { _ in UInt8.random(in: 0 ... UInt8.max) } // max is 20 octets
       data[0] &= 0x7F // must be non-negative
       return Integer(Data(data))
     }

@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  NamingStyles.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -40,14 +43,14 @@ public protocol NamingStyleProtocol: CustomStringConvertible {
 
 public extension NamingStyleProtocol {
 
-  static func decode(attributeName name: String, mapping: [String:OID]) -> OID? {
+  static func decode(attributeName name: String, mapping: [String: OID]) -> OID? {
 
     let start = name.startIndex, end = name.endIndex
 
     if let firstFour = name.index(start, offsetBy: 4, limitedBy: end), name[...firstFour].uppercased() == "OID." {
       return OID(String(name[firstFour...]))
     }
-    else if start != end, name[start].isASCII && name[start].isNumber {
+    else if start != end, name[start].isASCII, name[start].isNumber {
       return OID(name)
     }
 
@@ -57,7 +60,7 @@ public extension NamingStyleProtocol {
 }
 
 
-// MARK:  RFC4519 Style
+// MARK: RFC4519 Style
 
 public extension NamingStyle {
   static var rfc4519: NamingStyle { RFC4519Style.instance }
@@ -113,11 +116,11 @@ public struct RFC4519Style: NamingStyleProtocol {
     "x500UniqueIdentifier": "2.5.4.45",
   ]
 
-  static let byName: [String:OID] = {
+  static let byName: [String: OID] = {
     Dictionary(uniqueKeysWithValues: Self.typeNameTable.map { key, value in (key.lowercased(), value) })
   }()
 
-  static let byOID: [OID:String] = {
+  static let byOID: [OID: String] = {
     Dictionary(uniqueKeysWithValues: Self.typeNameTable.map { key, value in (value, key) })
   }()
 

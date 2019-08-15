@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  OIDs.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -37,17 +40,17 @@ public extension OID {
 
   private static func branches<FC: Collection, NC: Collection>(fields: FC, nodes: NC) -> [OIDNode.Type]
     where FC.Element == UInt64, NC.Element == OIDNode.Type {
-      for node in nodes {
-        guard fields.first == node.id else { continue }
+    for node in nodes {
+      guard fields.first == node.id else { continue }
 
-        if fields.count == 1 { return [node] }
+      if fields.count == 1 { return [node] }
 
-        if let branch = node as? OIDBranch.Type {
-          return [node] + branches(fields: fields.dropFirst(), nodes: branch.children)
-        }
-        return [node]
+      if let branch = node as? OIDBranch.Type {
+        return [node] + branches(fields: fields.dropFirst(), nodes: branch.children)
       }
-      return []
+      return [node]
+    }
+    return []
   }
 
   private static func tree(of oid: OID) -> [(id: UInt64, name: String)]? {

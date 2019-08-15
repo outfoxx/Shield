@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  DistinguishedNameStringComposer.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -11,7 +14,7 @@ import PotentASN1
 
 public struct DistinguishedNameStringComposer<Mapper: AttributeValueMapper> {
 
-  public enum Error : Swift.Error {
+  public enum Error: Swift.Error {
     case unsupportedAttributeType(OID)
     case attributeEncodingError(Swift.Error)
   }

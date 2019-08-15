@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  Attributes.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -61,7 +64,7 @@ public struct Attributes<Handler: AttributeValuesHandler>: Equatable, Hashable, 
   private var storage: [Attribute]
 
   public init() {
-    self.storage = []
+    storage = []
   }
 
   public func all<AV: AttributeValue>(_ type: AV.Type) throws -> [[AV]] {
@@ -85,7 +88,7 @@ public struct Attributes<Handler: AttributeValuesHandler>: Equatable, Hashable, 
           throw Error.invalidElement
         }
         guard attrValues.count == 1 else {
-           throw Error.singleValueRequired
+          throw Error.singleValueRequired
         }
         found.append(attrValues[0])
       }
@@ -176,7 +179,7 @@ public extension Schemas {
   static func Attribute(_ ioSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
     .sequence([
       "attrType": .type(.objectIdentifier()),
-      "attrValues": .setOf(.dynamic(allowUnknownTypes: allowUnknownTypes, ioSet))
+      "attrValues": .setOf(.dynamic(allowUnknownTypes: allowUnknownTypes, ioSet)),
     ])
   }
 
@@ -202,7 +205,7 @@ extension Attributes {
       }
       attrs.append(.init(attrType: attrType, attrValues: attrValues))
     }
-    self.storage = attrs
+    storage = attrs
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -228,10 +231,10 @@ extension Attributes {
     }
   }
 
-  public static func ==(_ lhs: Attributes, _ rhs: Attributes) -> Bool {
+  public static func == (_ lhs: Attributes, _ rhs: Attributes) -> Bool {
     guard lhs.storage.count == rhs.storage.count else { return false }
     return zip(lhs.storage, rhs.storage).allSatisfy { l, r in
-      guard l.attrType == r.attrType && l.attrValues.count == r.attrValues.count else { return false }
+      guard l.attrType == r.attrType, l.attrValues.count == r.attrValues.count else { return false }
       let attrHandler = Handler.handler(for: l.attrType)
       return zip(l.attrValues, r.attrValues).allSatisfy { lv, rv in attrHandler.equal(lv, rv) }
     }
@@ -252,8 +255,6 @@ extension Attributes {
     return storage.makeIterator()
   }
 
-  public subscript(position: Index) -> Attribute {
-    get { storage[position] }
-  }
+  public subscript(position: Index) -> Attribute { storage[position] }
 
 }

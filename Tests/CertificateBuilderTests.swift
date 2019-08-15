@@ -1,13 +1,16 @@
 //
-//  File.swift
-//  
+//  CertificateBuilderTests.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 8/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
-@testable import Shield
-import PotentASN1
 import BigInt
+import PotentASN1
+@testable import Shield
 import XCTest
 
 

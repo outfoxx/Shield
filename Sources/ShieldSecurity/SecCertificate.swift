@@ -1,6 +1,6 @@
 //
 //  SecCertificate.swift
-//  CryptoSecurity
+//  Shield
 //
 //  Copyright © 2019 Outfox, inc.
 //
@@ -9,14 +9,14 @@
 //
 
 import Foundation
-import Security
-import Regex
 import PotentASN1
+import Regex
+import Security
 import ShieldCrypto
 import ShieldOID
 import ShieldPKCS
-import ShieldX509
 import ShieldX500
+import ShieldX509
 
 
 public enum SecCertificateError: Int, Error {

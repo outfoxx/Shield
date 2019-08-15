@@ -1,23 +1,26 @@
 //
-//  File.swift
-//  
+//  Certificate.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 8/8/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
-import ShieldX509
 import PotentASN1
 import ShieldCrypto
 import ShieldOID
+import ShieldX509
 
 
 public extension Certificate.Builder {
 
   func publicKey(keyPair: SecKeyPair, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {
-    return try self.publicKey(keyPair.encodedPublicKey(),
-                              algorithm: .init(publicKey: keyPair.publicKey),
-                              usage: keyUsage)
+    return try publicKey(keyPair.encodedPublicKey(),
+                         algorithm: .init(publicKey: keyPair.publicKey),
+                         usage: keyUsage)
   }
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {

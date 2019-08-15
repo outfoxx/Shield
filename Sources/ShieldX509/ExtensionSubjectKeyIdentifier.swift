@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  ExtensionSubjectKeyIdentifier.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -27,7 +30,7 @@ extension SubjectKeyIdentifier: Codable {
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    self.value = try container.decode(KeyIdentifier.self)
+    value = try container.decode(KeyIdentifier.self)
   }
 
   public func encode(to encoder: Encoder) throws {

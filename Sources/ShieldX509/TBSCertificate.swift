@@ -1,15 +1,18 @@
 //
-//  File.swift
-//  
+//  TBSCertificate.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
-import ShieldX500
+import PotentASN1
 import ShieldOID
 import ShieldPKCS
-import PotentASN1
+import ShieldX500
 
 
 public struct TBSCertificate: Equatable, Hashable, Codable {
@@ -31,7 +34,7 @@ public struct TBSCertificate: Equatable, Hashable, Codable {
       self.notBefore = notBefore
       self.notAfter = notAfter
     }
-    
+
   }
 
   public typealias UniqueIdentifier = Data
@@ -104,9 +107,9 @@ public extension Schemas {
       "validity": Validity,
       "subject": Name,
       "subjectPublicKeyInfo": SubjectPublicKeyInfo,
-      "issuerUniqueID": .versioned(range: 1...2, .implicit(1, UniqueIdentifier)),
-      "subjectUniqueID": .versioned(range: 1...2, .implicit(2, UniqueIdentifier)),
-      "extensions": .versioned(range: 2...2, .explicit(3, Extensions))
+      "issuerUniqueID": .versioned(range: 1 ... 2, .implicit(1, UniqueIdentifier)),
+      "subjectUniqueID": .versioned(range: 1 ... 2, .implicit(2, UniqueIdentifier)),
+      "extensions": .versioned(range: 2 ... 2, .explicit(3, Extensions)),
     ])
 
   static let Version: Schema = .integer(allowed: 0 ..< 3, default: 0)
@@ -117,13 +120,13 @@ public extension Schemas {
   static let Time: Schema =
     .choiceOf([
       .time(kind: .utc),
-      .time(kind: .generalized)
+      .time(kind: .generalized),
     ])
 
   static let Validity: Schema =
     .sequence([
       "notBefore": Time,
-      "notAfter": Time
+      "notAfter": Time,
     ])
 
   static let UniqueIdentifier: Schema =

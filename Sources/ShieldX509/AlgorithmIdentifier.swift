@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  AlgorithmIdentifier.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/12/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -30,7 +33,7 @@ public extension Schemas {
   static func AlgorithmIdentifier(_ ioSet: Schema.DynamicMap) -> Schema {
     .sequence([
       "algorithm": .type(.objectIdentifier()),
-      "parameters": .dynamic(ioSet)
+      "parameters": .dynamic(ioSet),
     ])
   }
 

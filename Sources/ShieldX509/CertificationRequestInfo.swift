@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  CertificationRequestInfo.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -27,7 +30,7 @@ public struct CertificationRequestInfo: Equatable, Hashable, Codable {
     self.subjectPKInfo = subjectPKInfo
     self.attributes = attributes
   }
-  
+
 }
 
 
@@ -45,7 +48,7 @@ public extension Schemas {
 
   static let CRIAttributes: Schema.DynamicMap = [
     iso.memberBody.us.rsadsi.pkcs.pkcs9.extensionRequest.asn1: Extensions,
-    iso.memberBody.us.rsadsi.pkcs.pkcs9.extendedCertificateAttributes.asn1: Attributes([:], allowUnknownTypes: true)
+    iso.memberBody.us.rsadsi.pkcs.pkcs9.extendedCertificateAttributes.asn1: Attributes([:], allowUnknownTypes: true),
   ]
 
   static let CertificationRequestInfo: Schema =
@@ -53,7 +56,7 @@ public extension Schemas {
       "version": .version(.integer(allowed: 0 ..< 1)),
       "subject": Name,
       "subjectPKInfo": SubjectPublicKeyInfo,
-      "attributes": .implicit(0, Attributes(CRIAttributes))
+      "attributes": .implicit(0, Attributes(CRIAttributes)),
     ])
 
 }

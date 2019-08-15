@@ -1,6 +1,6 @@
 //
-//  ASN1Tests.swift
-//  CryptoSecurity
+//  OIDTests.swift
+//  Shield
 //
 //  Copyright © 2019 Outfox, inc.
 //
@@ -8,12 +8,12 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
-@testable import Shield
 import Foundation
-import Security
-import XCTest
 import PotentASN1
 import PotentJSON
+import Security
+@testable import Shield
+import XCTest
 
 
 class OIDTests: XCTestCase {

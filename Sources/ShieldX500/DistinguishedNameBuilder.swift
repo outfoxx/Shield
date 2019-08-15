@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  DistinguishedNameBuilder.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -50,7 +53,7 @@ public struct DistinguishedNameBuilder<Mapper: AttributeValueMapper> {
 
   public func add(multiValued values: [(type: OID, value: AnyString)]) -> Self {
     let rdn = values.map { ATV(type: $0.type, value: $0.value) }
-    return Self(rdns: self.rdns + [rdn], style: style)
+    return Self(rdns: rdns + [rdn], style: style)
   }
 
   public func add(_ value: String, forTypeName name: String) throws -> Self {
@@ -65,7 +68,7 @@ public struct DistinguishedNameBuilder<Mapper: AttributeValueMapper> {
   }
 
   public func add(_ value: AnyString, forType type: OID) -> Self {
-    return Self(rdns: self.rdns + [[ATV(type: type, value: value)]], style: style)
+    return Self(rdns: rdns + [[ATV(type: type, value: value)]], style: style)
   }
 
   public func add(parsed string: String) throws -> Self {

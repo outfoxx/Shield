@@ -1,12 +1,15 @@
 //
-//  File.swift
-//  
+//  Errors.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/11/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 
 public struct CCError: Swift.Error, RawRepresentable, Equatable, Hashable {

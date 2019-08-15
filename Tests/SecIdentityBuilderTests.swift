@@ -1,6 +1,6 @@
 //
 //  SecIdentityBuilderTests.swift
-//  CryptoSecurity
+//  Shield
 //
 //  Copyright © 2019 Outfox, inc.
 //

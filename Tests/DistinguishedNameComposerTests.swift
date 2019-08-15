@@ -1,14 +1,17 @@
 //
-//  File.swift
+//  DistinguishedNameComposerTests.swift
+//  Shield
+//
+//  Copyright © 2019 Outfox, inc.
 //
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
-import ShieldX509
-import ShieldOID
 import PotentASN1
+import ShieldOID
+import ShieldX509
 import XCTest
 
 
@@ -57,7 +60,7 @@ class DistinguishedNameComposerTests: XCTestCase {
       .add("Provided by TBS INTERNET http://www.tbs-certificats.com/", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
       .add(" CANAL +", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
       .add("CANAL+DISTRIBUTION", forType: iso_itu.ds.attributeType.organizationName.oid)
-      .add("issy les moulineaux", forType:  iso_itu.ds.attributeType.localityName.oid)
+      .add("issy les moulineaux", forType: iso_itu.ds.attributeType.localityName.oid)
       .add("Hauts de Seine", forType: iso_itu.ds.attributeType.stateOrProvinceName.oid)
       .add("FR", forType: iso_itu.ds.attributeType.countryName.oid)
       .name

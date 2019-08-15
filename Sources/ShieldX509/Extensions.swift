@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  Extensions.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -19,7 +22,7 @@ public struct Extension: Equatable, Hashable, Codable {
   public var extnValue: Data
 
   public init(extnId: ObjectIdentifier, critical: Bool, extnValue: Data) {
-    self.extnID = extnId
+    extnID = extnId
     self.critical = critical
     self.extnValue = extnValue
   }
@@ -39,12 +42,12 @@ public struct Extensions: Equatable, Hashable, Codable, SingleAttributeValue {
   private var storage: [Extension]
 
   public init() {
-    self.storage = []
+    storage = []
   }
 
   public func all<Value: ExtensionValue>(_ type: Value.Type) throws -> [Value] {
     return try storage.filter { $0.extnID == Value.extensionID }.map {
-      return try ASN1Decoder.decode(Value.self, from: $0.extnValue)
+      try ASN1Decoder.decode(Value.self, from: $0.extnValue)
     }
   }
 
@@ -108,7 +111,7 @@ public extension Schemas {
     .sequence([
       "extnID": .objectIdentifier(),
       "critical": .boolean(default: false),
-      "extnValue": .octetString()
+      "extnValue": .octetString(),
     ])
 
 }
@@ -124,7 +127,7 @@ extension Extensions {
     for _ in 0 ..< (container.count ?? 0) {
       extensions.append(try container.decode(Extension.self))
     }
-    self.storage = extensions
+    storage = extensions
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -150,11 +153,9 @@ extension Extensions {
   }
 
   public init(arrayLiteral elements: Extension...) {
-    self.storage = elements
+    storage = elements
   }
 
-  public subscript(position: Index) -> Extension {
-    get { storage[position] }
-  }
+  public subscript(position: Index) -> Extension { storage[position] }
 
 }

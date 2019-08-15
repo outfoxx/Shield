@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  Name.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/24/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -30,7 +33,7 @@ public extension Schemas {
 
   static let Name: Schema =
     .choiceOf([
-      ShieldX500.Schemas.RDNSequence(DirectoryNames, allowUnknownTypes: true)
+      ShieldX500.Schemas.RDNSequence(DirectoryNames, allowUnknownTypes: true),
     ])
 
 }

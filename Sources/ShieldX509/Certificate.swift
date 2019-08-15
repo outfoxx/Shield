@@ -1,14 +1,17 @@
 //
-//  File.swift
-//  
+//  Certificate.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/14/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
+import BigInt
 import Foundation
 import PotentASN1
 import ShieldX500
-import BigInt
 
 
 public struct Certificate: Equatable, Hashable, Codable {
@@ -22,7 +25,7 @@ public struct Certificate: Equatable, Hashable, Codable {
     self.signatureAlgorithm = signatureAlgorithm
     self.signature = signature
   }
-  
+
 }
 
 
@@ -42,7 +45,7 @@ public extension Schemas {
     .sequence([
       "tbsCertificate": TBSCertificate,
       "signatureAlgorithm": AlgorithmIdentifier(SignatureAlgorithms),
-      "signature": .bitString()
+      "signature": .bitString(),
     ])
 
 }

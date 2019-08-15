@@ -1,8 +1,11 @@
 //
-//  File.swift
+//  Schemas.swift
+//  Shield
+//
+//  Copyright © 2019 Outfox, inc.
 //
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation

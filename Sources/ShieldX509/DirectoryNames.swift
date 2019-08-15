@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  DirectoryNames.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -93,7 +96,7 @@ public extension Schemas {
       .string(kind: .printable, size: .range(1, max)),
       .string(kind: .teletex, size: .range(1, max)),
       .string(kind: .visible, size: .range(1, max)),
-      .string(kind: .bmp, size: .range(1, max))
+      .string(kind: .bmp, size: .range(1, max)),
     ])
   }
 

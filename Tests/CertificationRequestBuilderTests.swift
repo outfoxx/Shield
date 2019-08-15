@@ -8,8 +8,8 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
-@testable import Shield
 import PotentASN1
+@testable import Shield
 import XCTest
 
 

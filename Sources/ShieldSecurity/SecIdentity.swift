@@ -1,6 +1,6 @@
 //
 //  SecIdentity.swift
-//  CryptoSecurity
+//  Shield
 //
 //  Copyright © 2019 Outfox, inc.
 //
@@ -9,10 +9,10 @@
 //
 
 import Foundation
+import PotentASN1
 import Security
 import ShieldX500
 import ShieldX509
-import PotentASN1
 
 
 public enum SecIdentityError: Int, Error {

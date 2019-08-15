@@ -1,14 +1,17 @@
 //
-//  File.swift
-//  
+//  CertificationRequest.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/12/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
 import PotentASN1
-import ShieldX500
 import ShieldOID
+import ShieldX500
 
 
 public struct CertificationRequest: Equatable, Hashable, Codable {
@@ -42,7 +45,7 @@ public extension Schemas {
     .sequence([
       "certificationRequestInfo": CertificationRequestInfo,
       "signatureAlgorithm": AlgorithmIdentifier(SignatureAlgorithms),
-      "signature": .bitString()
+      "signature": .bitString(),
     ])
 
 }

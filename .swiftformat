@@ -8,6 +8,6 @@
 --decimalgrouping none
 --hexgrouping none
 --octalgrouping none
---header "//\n//  {file}\n//  CryptoSecurity\n//\n//  Copyright © {created.year} Outfox, inc.\n//\n//\n//  Distributed under the MIT License, See LICENSE for details.\n//"
+--header "//\n//  {file}\n//  Shield\n//\n//  Copyright © {created.year} Outfox, inc.\n//\n//\n//  Distributed under the MIT License, See LICENSE for details.\n//"
 --enable blankLinesBetweenScopes
 --disable consecutiveBlankLines,blankLinesAtStartOfScope,blankLinesAtEndOfScope

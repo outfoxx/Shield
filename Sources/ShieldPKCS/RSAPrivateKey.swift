@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  RSAPrivateKey.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -56,7 +59,7 @@ public extension Schemas {
       "exponent1": .integer(),
       "exponent2": .integer(),
       "coefficient": .integer(),
-      "otherPrimeInfos":  .versioned(range: 1...1, RSAPrivateKeyOtherPrimeInfos)
+      "otherPrimeInfos": .versioned(range: 1 ... 1, RSAPrivateKeyOtherPrimeInfos),
     ])
 
   static let RSAPrivateKeyOtherPrimeInfos: Schema =
@@ -66,7 +69,7 @@ public extension Schemas {
     .sequence([
       "prime": .integer(),
       "exponent": .integer(),
-      "coefficient": .integer()
+      "coefficient": .integer(),
     ])
 
 }

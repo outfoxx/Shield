@@ -1,12 +1,15 @@
 //
 //  PBKDF.swift
-//  
+//  Shield
 //
-//  Created by Kevin Wooten on 7/11/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
-import Foundation
 import CommonCrypto.CommonKeyDerivation
+import Foundation
 
 
 public struct PBKDF {
@@ -74,14 +77,14 @@ public struct PBKDF {
         }
       }
     }
-    
+
     return key
   }
 
   public static func calibrate(passwordLength: Int, saltLength: Int, keyLength: Int,
-                                using algorithm: Algorithm = .pbkdf2,
-                                psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .sha512,
-                                taking: TimeInterval) throws -> Int {
+                               using algorithm: Algorithm = .pbkdf2,
+                               psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .sha512,
+                               taking: TimeInterval) throws -> Int {
     let rounds = CCCalibratePBKDF(algorithm.rawValue, passwordLength, saltLength,
                                   psuedoRandomAlgorithm.rawValue, keyLength, UInt32(taking * 1000))
     if rounds == UInt32.max {

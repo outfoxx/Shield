@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  ParameterizedTest.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/11/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import XCTest
@@ -10,7 +13,7 @@ import XCTest
 
 class ParameterizedTest: XCTestCase {
 
-  override class var defaultTestSuite : XCTestSuite {
+  override class var defaultTestSuite: XCTestSuite {
     let testClass = NSClassFromString(NSStringFromClass(self)) as! XCTestCase.Type
     let testSuite = XCTestSuite(forTestCaseClass: self)
     parameterSets.forEach { parameterSet in
@@ -23,11 +26,10 @@ class ParameterizedTest: XCTestCase {
     return testSuite
   }
 
-  open class var parameterSets : [Any] {
+  open class var parameterSets: [Any] {
     return []
   }
 
-  open func setUp(with parameters: Any) {
-  }
+  open func setUp(with parameters: Any) {}
 
 }

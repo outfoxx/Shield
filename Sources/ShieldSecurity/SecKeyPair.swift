@@ -1,6 +1,6 @@
 //
 //  SecKeyPair.swift
-//  CryptoSecurity
+//  Shield
 //
 //  Copyright © 2019 Outfox, inc.
 //
@@ -9,10 +9,10 @@
 //
 
 import Foundation
+import PotentASN1
 import Security
 import ShieldCrypto
 import ShieldPKCS
-import PotentASN1
 
 
 public enum SecKeyPairError: Error {
@@ -137,7 +137,7 @@ public class SecKeyPair: Codable {
         "exportKeyLength": .integer(),
         "exportKeyRounds": .integer(),
         "exportKeySalt": .octetString(),
-        "keyMaterial": .octetString()
+        "keyMaterial": .octetString(),
       ])
 
     let keyType: SecKeyType

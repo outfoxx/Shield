@@ -1,8 +1,11 @@
 //
-//  File.swift
+//  RSAPublicKey.swift
+//  Shield
+//
+//  Copyright © 2019 Outfox, inc.
 //
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -35,7 +38,7 @@ public extension Schemas {
   static let RSAPublicKey: Schema =
     .sequence([
       "modulus": .integer(),
-      "publicExponent": .integer()
+      "publicExponent": .integer(),
     ])
 
 }

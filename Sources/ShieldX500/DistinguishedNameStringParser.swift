@@ -1,18 +1,21 @@
 //
-//  File.swift
-//  
+//  DistinguishedNameStringParser.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/23/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
-import ShieldOID
 import PotentASN1
+import ShieldOID
 
 
 public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
 
-  public enum Error : Swift.Error {
+  public enum Error: Swift.Error {
     case badFormat(String)
   }
 
@@ -71,7 +74,7 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
 
     var currentIndex = string.startIndex
     let endIndex = string.endIndex
-    var lastEscape: String.Index? = nil
+    var lastEscape: String.Index?
     var escaping = false
     var quoting = false
     var result = ""
@@ -82,7 +85,7 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
       let nextIndex = string.index(after: currentIndex)
 
       // is it an escaped hash string?
-      if nextIndex != endIndex && string[nextIndex] == "#" {
+      if nextIndex != endIndex, string[nextIndex] == "#" {
         // preserve escaping
         currentIndex = string.index(after: nextIndex)
         result.append("\\#")
@@ -108,13 +111,13 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
           escaping = false
         }
       }
-      else if current == "\\" && !escaping && !quoting {
+      else if current == "\\", !escaping, !quoting {
         escaping = true
         lastEscape = result.endIndex
       }
       else {
 
-        if current == " " && !escaping && !nonWhitespace {
+        if current == " ", !escaping, !nonWhitespace {
           currentIndex = string.index(after: currentIndex)
           continue
         }
@@ -141,9 +144,8 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
     if !result.isEmpty {
       while
         let lastIndex = result.index(result.endIndex, offsetBy: -1, limitedBy: result.startIndex),
-        result[lastIndex] == " " && lastIndex != lastEscape
-      {
-          result.removeLast()
+        result[lastIndex] == " ", lastIndex != lastEscape {
+        result.removeLast()
       }
     }
 
@@ -158,7 +160,7 @@ public struct DistinguishedNameStringParser<Mapper: AttributeValueMapper> {
 
     init(string: String, separators: String) {
       self.string = string
-      self.currentIndex = string.startIndex
+      currentIndex = string.startIndex
       self.separators = separators
     }
 

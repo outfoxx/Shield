@@ -1,8 +1,11 @@
 //
-//  File.swift
-//  
+//  OtherName.swift
+//  Shield
 //
-//  Created by Kevin Wooten on 7/16/19.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -23,7 +26,7 @@ public extension Schemas {
   static let OtherName: Schema =
     .sequence([
       "typeId": .type(.objectIdentifier()),
-      "value": .explicit(0, in: .contextSpecific, .dynamic([:]))
+      "value": .explicit(0, in: .contextSpecific, .dynamic([:])),
     ])
 
 }
