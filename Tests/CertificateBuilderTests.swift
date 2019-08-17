@@ -24,7 +24,7 @@ class CertificateBuilderTests: XCTestCase {
 
   func testBuildVer1() throws {
 
-    let subject = try NameBuilder().add("Shield Subject", forTypeName: "CN").name
+    let subject = try NameBuilder().add("Shield Subject", forTypeName: "CN").add("12345", forTypeName: "UID").name
     let issuer = try NameBuilder().add("Shield CA", forTypeName: "CN").name
 
     let cert =

@@ -33,7 +33,7 @@ public extension Schemas {
 
   static let Name: Schema =
     .choiceOf([
-      ShieldX500.Schemas.RDNSequence(DirectoryNames, allowUnknownTypes: true),
+      ShieldX500.Schemas.RDNSequence(DirectoryNames, unknownTypeSchema: .string(kind: .utf8)),
     ])
 
 }

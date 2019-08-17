@@ -19,38 +19,23 @@ public typealias DirectoryName = RDNSequence<DirectoryNameAttributeMapper>
 
 public struct DirectoryNameAttributeMapper: AttributeValueMapper {
 
-  public static let known: [OID: ShieldX500.AttributeValueHandler] = [
-    iso_itu.ds.attributeType.name.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.surname.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.givenName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.initials.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.generationQualifier.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.commonName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.localityName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.stateOrProvinceName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.organizationName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.organizationalUnitName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.title.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.dnQualifier.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.countryName.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.serialNumber.oid: AnyStringAttributeValueHandler.instance,
-    iso_itu.ds.attributeType.pseudonym.oid: AnyStringAttributeValueHandler.instance,
-    itu.data.pss.ucl.pilot.pilotAttributeType.domainComponent.oid: AnyStringAttributeValueHandler.instance,
-    iso.memberBody.us.rsadsi.pkcs.pkcs9.emailAddres.oid: AnyStringAttributeValueHandler.instance,
-  ]
-
   public static func encoder(forType type: ObjectIdentifier) -> ValueEncoder? {
     guard let schema = Schemas.DirectoryNames[.objectIdentifier(type.fields)] else { return nil }
-    return { value in try ASN1Encoder(schema: schema).encode(value as! AnyString) }
+    return { value in
+      guard let string = value as? AnyString else {
+        fatalError("AnyString required")
+      }
+      return try ASN1Encoder(schema: schema).encode(string)
+    }
   }
 
-  public static func decoder(forType type: ObjectIdentifier) -> Self.ValueDecoder? {
+  public static func decoder(forType type: ObjectIdentifier) -> ValueDecoder? {
     guard let schema = Schemas.DirectoryNames[.objectIdentifier(type.fields)] else { return nil }
     return { data in try ASN1Decoder(schema: schema).decode(AnyString.self, from: data) }
   }
 
   public static func handler(forType type: ObjectIdentifier) -> ShieldX500.AttributeValueHandler? {
-    return known[type] ?? ShieldX500.UnknownAttributeValueHandler.instance
+    return ShieldX500.AnyStringAttributeValueHandler.instance
   }
 
 }

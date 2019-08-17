@@ -19,12 +19,12 @@ public typealias RelativeDistinguishedName<Mapper: AttributeValueMapper> = [Attr
 
 public extension Schemas {
 
-  static func RelativeDistinguishedName(_ valueSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
-    .setOf(AttributeTypeAndValue(valueSet, allowUnknownTypes: allowUnknownTypes), size: .min(1))
+  static func RelativeDistinguishedName(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
+    .setOf(AttributeTypeAndValue(valueSet, unknownTypeSchema: unknownTypeSchema), size: .min(1))
   }
 
-  static func RDNSequence(_ valueSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
-    .sequenceOf(RelativeDistinguishedName(valueSet, allowUnknownTypes: allowUnknownTypes))
+  static func RDNSequence(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
+    .sequenceOf(RelativeDistinguishedName(valueSet, unknownTypeSchema: unknownTypeSchema))
   }
 
 }

@@ -99,10 +99,10 @@ extension AttributeTypeAndValue: Equatable, Hashable, Codable {
 
 public extension Schemas {
 
-  static func AttributeTypeAndValue(_ ioSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
+  static func AttributeTypeAndValue(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
     .sequence([
       "type": .type(.objectIdentifier()),
-      "value": .dynamic(allowUnknownTypes: allowUnknownTypes, ioSet),
+      "value": .dynamic(unknownTypeSchema: unknownTypeSchema, ioSet),
     ])
   }
 

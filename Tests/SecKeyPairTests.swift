@@ -42,8 +42,6 @@ class SecKeyPairTests: XCTestCase {
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
-    print(certData.base64EncodedString())
-
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
     XCTAssertTrue(try keyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert]))

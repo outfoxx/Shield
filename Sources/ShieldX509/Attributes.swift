@@ -172,14 +172,14 @@ extension Attributes: Collection, BidirectionalCollection, RandomAccessCollectio
 
 public extension Schemas {
 
-  static func Attributes(_ ioSet: Schema.DynamicMap, allowUnknownTypes: Bool = false) -> Schema {
-    .setOf(Attribute(ioSet, allowUnknownTypes: allowUnknownTypes))
+  static func Attributes(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
+    .setOf(Attribute(ioSet, unknownTypeSchema: unknownTypeSchema))
   }
 
-  static func Attribute(_ ioSet: Schema.DynamicMap, allowUnknownTypes: Bool) -> Schema {
+  static func Attribute(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
     .sequence([
       "attrType": .type(.objectIdentifier()),
-      "attrValues": .setOf(.dynamic(allowUnknownTypes: allowUnknownTypes, ioSet)),
+      "attrValues": .setOf(.dynamic(unknownTypeSchema: unknownTypeSchema, ioSet)),
     ])
   }
 
