@@ -16,7 +16,7 @@ let package = Package(
       targets: ["Shield", "ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "1.5.0"),
+    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "1.6.0"),
     .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0"),
   ],
   targets: [

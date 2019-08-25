@@ -141,39 +141,39 @@ extension GeneralName: Codable {
     var container = encoder.unkeyedContainer()
     switch self {
     case .otherName(let value):
-      try container.encode(ASN1.Tag.tag(from: 0, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 0, in: .contextSpecific, constructed: true))
       try container.encode(value)
 
     case .rfc822Name(let value):
-      try container.encode(ASN1.Tag.tag(from: 1, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 1, in: .contextSpecific, constructed: false))
       try container.encode(value)
 
     case .dnsName(let value):
-      try container.encode(ASN1.Tag.tag(from: 2, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 2, in: .contextSpecific, constructed: false))
       try container.encode(value)
 
     case .x400Address(let value):
-      try container.encode(ASN1.Tag.tag(from: 3, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 3, in: .contextSpecific, constructed: true))
       try container.encode(value)
 
     case .directoryName(let value):
-      try container.encode(ASN1.Tag.tag(from: 4, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 4, in: .contextSpecific, constructed: true))
       try container.encode(value)
 
     case .ediPartyName(let value):
-      try container.encode(ASN1.Tag.tag(from: 5, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 5, in: .contextSpecific, constructed: true))
       try container.encode(value)
 
     case .uniformResourceIdentifier(let value):
-      try container.encode(ASN1.Tag.tag(from: 6, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 6, in: .contextSpecific, constructed: false))
       try container.encode(value)
 
     case .ipAddress(let value):
-      try container.encode(ASN1.Tag.tag(from: 7, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 7, in: .contextSpecific, constructed: false))
       try container.encode(value)
 
     case .registeredID(let value):
-      try container.encode(ASN1.Tag.tag(from: 8, in: .contextSpecific))
+      try container.encode(ASN1.Tag.tag(from: 8, in: .contextSpecific, constructed: false))
       try container.encode(value)
     }
   }

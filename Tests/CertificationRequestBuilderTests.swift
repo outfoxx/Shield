@@ -21,7 +21,7 @@ class CertificationRequestBuilderTests: XCTestCase {
 
   let outputEnabled = false
 
-  func testBuild() throws {
+  func testBuildParse() throws {
 
     let csr =
       try CertificationRequest.Builder()
@@ -31,6 +31,9 @@ class CertificationRequestBuilderTests: XCTestCase {
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(csr)
+
+    let csr2 = try ASN1Decoder.decode(CertificationRequest.self, from: csr.encoded())
+    XCTAssertEqual(csr, csr2)
 
     let csrAttrs = csr.certificationRequestInfo.attributes
     XCTAssertEqual(try csrAttrs.first(Extensions.self)?.first(KeyUsage.self), [.keyEncipherment])
