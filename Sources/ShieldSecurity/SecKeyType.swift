@@ -16,7 +16,7 @@ public enum SecKeyType: UInt32, CaseIterable, Codable {
   case rsa
   case ec
 
-  init?(systemValue: CFString) {
+  public init?(systemValue: CFString) {
     switch systemValue {
     case kSecAttrKeyTypeEC:
       self = .ec
@@ -27,7 +27,7 @@ public enum SecKeyType: UInt32, CaseIterable, Codable {
     }
   }
 
-  var systemValue: CFString {
+  public var systemValue: CFString {
     switch self {
     case .rsa:
       return kSecAttrKeyTypeRSA
