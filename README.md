@@ -1,6 +1,8 @@
 # 🛡 Shield
+[![Build Status](https://travis-ci.org/outfoxx/Shield.svg?branch=master)](https://travis-ci.org/outfoxx/Shield)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/outfoxx/Shield)
 
-Security library covering Cryptography, Hashing, HMAC, Random, PBKDF, PKCS, X509, PKCS10
+## Security library covering Cryptography, Hashing, HMAC, Random, PBKDF, PKCS, X509, PKCS10
 
 Shield is split into a number of libraries, each focusing on specific capabililties:
 
