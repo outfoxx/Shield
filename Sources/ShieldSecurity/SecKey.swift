@@ -80,7 +80,7 @@ public extension SecKey {
 
     #if os(iOS) || os(watchOS) || os(tvOS)
 
-      if #available(iOS 10, watchOS 3.3, *) {
+      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
 
         let attrs = [
           kSecClass as String: kSecClassKey,
@@ -159,7 +159,7 @@ public extension SecKey {
 
     #if os(iOS) || os(watchOS) || os(tvOS)
 
-      if #available(iOS 10, watchOS 3.3, *) {
+      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
 
         var error: Unmanaged<CFError>?
 
@@ -225,7 +225,7 @@ public extension SecKey {
 
     #if os(iOS) || os(watchOS) || os(tvOS)
 
-      if #available(iOS 10, watchOS 3.3, *) {
+      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
 
         return SecKeyCopyAttributes(self) as! [String: Any]
 
