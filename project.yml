@@ -1,0 +1,49 @@
+name: ShieldTest
+packages:
+  Shield:
+    url: https://github.com/outfoxx/Shield.git
+    from: 0.0.0
+localPackages:
+  - ../Shield
+options:
+  bundleIdPrefix: io.outfoxx
+targets:
+  ShieldWrap:
+    type: framework.static
+    platform: [iOS, tvOS, watchOS]
+    deploymentTarget:
+      macOS: 10.12
+      iOS: 10.0
+      tvOS: 10.0
+      watchOS: 3.0
+    sources: []
+    info:
+      path: Project/${platform}/Info.plist
+    scheme:
+      testTargets:
+        - ShieldTests_${platform}
+    dependencies:
+      - package: Shield
+  ShieldHost:
+    type: application
+    platform: [iOS, tvOS, watchOS]
+    sources:
+      - path: TestHosts/${platform}
+        createIntermediateGroups: true
+    info:
+      path: Project/${platform}Host/Info.plist
+    entitlements:
+      path: Project/${platform}Host/Host.entitlements
+      properties:
+        keychain-access-groups: []
+  ShieldTests:
+    type: bundle.unit-test
+    platform: [iOS, tvOS, watchOS]
+    sources: [Tests]
+    dependencies:
+      - target: ShieldWrap_${platform}
+        link: true
+      - target: ShieldHost_${platform}
+        link: false
+    settings:
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ShieldHost.app/ShieldHost

@@ -1,0 +1,16 @@
+language: objective-c
+osx_image:
+  - xcode11
+  - xcode11.1
+  - xcode11.2
+env:
+  - PLATFORM=macOS
+  - PLATFORM=iOS
+  - PLATFORM=tvOS
+addons:
+  homebrew:
+    packages:
+      - xcodegen
+    update: true
+script:
+  - make build-test-$PLATFORM
