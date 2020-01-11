@@ -13,11 +13,10 @@ import PotentASN1
 import ShieldOID
 
 
-public struct SubjectKeyIdentifier: Equatable, Hashable, ExtensionValue {
+public struct SubjectKeyIdentifier: Equatable, Hashable, NonCriticalExtensionValue {
 
   public static let extensionID = iso_itu.ds.certificateExtension.subjectKeyIdentifier.oid
   public static let asn1Schema = Schemas.SubjectKeyIdentifier
-  public var isCritical: Bool { false }
 
   public var value: KeyIdentifier
 

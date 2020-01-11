@@ -13,11 +13,10 @@ import PotentASN1
 import ShieldOID
 
 
-public struct BasicConstraints: Equatable, Hashable, Codable, ExtensionValue {
+public struct BasicConstraints: Equatable, Hashable, Codable, CriticalExtensionValue {
 
   public static let extensionID = iso_itu.ds.certificateExtension.basicConstraints.oid
   public static let asn1Schema = Schemas.BasicConstraints
-  public var isCritical: Bool { true }
 
   public var ca: Bool
   public var pathLenConstraint: Int?

@@ -14,5 +14,8 @@ import PotentASN1
 
 public protocol ExtensionValue: Codable, SchemaSpecified {
   static var extensionID: ObjectIdentifier { get }
-  var isCritical: Bool { get }
 }
+
+
+public protocol CriticalExtensionValue: ExtensionValue {}
+public protocol NonCriticalExtensionValue: ExtensionValue {}

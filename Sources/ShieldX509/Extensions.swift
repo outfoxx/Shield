@@ -26,6 +26,24 @@ public struct Extension: Equatable, Hashable, Codable {
     self.critical = critical
     self.extnValue = extnValue
   }
+
+  public init<Value: ExtensionValue>(value: Value, critical: Bool) throws {
+    extnID = Value.extensionID
+    self.critical = critical
+    self.extnValue = try ASN1Encoder.encode(value)
+  }
+
+  public init<Value: CriticalExtensionValue>(value: Value) throws {
+    extnID = Value.extensionID
+    self.critical = true
+    self.extnValue = try ASN1Encoder.encode(value)
+  }
+
+  public init<Value: NonCriticalExtensionValue>(value: Value) throws {
+    extnID = Value.extensionID
+    self.critical = false
+    self.extnValue = try ASN1Encoder.encode(value)
+  }
 }
 
 // MARK: Extensions
@@ -64,9 +82,19 @@ public struct Extensions: Equatable, Hashable, Codable, SingleAttributeValue {
     storage.append(element)
   }
 
-  public mutating func append<Value: ExtensionValue>(value: Value) throws {
+  public mutating func append<Value: ExtensionValue>(value: Value, isCritical: Bool) throws {
     let valueData = try ASN1Encoder.encode(value)
-    append(id: Value.extensionID, isCritical: value.isCritical, value: valueData)
+    append(id: Value.extensionID, isCritical: isCritical, value: valueData)
+  }
+
+  public mutating func append<Value: CriticalExtensionValue>(value: Value) throws {
+    let valueData = try ASN1Encoder.encode(value)
+    append(id: Value.extensionID, isCritical: true, value: valueData)
+  }
+
+  public mutating func append<Value: NonCriticalExtensionValue>(value: Value) throws {
+    let valueData = try ASN1Encoder.encode(value)
+    append(id: Value.extensionID, isCritical: false, value: valueData)
   }
 
   public mutating func remove<Value: ExtensionValue>(_ type: Value.Type) {
@@ -82,9 +110,19 @@ public struct Extensions: Equatable, Hashable, Codable, SingleAttributeValue {
     append(element)
   }
 
-  public mutating func replace<Value: ExtensionValue>(value: Value) throws {
+  public mutating func replace<Value: ExtensionValue>(value: Value, isCritical: Bool) throws {
     remove(id: Value.extensionID)
-    append(id: Value.extensionID, isCritical: value.isCritical, value: try ASN1Encoder.encode(value))
+    append(id: Value.extensionID, isCritical: isCritical, value: try ASN1Encoder.encode(value))
+  }
+
+  public mutating func replace<Value: CriticalExtensionValue>(value: Value) throws {
+    remove(id: Value.extensionID)
+    append(id: Value.extensionID, isCritical: true, value: try ASN1Encoder.encode(value))
+  }
+
+  public mutating func replace<Value: NonCriticalExtensionValue>(value: Value) throws {
+    remove(id: Value.extensionID)
+    append(id: Value.extensionID, isCritical: false, value: try ASN1Encoder.encode(value))
   }
 
   public mutating func replaceAll<S>(_ elements: S) where S: Sequence, S.Element == Extension {

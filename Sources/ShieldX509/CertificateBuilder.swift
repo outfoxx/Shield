@@ -186,7 +186,27 @@ public extension Certificate {
                                                             authorityCertSerialNumber: certSerialNumber))
     }
 
-    public func addExtension<Value>(value: Value) throws -> Builder where Value: ExtensionValue {
+    public func addExtension<Value>(value: Value, isCritical: Bool) throws -> Builder where Value: ExtensionValue {
+
+      var extensions = self.extensions ?? Extensions()
+      try extensions.append(value: value, isCritical: isCritical)
+
+      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
+                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
+                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+    }
+
+    public func addExtension<Value>(value: Value) throws -> Builder where Value: CriticalExtensionValue {
+
+      var extensions = self.extensions ?? Extensions()
+      try extensions.append(value: value)
+
+      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
+                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
+                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+    }
+
+    public func addExtension<Value>(value: Value) throws -> Builder where Value: NonCriticalExtensionValue {
 
       var extensions = self.extensions ?? Extensions()
       try extensions.append(value: value)

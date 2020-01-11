@@ -13,11 +13,10 @@ import PotentASN1
 import ShieldOID
 
 
-public struct IssuerAltName: Equatable, Hashable, ExtensionValue {
+public struct IssuerAltName: Equatable, Hashable, NonCriticalExtensionValue {
 
   public static let extensionID = iso_itu.ds.certificateExtension.issuerAltName.oid
   public static let asn1Schema = Schemas.IssuerAltName
-  public var isCritical: Bool { false }
 
   public var names: GeneralNames
 
