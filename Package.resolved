@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/attaswift/BigInt.git",
         "state": {
           "branch": null,
-          "revision": "108801d539eb014469c758bc0d7f734690791fb4",
-          "version": "4.0.0"
+          "revision": "19f5e8a48be155e34abb98a2bcf4a343316f0343",
+          "version": "5.0.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/outfoxx/PotentCodables.git",
         "state": {
           "branch": null,
-          "revision": "2d4860a9f3adcfa856d6295057fb2476dda3c210",
-          "version": "1.6.1"
+          "revision": "ec076a59771f7de1064cbf41dad1fe05b99de64d",
+          "version": "1.6.2"
         }
       },
       {
