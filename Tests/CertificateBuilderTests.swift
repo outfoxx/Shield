@@ -10,6 +10,7 @@
 
 import BigInt
 import PotentASN1
+import ShieldOID
 @testable import Shield
 import XCTest
 
@@ -122,6 +123,8 @@ class CertificateBuilderTests: XCTestCase {
         .subject(name: subject, uniqueID: subjectID)
         .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
         .publicKey(keyPair: keyPair)
+        .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
+                          isCritical: false)
         .issuer(name: issuer, uniqueID: issuerID)
         .valid(for: 86400 * 365)
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
@@ -223,7 +226,9 @@ class CertificateBuilderTests: XCTestCase {
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Shield Subject", forTypeName: "CN").name)
         .alternativeNames(names: altNames)
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: keyPair, usage: [.dataEncipherment])
+        .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
+                          isCritical: false)
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 

@@ -9,6 +9,7 @@
 //
 
 import Foundation
+import PotentASN1
 
 
 public extension CertificationRequest {
@@ -70,18 +71,32 @@ public extension CertificationRequest {
                           algorithm: AlgorithmIdentifier,
                           usage keyUsage: KeyUsage? = nil) throws -> Builder {
 
-      var attributes = self.attributes
-      if let keyUsage = keyUsage {
-        attributes = attributes ?? CRAttributes()
-        var extensions = try attributes!.first(Extensions.self) ?? Extensions()
-        extensions.remove(KeyUsage.self)
-        try extensions.append(value: keyUsage)
+      var builder = self
 
-        attributes!.remove(Extensions.self)
-        attributes!.append(singleValued: extensions)
+      if let keyUsage = keyUsage {
+        builder = try builder.extension(Extension(value: keyUsage))
       }
 
       let subjectPKInfo = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
+
+      return Builder(subject: builder.subject, subjectPKInfo: subjectPKInfo, attributes: builder.attributes)
+    }
+
+    public func extendedKeyUsage(keyPurposes: Set<OID>, isCritical: Bool) throws -> Builder {
+
+      let extKeyUsage = ExtKeyUsage(keyPurposes: keyPurposes)
+
+      return try `extension`(Extension(value: extKeyUsage, critical: isCritical))
+    }
+
+    public func `extension`(_ extension: Extension) throws -> Builder {
+
+      var attributes = self.attributes ?? CRAttributes()
+      var extensions = try attributes.first(Extensions.self) ?? Extensions()
+
+      extensions.replace(`extension`)
+
+      attributes.replace(singleValued: extensions)
 
       return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: attributes)
     }

@@ -145,8 +145,7 @@ public extension Certificate {
       var extensions = self.extensions
       if let keyUsage = keyUsage {
         extensions = extensions ?? Extensions()
-        extensions!.remove(KeyUsage.self)
-        try extensions!.append(value: keyUsage)
+        try extensions!.replace(value: keyUsage)
       }
 
       let subjectPublicKeyInfo = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
@@ -154,6 +153,11 @@ public extension Certificate {
       return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
                      subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
                      notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+    }
+
+    public func extendedKeyUsage(keyPurposes: Set<OID>, isCritical: Bool) throws -> Builder {
+
+      return try addExtension(value: ExtKeyUsage(keyPurposes: keyPurposes), isCritical: isCritical)
     }
 
     public func basicConstraints(ca: Bool, pathLength: Int? = nil) throws -> Builder {
