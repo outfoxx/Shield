@@ -114,6 +114,7 @@ public struct RFC4519Style: NamingStyleProtocol {
     "userPassword": "2.5.4.35",
     "x121Address": "2.5.4.24",
     "x500UniqueIdentifier": "2.5.4.45",
+    "emailAddress": "1.2.840.113549.1.9.1",
   ]
 
   static let byName: [String: OID] = {
