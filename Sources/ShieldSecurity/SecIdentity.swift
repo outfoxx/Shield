@@ -25,15 +25,15 @@ public extension SecIdentity {
     case copyCertificateFailed
   }
 
-  static func create(certificate: SecCertificate, keyPair: SecKeyPair) throws -> SecIdentity {
+    static func create(certificate: SecCertificate, keyPair: SecKeyPair,primaryName: String, applicationTag: Data) throws -> SecIdentity {
 
-    return try create(certificate: certificate, privateKey: keyPair.privateKey)
+        return try create(certificate: certificate, privateKey: keyPair.privateKey, primaryName: primaryName, applicationTag: applicationTag)
   }
 
-  static func create(certificate: SecCertificate, privateKey: SecKey) throws -> SecIdentity {
+  static func create(certificate: SecCertificate, privateKey: SecKey,primaryName: String, applicationTag: Data) throws -> SecIdentity {
 
     do {
-      try privateKey.save(class: kSecAttrKeyClassPrivate)
+        try privateKey.save(class: kSecAttrKeyClassPrivate, applicationTag: applicationTag)
     }
     catch SecKeyError.saveDuplicate {
       // Allowable...
@@ -44,7 +44,7 @@ public extension SecIdentity {
 
     let query: [String: Any] = [
       kSecClass as String: kSecClassCertificate,
-      kSecAttrLabel as String: UUID().uuidString,
+      kSecAttrLabel as String: primaryName, // UUID().uuidString,
       kSecValueRef as String: certificate,
     ]
 
@@ -57,11 +57,28 @@ public extension SecIdentity {
       throw Error.saveFailed
     }
 
-    return try load(certificate: certificate)
+    return try load(certificate: certificate,applicationTag: applicationTag)
   }
 
+  static func load(primaryName: String,applicationTag: Data) throws -> SecIdentity {
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassIdentity,
+      kSecAttrLabel as String: primaryName,
+      kSecReturnRef as String: kCFBooleanTrue!,
+      kSecAttrApplicationTag as String: applicationTag,
+    ]
 
-  static func load(certificate: SecCertificate) throws -> SecIdentity {
+    var result: CFTypeRef?
+
+    let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+    if status != errSecSuccess || result == nil {
+      throw Error.loadFailed
+    }
+    return result as! SecIdentity
+  }
+  
+  static func load(certificate: SecCertificate,applicationTag: Data) throws -> SecIdentity {
 
     let attrs = try certificate.attributes()
 
@@ -69,6 +86,7 @@ public extension SecIdentity {
       kSecClass as String: kSecClassIdentity,
       kSecAttrLabel as String: attrs[kSecAttrLabel as String]!,
       kSecReturnRef as String: kCFBooleanTrue!,
+      kSecAttrApplicationTag as String: applicationTag,
     ]
 
     var result: CFTypeRef?

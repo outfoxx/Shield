@@ -301,13 +301,17 @@ public extension SecKey {
     return (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ?? (attrs[kSecAttrKeyType as String] as! String)
   }
 
-  func save(class keyClass: CFString) throws {
+    func save(class keyClass: CFString,applicationTag: Data? = nil) throws {
 
-    let query: [String: Any] = [
+    var query: [String: Any] = [
       kSecClass as String: kSecClassKey,
       kSecAttrKeyClass as String: keyClass,
       kSecValueRef as String: self,
     ]
+    
+    if let data = applicationTag {
+        query[kSecAttrApplicationTag as String] = data
+    }
 
     let status = SecItemAdd(query as CFDictionary, nil)
 
