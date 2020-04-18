@@ -25,12 +25,12 @@ public extension SecIdentity {
     case copyCertificateFailed
   }
 
-    static func create(certificate: SecCertificate, keyPair: SecKeyPair,primaryName: String, applicationTag: Data) throws -> SecIdentity {
+    static func create(certificate: SecCertificate, keyPair: SecKeyPair,name: String, applicationTag: Data) throws -> SecIdentity {
 
-        return try create(certificate: certificate, privateKey: keyPair.privateKey, primaryName: primaryName, applicationTag: applicationTag)
+        return try create(certificate: certificate, privateKey: keyPair.privateKey, name: name, applicationTag: applicationTag)
   }
 
-  static func create(certificate: SecCertificate, privateKey: SecKey,primaryName: String, applicationTag: Data) throws -> SecIdentity {
+  static func create(certificate: SecCertificate, privateKey: SecKey,name: String, applicationTag: Data) throws -> SecIdentity {
 
     do {
         try privateKey.save(class: kSecAttrKeyClassPrivate, applicationTag: applicationTag)
@@ -44,7 +44,7 @@ public extension SecIdentity {
 
     let query: [String: Any] = [
       kSecClass as String: kSecClassCertificate,
-      kSecAttrLabel as String: primaryName, // UUID().uuidString,
+      kSecAttrLabel as String: name, // UUID().uuidString,
       kSecValueRef as String: certificate,
     ]
 
@@ -60,10 +60,10 @@ public extension SecIdentity {
     return try load(certificate: certificate,applicationTag: applicationTag)
   }
 
-  static func load(primaryName: String,applicationTag: Data) throws -> SecIdentity {
+  static func load(name: String,applicationTag: Data) throws -> SecIdentity {
     let query: [String: Any] = [
       kSecClass as String: kSecClassIdentity,
-      kSecAttrLabel as String: primaryName,
+      kSecAttrLabel as String: name,
       kSecReturnRef as String: kCFBooleanTrue!,
       kSecAttrApplicationTag as String: applicationTag,
     ]
