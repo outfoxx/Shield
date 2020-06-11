@@ -126,14 +126,14 @@ Supported Algorithms:
 ## ShieldX509
 ### X.509 Certificate and PKCS10 CertificationRequest Framework
 
-ShieldX509 provides easy generation and signing of PKCS10 `CertifcationRequest`s (aka CSRs) and X.509 `Certificate`s.
+ShieldX509 provides easy generation and signing of PKCS10 `CertificationRequest`s (aka CSRs) and X.509 `Certificate`s.
 
-### `Certifcate` and `Certificate.Builder`
+### `Certificate` and `Certificate.Builder`
 Certificates can be generated programmatically or loaded/saved using Swift's  `Codable` system.  The `Builder` provides an easy
 interface for generating certificates based on individual data or from a provided `CertificationRequest`.  `Builder` also provides
 easy methods for signing generated certificates.
 
-### `CertifcationRequest` and `CertifcationRequest.Builder`
+### `CertificationRequest` and `CertificationRequest.Builder`
 Certification requests can be generated programmatically or loaded/saved using Swift's  `Codable` system.  The `Builder` provides an
 easy interface for generating requests based on only the required data as well as provided a signed version.
 

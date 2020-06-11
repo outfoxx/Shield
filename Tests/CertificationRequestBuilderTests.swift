@@ -22,12 +22,14 @@ class CertificationRequestBuilderTests: XCTestCase {
   let outputEnabled = false
 
   func testBuildParse() throws {
-
+    
+    let kp = iso.org.dod.internet.security.mechanisms.pkix.kp.self
     let csr =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
         .alternativeNames(names: .dnsName("outfoxx.io"))
         .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .extendedKeyUsage(keyPurposes: [kp.clientAuth.oid, kp.serverAuth.oid], isCritical: true)
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(csr)

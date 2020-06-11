@@ -61,7 +61,7 @@ public struct iso: OIDBranch {
             public static let id: UInt64 = 9
             public static let names = ["pkcs-9"]
 
-            case emailAddres =                      "1.2.840.113549.1.9.1"
+            case emailAddress =                      "1.2.840.113549.1.9.1"
             case unstructuredName =                 "1.2.840.113549.1.9.2"
             case contentType =                      "1.2.840.113549.1.9.3"
             case messageDigest =                    "1.2.840.113549.1.9.4"
