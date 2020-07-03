@@ -63,7 +63,7 @@ public extension Schemas {
     iso_itu.ds.attributeType.serialNumber.asn1: .string(kind: .printable, size: .range(1, 64)),
     iso_itu.ds.attributeType.pseudonym.asn1: X520Pseudonym,
     itu.data.pss.ucl.pilot.pilotAttributeType.domainComponent.asn1: .string(kind: .ia5),
-    iso.memberBody.us.rsadsi.pkcs.pkcs9.emailAddres.asn1: .string(kind: .ia5, size: .range(1, 255)),
+    iso.memberBody.us.rsadsi.pkcs.pkcs9.emailAddress.asn1: .string(kind: .ia5, size: .range(1, 255)),
   ]
 
   static let X520Name = DirectoryString(max: 32768)
