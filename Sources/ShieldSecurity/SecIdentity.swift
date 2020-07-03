@@ -46,6 +46,7 @@ public extension SecIdentity {
       kSecClass as String: kSecClassCertificate,
       kSecAttrLabel as String: name, // UUID().uuidString,
       kSecValueRef as String: certificate,
+      kSecAttrApplicationTag as String: applicationTag,
     ]
 
     var data: CFTypeRef?
@@ -77,7 +78,7 @@ public extension SecIdentity {
     }
     return result as! SecIdentity
   }
-  
+
   static func load(certificate: SecCertificate,applicationTag: Data) throws -> SecIdentity {
 
     let attrs = try certificate.attributes()

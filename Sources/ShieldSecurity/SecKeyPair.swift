@@ -53,10 +53,16 @@ public struct SecKeyPair {
       let privateAttrs: [String: Any] = [
          kSecAttrApplicationTag as String: applicationTag
       ]
+
+      let publicAttrs: [String: Any] = [
+         kSecAttrApplicationTag as String: applicationTag
+      ]
+
       let attrs: [String: Any] = [
         kSecAttrKeyType as String: type.systemValue,
         kSecAttrKeySizeInBits as String: keySize,
-        kSecPrivateKeyAttrs as String : privateAttrs as CFDictionary
+        kSecPrivateKeyAttrs as String : privateAttrs as CFDictionary,
+        kSecPublicKeyAttrs as String : publicAttrs as CFDictionary,
       ]
 
       var publicKey: SecKey?, privateKey: SecKey?
@@ -67,7 +73,7 @@ public struct SecKeyPair {
 
       #if os(iOS) || os(watchOS) || os(tvOS)
 
-        try publicKey!.save(class: kSecAttrKeyClassPublic)
+        try publicKey!.save(class: kSecAttrKeyClassPublic,applicationTag: applicationTag)
         try privateKey!.save(class: kSecAttrKeyClassPrivate,applicationTag: applicationTag)
 
       #endif
