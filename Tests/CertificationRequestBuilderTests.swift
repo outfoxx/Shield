@@ -9,6 +9,7 @@
 //
 
 import PotentASN1
+import ShieldOID
 @testable import Shield
 import XCTest
 
