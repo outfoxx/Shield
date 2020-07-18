@@ -222,67 +222,7 @@ public extension SecKey {
   }
 
   func attributes(class keyClass: CFString) throws -> [String: Any] {
-
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
-
-        return SecKeyCopyAttributes(self) as! [String: Any]
-
-      }
-      else {
-
-        let query = [
-          kSecClass as String: kSecClassKey as Any,
-          kSecAttrKeyClass as String: keyClass,
-          kSecReturnAttributes as String: kCFBooleanTrue!,
-          kSecReturnPersistentRef as String: kCFBooleanTrue!,
-          kSecValueRef as String: self,
-        ] as CFDictionary
-
-        var result: CFTypeRef?
-
-        // Add temporary key, returning the encoded data
-        let addStatus = SecItemAdd(query, &result)
-        if addStatus != errSecSuccess {
-          throw SecKeyError.build(error: .queryFailed, message: "Add failed", status: addStatus)
-        }
-
-        let data = result as! [String: Any]
-
-        let ref = data[kSecValuePersistentRef as String] as! Data
-
-        // Remove the temporary key
-        try SecKey.delete(persistentReference: ref)
-
-        return data
-      }
-
-    #elseif os(macOS)
-
-      if #available(macOS 10.12, *) {
-
-        return SecKeyCopyAttributes(self) as! [String: Any]
-      }
-      else {
-
-        let query: [String: Any] = [
-          kSecReturnAttributes as String: kCFBooleanTrue!,
-          kSecUseItemList as String: [self] as CFArray,
-        ]
-
-        var data: AnyObject?
-
-        let status = SecItemCopyMatching(query as CFDictionary, &data)
-        if status != errSecSuccess {
-          throw SecKeyError.build(error: .queryFailed, message: "Unable to copy attributes", status: status)
-        }
-
-        return data as! [String: Any]
-      }
-
-    #endif
-
+    return SecKeyCopyAttributes(self) as! [String: Any]
   }
 
   func keyType(class keyClass: CFString) throws -> SecKeyType {
