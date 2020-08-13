@@ -15,13 +15,16 @@ public enum SecKeyType: UInt32, CaseIterable, Codable {
 
   case rsa
   case ec
+  case ecSECPrimeRandom
 
   public init?(systemValue: CFString) {
     switch systemValue {
-    case kSecAttrKeyTypeEC:
-      self = .ec
     case kSecAttrKeyTypeRSA:
       self = .rsa
+    case kSecAttrKeyTypeEC:
+      self = .ec
+    case kSecAttrKeyTypeECSECPrimeRandom:
+      self = .ecSECPrimeRandom
     default:
       return nil
     }
@@ -33,6 +36,8 @@ public enum SecKeyType: UInt32, CaseIterable, Codable {
       return kSecAttrKeyTypeRSA
     case .ec:
       return kSecAttrKeyTypeEC
+    case .ecSECPrimeRandom:
+      return kSecAttrKeyTypeECSECPrimeRandom
     }
   }
 }

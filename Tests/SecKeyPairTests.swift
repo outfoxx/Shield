@@ -14,21 +14,30 @@ import XCTest
 
 class SecKeyPairTests: XCTestCase {
 
-  var keyPair: SecKeyPair!
+  var rsaKeyPair: SecKeyPair!
+  var ecKeyPair: SecKeyPair!
 
   override func setUp() {
     super.setUp()
 
-    keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
+    rsaKeyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
+    ecKeyPair = try! SecKeyPair.Builder(type: .ec, keySize: 256).generate()
   }
-
-  func testPersistentLoad() throws {
-
-    let (privateKeyRef, publicKeyRef) = try keyPair.persistentReferences()
-
+  
+  func testPersistentLoadRSA() throws {
+    
+    let (privateKeyRef, publicKeyRef) = try rsaKeyPair.persistentReferences()
+    
     XCTAssertNotNil(try SecKeyPair(privateKeyRef: privateKeyRef, publicKeyRef: publicKeyRef))
   }
-
+  
+  func testPersistentLoadEC() throws {
+    
+    let (privateKeyRef, publicKeyRef) = try ecKeyPair.persistentReferences()
+    
+    XCTAssertNotNil(try SecKeyPair(privateKeyRef: privateKeyRef, publicKeyRef: publicKeyRef))
+  }
+  
   func testCertificateMatching() throws {
 
     let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -37,27 +46,27 @@ class SecKeyPairTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: name)
         .issuer(name: name)
-        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: rsaKeyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: rsaKeyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    XCTAssertTrue(try keyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert]))
+    XCTAssertTrue(try rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert]))
   }
 
   func testImportExport() throws {
 
-    let exportedKeyData = try keyPair.export(password: "123")
+    let exportedKeyData = try rsaKeyPair.export(password: "123")
 
-    try keyPair.delete()
+    try rsaKeyPair.delete()
 
     let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 
     let plainText = try Random.generate(count: 171)
 
-    let cipherText1 = try keyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
+    let cipherText1 = try rsaKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
     let plainText2 = try importedKeyPair.privateKey.decrypt(cipherText: cipherText1, padding: .oaep)
 
@@ -65,7 +74,7 @@ class SecKeyPairTests: XCTestCase {
 
     let cipherText2 = try importedKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
-    let plainText3 = try keyPair.privateKey.decrypt(cipherText: cipherText2, padding: .oaep)
+    let plainText3 = try rsaKeyPair.privateKey.decrypt(cipherText: cipherText2, padding: .oaep)
 
     XCTAssertEqual(plainText, plainText3)
   }
