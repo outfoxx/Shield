@@ -16,8 +16,10 @@ let package = Package(
       targets: ["Shield", "ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "1.6.2"),
+    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "1.7.2"),
     .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0"),
+    .package(url: "https://github.com/attaswift/BigInt.git", from: "5.0.0"),
+    .package(url: "https://github.com/lukaskubanek/OrderedDictionary.git", from: "2.2.2")
   ],
   targets: [
     .target(
@@ -30,15 +32,15 @@ let package = Package(
     ),
     .target(
       name: "ShieldX500",
-      dependencies: ["ShieldOID"]
+      dependencies: ["ShieldOID", "OrderedDictionary"]
     ),
     .target(
       name: "ShieldPKCS",
-      dependencies: ["ShieldX500"]
+      dependencies: ["ShieldX500", "OrderedDictionary"]
     ),
     .target(
       name: "ShieldX509",
-      dependencies: ["ShieldX500", "ShieldPKCS"]
+      dependencies: ["ShieldX500", "ShieldPKCS", "BigInt", "OrderedDictionary"]
     ),
     .target(
       name: "ShieldCrypto"
