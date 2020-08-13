@@ -257,7 +257,7 @@ public extension SecCertificate {
     }
 
     // See: https://tools.ietf.org/html/rfc5280#section-4.2.1.3
-    public static let unspecified = SecKeyUsage(rawValue: 0)
+    public static let unspecified: SecKeyUsage = []
     public static let digitalSignature = SecKeyUsage(rawValue: 1 << 0)
     public static let nonRepudiation = SecKeyUsage(rawValue: 1 << 1)
     public static let keyEncipherment = SecKeyUsage(rawValue: 1 << 2)
