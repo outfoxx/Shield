@@ -77,212 +77,36 @@ public extension SecKey {
   }
 
   static func decode(fromData data: Data, type: CFString, class keyClass: CFString) throws -> SecKey {
-
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
-
-        let attrs = [
-          kSecClass as String: kSecClassKey,
-          kSecAttrKeyClass as String: keyClass,
-          kSecAttrKeyType as String: type,
-        ] as CFDictionary
-
-        var error: Unmanaged<CFError>?
-
-        guard let key = SecKeyCreateWithData(data as CFData, attrs, &error), error == nil else {
-          throw error!.takeRetainedValue()
-        }
-
-        return key
-      }
-
-      let query: [String: Any] = [
-        kSecClass as String: kSecClassKey,
-        kSecAttrKeyClass as String: keyClass,
-        kSecAttrKeyType as String: Int(type as String)! as CFNumber,
-        kSecAttrApplicationTag as String: try Random.generate(count: 32),
-        kSecReturnRef as String: kCFBooleanTrue!,
-        kSecReturnPersistentRef as String: kCFBooleanTrue!,
-        kSecValueData as String: data,
-      ]
-
-    #elseif os(macOS)
-
-      if #available(macOS 10.12, *) {
-
-        let attrs: [String: Any] = [
-          kSecClass as String: kSecClassKey,
-          kSecAttrKeyClass as String: keyClass,
-          kSecAttrKeyType as String: type,
-        ]
-
-        var error: Unmanaged<CFError>?
-
-        guard let key = SecKeyCreateWithData(data as CFData, attrs as CFDictionary, &error), error == nil else {
-          throw error!.takeRetainedValue()
-        }
-
-        return key
-      }
-
-
-      let query: [String: Any] = [
-        kSecClass as String: kSecClassKey,
-        kSecAttrKeyType as String: Int(type as String)! as CFNumber,
-        kSecAttrApplicationTag as String: try Random.generate(count: 32),
-        kSecReturnRef as String: kCFBooleanTrue!,
-        kSecReturnPersistentRef as String: kCFBooleanTrue!,
-        kSecValueData as String: data,
-      ]
-
-    #endif
-
-    var result: CFTypeRef?
-
-    let status = SecItemAdd(query as CFDictionary, &result)
-    if status != errSecSuccess || result == nil {
-      throw SecKeyError.build(error: .importFailed, message: "Unable to add key", status: status)
+    
+    let attrs = [
+      kSecClass as String: kSecClassKey,
+      kSecAttrKeyClass as String: keyClass,
+      kSecAttrKeyType as String: type,
+      ] as CFDictionary
+    
+    var error: Unmanaged<CFError>?
+    
+    guard let key = SecKeyCreateWithData(data as CFData, attrs, &error), error == nil else {
+      throw error!.takeRetainedValue()
     }
-
-    let results = result as! [String: Any]
-
-    let key = results[kSecValueRef as String] as! SecKey
-    let ref = results[kSecValuePersistentRef as String] as! Data
-
-    try SecKey.delete(persistentReference: ref)
-
+    
     return key
   }
 
   func encode(class keyClass: CFString) throws -> Data {
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
-
-        var error: Unmanaged<CFError>?
-
-        guard let data = SecKeyCopyExternalRepresentation(self, &error) else {
-          throw error!.takeRetainedValue()
-        }
-
-        return data as Data
-      }
-
-      let query = [
-        kSecClass as String: kSecClassKey,
-        kSecAttrKeyClass as String: keyClass,
-        kSecReturnData as String: kCFBooleanTrue!,
-        kSecReturnPersistentRef as String: kCFBooleanTrue!,
-        kSecValueRef as String: self,
-      ] as CFDictionary
-
-      var result: CFTypeRef?
-
-      // Add temporary key, returning the encoded data
-      let addStatus = SecItemAdd(query, &result)
-      if addStatus != errSecSuccess {
-        throw SecKeyError.build(error: .exportFailed, message: "Add failed", status: addStatus)
-      }
-
-      let results = result as! [String: Any]
-
-      let data = results[kSecValueData as String] as! Data
-      let ref = results[kSecValuePersistentRef as String] as! Data
-
-      // Remove temporary key
-      try SecKey.delete(persistentReference: ref)
-
-    #elseif os(macOS)
-
-      if #available(macOS 10.12, *) {
-
-        var error: Unmanaged<CFError>?
-
-        guard let data = SecKeyCopyExternalRepresentation(self, &error) else {
-          throw error!.takeRetainedValue()
-        }
-
-        return data as Data
-      }
-
-      var result: CFData?
-
-      let status = SecItemExport(self, SecExternalFormat.formatOpenSSL, [], nil, &result)
-      if result == nil || status != errSecSuccess {
-        throw SecKeyError.build(error: .exportFailed, message: "Export failed", status: status)
-      }
-
-      let data = result! as Data
-
-    #endif
-
-    return data
+    var error: Unmanaged<CFError>?
+    
+    guard let data = SecKeyCopyExternalRepresentation(self, &error) else {
+      throw error!.takeRetainedValue()
+    }
+    
+    return data as Data
   }
 
   func attributes(class keyClass: CFString) throws -> [String: Any] {
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      if #available(iOS 10, tvOS 10, watchOS 3.3, *) {
-
-        return SecKeyCopyAttributes(self) as! [String: Any]
-
-      }
-      else {
-
-        let query = [
-          kSecClass as String: kSecClassKey as Any,
-          kSecAttrKeyClass as String: keyClass,
-          kSecReturnAttributes as String: kCFBooleanTrue!,
-          kSecReturnPersistentRef as String: kCFBooleanTrue!,
-          kSecValueRef as String: self,
-        ] as CFDictionary
-
-        var result: CFTypeRef?
-
-        // Add temporary key, returning the encoded data
-        let addStatus = SecItemAdd(query, &result)
-        if addStatus != errSecSuccess {
-          throw SecKeyError.build(error: .queryFailed, message: "Add failed", status: addStatus)
-        }
-
-        let data = result as! [String: Any]
-
-        let ref = data[kSecValuePersistentRef as String] as! Data
-
-        // Remove the temporary key
-        try SecKey.delete(persistentReference: ref)
-
-        return data
-      }
-
-    #elseif os(macOS)
-
-      if #available(macOS 10.12, *) {
-
-        return SecKeyCopyAttributes(self) as! [String: Any]
-      }
-      else {
-
-        let query: [String: Any] = [
-          kSecReturnAttributes as String: kCFBooleanTrue!,
-          kSecUseItemList as String: [self] as CFArray,
-        ]
-
-        var data: AnyObject?
-
-        let status = SecItemCopyMatching(query as CFDictionary, &data)
-        if status != errSecSuccess {
-          throw SecKeyError.build(error: .queryFailed, message: "Unable to copy attributes", status: status)
-        }
-
-        return data as! [String: Any]
-      }
-
-    #endif
-
+    return SecKeyCopyAttributes(self) as! [String: Any]
   }
 
   func keyType(class keyClass: CFString) throws -> SecKeyType {
