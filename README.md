@@ -1,5 +1,5 @@
 # 🛡 Shield
-[![Build Status](https://travis-ci.org/outfoxx/Shield.svg?branch=master)](https://travis-ci.org/outfoxx/Shield)
+[![Build Status](https://github.com/outfoxx/Shield/workflows/Swift/badge.svg)](https://github.com/outfoxx/Shield/actions)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/outfoxx/Shield)
 
 ## Security library covering Cryptography, Hashing, HMAC, Random, PBKDF, PKCS, X509, PKCS10
