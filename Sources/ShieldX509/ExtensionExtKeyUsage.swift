@@ -18,7 +18,7 @@ public struct ExtKeyUsage: Equatable, Hashable, Codable, ExtensionValue {
   public static var extensionID = iso_itu.ds.certificateExtension.extKeyUsage.oid
   public static var asn1Schema = Schemas.extKeyUsageExtension
 
-  public let keyPurposes: Set<OID>
+  public var keyPurposes: Set<OID>
 
   public init(keyPurposes: Set<OID>) {
     self.keyPurposes = keyPurposes

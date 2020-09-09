@@ -153,11 +153,11 @@ public struct SecKeyPair {
         "keyMaterial": .octetString(),
       ])
 
-    let keyType: SecKeyType
-    let exportKeyLength: UInt64
-    let exportKeyRounds: UInt64
-    let exportKeySalt: Data
-    let keyMaterial: Data
+    public var keyType: SecKeyType
+    public var exportKeyLength: UInt64
+    public var exportKeyRounds: UInt64
+    public var exportKeySalt: Data
+    public var keyMaterial: Data
   }
 
   public func export(password: String,
