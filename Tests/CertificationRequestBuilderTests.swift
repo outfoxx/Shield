@@ -13,14 +13,19 @@ import ShieldOID
 @testable import Shield
 import XCTest
 
-
-// Keys are comparatively slow to generate... so we do it once
-private let keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
-
-
 class CertificationRequestBuilderTests: XCTestCase {
 
   let outputEnabled = false
+  static var keyPair: SecKeyPair!
+  
+  override class func setUp() {
+    // Keys are comparatively slow to generate... so we do it once
+    keyPair  = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+  }
+  
+  override class func tearDown() {
+    try! keyPair.delete()
+  }
 
   func testBuildParse() throws {
     
@@ -29,9 +34,9 @@ class CertificationRequestBuilderTests: XCTestCase {
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
         .alternativeNames(names: .dnsName("outfoxx.io"))
-        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: Self.keyPair, usage: [.keyEncipherment])
         .extendedKeyUsage(keyPurposes: [kp.clientAuth.oid, kp.serverAuth.oid], isCritical: true)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(csr)
 

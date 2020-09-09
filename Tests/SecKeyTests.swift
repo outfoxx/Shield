@@ -11,21 +11,27 @@
 @testable import Shield
 import XCTest
 
-
-// Keys are comparatively slow to generate... so we do it once
-private let keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
-
-
 class SecKeyTests: XCTestCase {
 
+  private static var keyPair: SecKeyPair!
+  
   var publicKey: SecKey!
   var privateKey: SecKey!
+  
+  override class func setUp() {
+    // Keys are comparatively slow to generate... so we do it once
+    keyPair  = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+  }
+  
+  override class func tearDown() {
+    try! keyPair.delete()
+  }
 
-  override func setUp() {
-    super.setUp()
+  override func setUpWithError() throws {
+    try super.setUpWithError()
 
-    publicKey = keyPair.publicKey
-    privateKey = keyPair.privateKey
+    publicKey = Self.keyPair.publicKey
+    privateKey = Self.keyPair.privateKey
   }
 
 

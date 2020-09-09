@@ -14,14 +14,19 @@ import ShieldOID
 @testable import Shield
 import XCTest
 
-
-// Keys are comparatively slow to generate... so we do it once
-private let keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
-
-
 class CertificateBuilderTests: XCTestCase {
 
   let outputEnabled = false
+  static var keyPair: SecKeyPair!
+  
+  override class func setUp() {
+    // Keys are comparatively slow to generate... so we do it once
+    keyPair  = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+  }
+  
+  override class func tearDown() {
+    try! keyPair.delete()
+  }
 
   func testBuildVer1() throws {
 
@@ -31,10 +36,10 @@ class CertificateBuilderTests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject)
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -52,10 +57,10 @@ class CertificateBuilderTests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -74,10 +79,10 @@ class CertificateBuilderTests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject)
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer, uniqueID: issuerID)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -97,10 +102,10 @@ class CertificateBuilderTests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer, uniqueID: issuerID)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -122,12 +127,12 @@ class CertificateBuilderTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
         .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
                           isCritical: false)
         .issuer(name: issuer, uniqueID: issuerID)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -147,10 +152,10 @@ class CertificateBuilderTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subject)
         .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -170,16 +175,16 @@ class CertificateBuilderTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
         .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
-        .publicKey(keyPair: keyPair)
+        .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer, uniqueID: issuerID)
         .issuerAlternativeNames(names: .dnsName("github.com/outfoxx/Shield/CA"))
         .basicConstraints(ca: true)
-        .authorityKeyIdentifier(Digester.digest(keyPair.encodedPublicKey(), using: .sha1),
+        .authorityKeyIdentifier(Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
                                 certIssuer: [.dnsName("github.com/outfoxx/Shield/CA")],
                                 certSerialNumber: Integer(sign: .plus, magnitude: BigUInt(Random.generate(count: 19))))
         .computeSubjectKeyIdentifier()
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -197,8 +202,8 @@ class CertificateBuilderTests: XCTestCase {
     let csrData =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Shield Subject", forTypeName: "CN").name)
-        .publicKey(keyPair: keyPair)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .publicKey(keyPair: Self.keyPair)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let csr = try ASN1Decoder.decode(CertificationRequest.self, from: csrData)
@@ -211,7 +216,7 @@ class CertificateBuilderTests: XCTestCase {
         .request(csr)
         .issuer(name: csr.certificationRequestInfo.subject)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 
@@ -226,10 +231,10 @@ class CertificateBuilderTests: XCTestCase {
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Shield Subject", forTypeName: "CN").name)
         .alternativeNames(names: altNames)
-        .publicKey(keyPair: keyPair, usage: [.dataEncipherment])
+        .publicKey(keyPair: Self.keyPair, usage: [.dataEncipherment])
         .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
                           isCritical: false)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let csr = try ASN1Decoder.decode(CertificationRequest.self, from: csrData)
@@ -242,7 +247,7 @@ class CertificateBuilderTests: XCTestCase {
         .request(csr)
         .issuer(name: csr.certificationRequestInfo.subject)
         .valid(for: 86400 * 365)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(cert)
 

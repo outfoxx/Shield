@@ -22,7 +22,8 @@ class SecIdentityTests: XCTestCase {
       .add("TC", forTypeName: "C")
       .name
 
-    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
+    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    defer { try? keyPair.delete() }
 
     // Build a self-signed certificate for importing
     let cert =
@@ -33,9 +34,19 @@ class SecIdentityTests: XCTestCase {
         .valid(for: 86400 * 5)
         .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .sec()!
+    defer {
+      SecItemDelete([
+        kSecClass as String: kSecClassCertificate,
+        kSecMatchItemList as String: [cert] as CFArray,
+        kSecMatchLimit as String: kSecMatchLimitOne
+      ] as CFDictionary)
+    }
 
     // Ensure all went well
     let ident = try SecIdentity.create(certificate: cert, keyPair: keyPair)
+    defer {
+      
+    }
 
     XCTAssertNotNil(ident)
     XCTAssertNotNil(try ident.certificate())

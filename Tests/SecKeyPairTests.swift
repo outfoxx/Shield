@@ -17,11 +17,19 @@ class SecKeyPairTests: XCTestCase {
   var rsaKeyPair: SecKeyPair!
   var ecKeyPair: SecKeyPair!
 
-  override func setUp() {
-    super.setUp()
+  override func setUpWithError() throws {
+    try super.setUpWithError()
 
-    rsaKeyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
-    ecKeyPair = try! SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    rsaKeyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test RSA Key")
+    ecKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test EC Key")
+  }
+  
+  override func tearDownWithError() throws {
+    
+    try rsaKeyPair?.delete()
+    try ecKeyPair?.delete()
+    
+    try super.tearDownWithError()
   }
   
   func testPersistentLoadRSA() throws {
@@ -61,6 +69,7 @@ class SecKeyPairTests: XCTestCase {
     let exportedKeyData = try rsaKeyPair.export(password: "123")
 
     try rsaKeyPair.delete()
+    defer { rsaKeyPair = nil }
 
     let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 

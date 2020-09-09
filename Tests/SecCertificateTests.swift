@@ -11,12 +11,18 @@
 @testable import Shield
 import XCTest
 
-
-// Keys are comparatively slow to generate... so we do it once
-private let keyPair = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate()
-
-
 class SecCertificateTests: XCTestCase {
+
+  static var keyPair: SecKeyPair!
+  
+  override class func setUp() {
+    // Keys are comparatively slow to generate... so we do it once
+    keyPair  = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+  }
+  
+  override class func tearDown() {
+    try! keyPair.delete()
+  }
 
   func testCertificateProperties() throws {
 
@@ -26,9 +32,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: name)
         .issuer(name: name)
-        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: Self.keyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
@@ -45,9 +51,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: name)
         .issuer(name: name)
-        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: Self.keyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
