@@ -46,14 +46,18 @@ public struct SecKeyPair {
       return Builder(type: type, keySize: keySize)
     }
 
-    public func generate() throws -> SecKeyPair {
+    public func generate(label: String? = nil) throws -> SecKeyPair {
       guard let type = type else { fatalError("missing key type") }
       guard let keySize = keySize else { fatalError("missing key size") }
 
-      let attrs: [String: Any] = [
+      var attrs: [String: Any] = [
         kSecAttrKeyType as String: type.systemValue,
         kSecAttrKeySizeInBits as String: keySize,
       ]
+      
+      if let label = label {
+        attrs[kSecAttrLabel as String] = label
+      }
 
       var publicKey: SecKey?, privateKey: SecKey?
       let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
