@@ -18,5 +18,7 @@ jobs:
         - '/Applications/Xcode_12.app/Contents/Developer'
     steps:
     - uses: actions/checkout@v2
+    - name: Install xcodegen
+      run: brew install xcodegen
     - name: Build & Test
       run: make build-test-${{matrix.platform}}
