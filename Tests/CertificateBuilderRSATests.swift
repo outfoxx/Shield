@@ -14,7 +14,7 @@ import ShieldOID
 @testable import Shield
 import XCTest
 
-class CertificateBuilderTests: XCTestCase {
+class CertificateBuilderRSATests: XCTestCase {
 
   let outputEnabled = false
   static var keyPair: SecKeyPair!

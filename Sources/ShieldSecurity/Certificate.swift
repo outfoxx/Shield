@@ -31,7 +31,7 @@ public extension Certificate.Builder {
 
   func build(signingKey: SecKey, digestAlgorithm: Digester.Algorithm) throws -> Certificate {
 
-    let signatureAlgorithm = try AlgorithmIdentifier(digestAlgorithm: digestAlgorithm)
+    let signatureAlgorithm = try AlgorithmIdentifier(digestAlgorithm: digestAlgorithm, keyType: signingKey.keyType())
 
     let tbsCertificate = try buildInfo(signatureAlgorithm: signatureAlgorithm)
 
