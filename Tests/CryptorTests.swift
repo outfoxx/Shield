@@ -19,7 +19,7 @@ import XCTest
 /// As suggested by the name these tests are "padded" and use
 /// plain-text buffers in numerous non block-size buffers .
 ///
-class CryptorPaddedTests: ParameterizedTest {
+class CryptorPaddedTests: ParameterizedTestCase {
 
   static let plainTexts = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 368, 512]
     .map { try! Random.generate(count: $0) }
@@ -27,9 +27,9 @@ class CryptorPaddedTests: ParameterizedTest {
   static let bufferSize = 33
   static let bufferSize2 = 16
 
-  var plainText: Data = try! Random.generate(count: 333)
-  var algorithm: Cryptor.Algorithm = .aes
-  var keySize: Int = Cryptor.Algorithm.aes.keySizes.first!
+  var plainText: Data!
+  var algorithm: Cryptor.Algorithm!
+  var keySize: Int!
 
   override class var parameterSets: [Any] {
     var sets = [Any]()
@@ -43,8 +43,8 @@ class CryptorPaddedTests: ParameterizedTest {
     return sets
   }
 
-  override func setUp(with parameters: Any) {
-    let parameters = parameters as! (Data, Cryptor.Algorithm, Int)
+  override func setUp() {
+    let parameters = Self.parameterSets[parameterSetIdx ?? 0] as! (Data, Cryptor.Algorithm, Int)
     plainText = parameters.0
     algorithm = parameters.1
     keySize = parameters.2
@@ -53,8 +53,6 @@ class CryptorPaddedTests: ParameterizedTest {
   /// Tests encryption with padding enabled
   ///
   func testCryptorPadded() throws {
-    print("PlainText: \(plainText.count), Algorithm: \(algorithm), Key Size: \(keySize)")
-
     let iv = try Random.generate(count: algorithm.blockSize)
     let key = try Random.generate(count: keySize)
 
@@ -77,14 +75,14 @@ class CryptorPaddedTests: ParameterizedTest {
 /// As suggested by the name these tests are "unpadded" and use
 /// a plain-text buffer equal to the algorithm's block-size.
 ///
-class CryptorUnpaddedTests: ParameterizedTest {
+class CryptorUnpaddedTests: ParameterizedTestCase {
 
   static let bufferSize = 33
   static let bufferSize2 = 16
 
-  var plainText: Data = try! Random.generate(count: 16)
-  var algorithm: Cryptor.Algorithm = .aes
-  var keySize: Int = Cryptor.Algorithm.aes.keySizes.first!
+  var plainText: Data!
+  var algorithm: Cryptor.Algorithm!
+  var keySize: Int!
 
   override class var parameterSets: [Any] {
     var sets = [Any]()
@@ -96,8 +94,8 @@ class CryptorUnpaddedTests: ParameterizedTest {
     return sets
   }
 
-  override func setUp(with parameters: Any) {
-    let parameters = parameters as! (Cryptor.Algorithm, Int)
+  override func setUp() {
+    let parameters = Self.parameterSets[parameterSetIdx ?? 0] as! (Cryptor.Algorithm, Int)
     algorithm = parameters.0
     keySize = parameters.1
     plainText = try! Random.generate(count: algorithm.blockSize)
@@ -106,8 +104,6 @@ class CryptorUnpaddedTests: ParameterizedTest {
   /// Tests encryption with padding disabled
   ///
   func testCryptorUnpadded() throws {
-    print("PlainText: \(plainText.count), Algorithm: \(algorithm), Key Size: \(keySize)")
-
     let iv = try Random.generate(count: algorithm.blockSize)
     let key = try Random.generate(count: keySize)
 
