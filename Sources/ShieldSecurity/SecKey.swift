@@ -93,7 +93,7 @@ public extension SecKey {
     return key
   }
 
-  func encode(class keyClass: CFString) throws -> Data {
+  func encode() throws -> Data {
 
     var error: Unmanaged<CFError>?
     
@@ -104,32 +104,34 @@ public extension SecKey {
     return data as Data
   }
 
-  func attributes(class keyClass: CFString) throws -> [String: Any] {
+  func attributes() throws -> [String: Any] {
 
     return SecKeyCopyAttributes(self) as! [String: Any]
   }
 
-  func keyType(class keyClass: CFString) throws -> SecKeyType {
-    let secType = try self.type(class: kSecAttrKeyClassPrivate) as CFString
+  func keyType() throws -> SecKeyType {
+    let secType = try self.type() as CFString
     guard let type = SecKeyType(systemValue: secType) else {
       fatalError("Unsupported key type")
     }
     return type
   }
 
-  func type(class keyClass: CFString) throws -> String {
+  func type() throws -> String {
 
-    let attrs = try attributes(class: keyClass)
+    let attrs = try attributes()
 
     // iOS 10 SecKeyCopyAttributes returns string values, SecItemCopyMatching returns number values
     return (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ?? (attrs[kSecAttrKeyType as String] as! String)
   }
 
-  func save(class keyClass: CFString) throws {
+  func save() throws {
+    
+    let attrs = try attributes()
 
     let query: [String: Any] = [
       kSecClass as String: kSecClassKey,
-      kSecAttrKeyClass as String: keyClass,
+      kSecAttrKeyClass as String: attrs[kSecAttrKeyClass as String]!,
       kSecValueRef as String: self,
     ]
 

@@ -33,7 +33,7 @@ public extension SecIdentity {
   static func create(certificate: SecCertificate, privateKey: SecKey) throws -> SecIdentity {
 
     do {
-      try privateKey.save(class: kSecAttrKeyClassPrivate)
+      try privateKey.save()
     }
     catch SecKeyError.saveDuplicate {
       // Allowable...

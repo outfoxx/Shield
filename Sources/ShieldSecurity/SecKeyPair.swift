@@ -67,8 +67,8 @@ public struct SecKeyPair {
 
       #if os(iOS) || os(watchOS) || os(tvOS)
 
-        try publicKey!.save(class: kSecAttrKeyClassPublic)
-        try privateKey!.save(class: kSecAttrKeyClassPrivate)
+      try publicKey!.save()
+      try privateKey!.save()
 
       #endif
 
@@ -112,8 +112,8 @@ public struct SecKeyPair {
 
   public func save() throws {
 
-    try privateKey.save(class: kSecAttrKeyClassPrivate)
-    try publicKey.save(class: kSecAttrKeyClassPublic)
+    try privateKey.save()
+    try publicKey.save()
   }
 
   public func delete() throws {
@@ -127,17 +127,17 @@ public struct SecKeyPair {
   }
 
   public func encodedPublicKey() throws -> Data {
-    return try publicKey.encode(class: kSecAttrKeyClassPublic) as Data
+    return try publicKey.encode() as Data
   }
 
   public func encodedPrivateKey() throws -> Data {
-    return try privateKey.encode(class: kSecAttrKeyClassPrivate) as Data
+    return try privateKey.encode() as Data
   }
 
   public func matchesCertificate(certificate: SecCertificate, trustedCertificates: [SecCertificate]) throws -> Bool {
 
     let keyData =
-      try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode(class: kSecAttrKeyClassPublic)
+      try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
 
     return try encodedPublicKey() == keyData
   }
@@ -180,7 +180,7 @@ public struct SecKeyPair {
     let encryptedKeyMaterial = try Cryptor.encrypt(data: keyMaterial, using: .aes, options: [.pkcs7Padding],
                                                    key: exportKey, iv: exportKeySalt)
 
-    let keyType = try privateKey.keyType(class: kSecAttrKeyClassPrivate)
+    let keyType = try privateKey.keyType()
 
     return try ASN1Encoder.encode(ExportedKey(keyType: keyType,
                                               exportKeyLength: UInt64(derivedKeyLength),

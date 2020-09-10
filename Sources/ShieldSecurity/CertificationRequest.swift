@@ -23,7 +23,7 @@ public extension CertificationRequest.Builder {
   }
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> CertificationRequest.Builder {
-    return try self.publicKey(publicKey.encode(class: kSecAttrKeyClassPublic),
+    return try self.publicKey(publicKey.encode(),
                               algorithm: .init(publicKey: publicKey),
                               usage: keyUsage)
   }
