@@ -38,7 +38,7 @@ public extension CertificationRequestInfo {
 
   func signed(using signingKey: SecKey, digestAlgorithm: Digester.Algorithm) throws -> CertificationRequest {
 
-    let signatureAlgorithm = try AlgorithmIdentifier(digestAlgorithm: digestAlgorithm)
+    let signatureAlgorithm = try AlgorithmIdentifier(digestAlgorithm: digestAlgorithm, keyType: signingKey.keyType())
 
     let infoData = try ASN1Encoder.encode(self)
 

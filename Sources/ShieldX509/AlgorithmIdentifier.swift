@@ -15,9 +15,9 @@ import PotentASN1
 public struct AlgorithmIdentifier: Equatable, Hashable, Codable {
 
   public var algorithm: ObjectIdentifier
-  public var parameters: Data?
+  public var parameters: ASN1
 
-  public init(algorithm: ObjectIdentifier, parameters: Data? = nil) {
+  public init(algorithm: ObjectIdentifier, parameters: ASN1 = .null) {
     self.algorithm = algorithm
     self.parameters = parameters
   }

@@ -44,6 +44,9 @@ public enum SecEncryptionPadding {
 }
 
 
+private let maxSignatureBufferLen = 512
+
+
 public extension SecKey {
 
   func persistentReference() throws -> Data {
@@ -312,7 +315,7 @@ public extension SecKey {
 
     #if os(iOS) || os(watchOS) || os(tvOS)
 
-      var signature = Data(count: SecKeyGetBlockSize(self))
+      var signature = Data(count: maxSignatureBufferLen)
       var signatureLen: Int = signature.count
       let status =
         digest.withUnsafeBytes { digestPtr in
@@ -382,12 +385,12 @@ public extension SecKey {
         throw error!.takeRetainedValue()
       }
 
-      let digest: CFTypeRef? = SecTransformExecute(transform, &error)
-      if digest == nil {
+      let signature: CFTypeRef? = SecTransformExecute(transform, &error)
+      if signature == nil {
         throw error!.takeRetainedValue()
       }
 
-      return digest as! Data
+      return signature as! Data
 
     #endif
   }

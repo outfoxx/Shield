@@ -35,7 +35,7 @@ class CryptorPaddedTests: ParameterizedTestCase {
     var sets = [Any]()
     for plainText in plainTexts {
       for algorithm in Cryptor.Algorithm.allCases {
-        for keySize in algorithm.keySizes {
+        for keySize in algorithm.keySizes.testValues {
           sets.append((plainText, algorithm, keySize))
         }
       }
@@ -87,7 +87,7 @@ class CryptorUnpaddedTests: ParameterizedTestCase {
   override class var parameterSets: [Any] {
     var sets = [Any]()
     for algorithm in Cryptor.Algorithm.allCases {
-      for keySize in algorithm.keySizes {
+      for keySize in algorithm.keySizes.testValues {
         sets.append((algorithm, keySize))
       }
     }
@@ -142,4 +142,17 @@ func exec(_ cryptor: Cryptor, source data: Data, bufferSize: Int) throws -> Data
   result.append(buffer.prefix(upTo: processedBytes))
 
   return result
+}
+
+extension Array where Element == Int {
+
+  var testValues: [Int] {
+    if count <= 64 {
+      return self
+    }
+    else {
+      return [first!, last!] + (1 ... 62).compactMap { _ in randomElement() }
+    }
+  }
+
 }

@@ -22,30 +22,52 @@ public extension AlgorithmIdentifier {
     case unsupportedECKeySize
   }
 
-  init(digestAlgorithm: Digester.Algorithm) throws {
+  init(digestAlgorithm: Digester.Algorithm, keyType: SecKeyType) throws {
     let signingAlgorithmID: OID
-    switch digestAlgorithm {
-    case .sha1:
-      signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha1WithRSASignature.oid
-    case .sha224:
-      signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha224WithRSAEncryption.oid
-    case .sha256:
-      signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha256WithRSAEncryption.oid
-    case .sha384:
-      signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha384WithRSAEncryption.oid
-    case .sha512:
-      signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha512WithRSAEncryption.oid
-    default:
-      throw Error.unsupportedAlgorithm
+    switch keyType {
+
+    case .rsa:
+
+      switch digestAlgorithm {
+      case .sha1:
+        signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha1WithRSASignature.oid
+      case .sha224:
+        signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha224WithRSAEncryption.oid
+      case .sha256:
+        signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha256WithRSAEncryption.oid
+      case .sha384:
+        signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha384WithRSAEncryption.oid
+      case .sha512:
+        signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha512WithRSAEncryption.oid
+      default:
+        throw Error.unsupportedAlgorithm
+      }
+
+    case .ec:
+
+      switch digestAlgorithm {
+      case .sha1:
+        signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA1.oid
+      case .sha224:
+        signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA224.oid
+      case .sha256:
+        signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA256.oid
+      case .sha384:
+        signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA384.oid
+      case .sha512:
+        signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA512.oid
+      default:
+        throw Error.unsupportedAlgorithm
+      }
     }
 
-    self.init(algorithm: signingAlgorithmID, parameters: nil)
+    self.init(algorithm: signingAlgorithmID)
   }
 
   init(publicKey: SecKey) throws {
     switch try publicKey.keyType() {
     case .rsa:
-      self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid, parameters: nil)
+      self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid)
       
     case .ec:
       let curve: OID
@@ -67,7 +89,7 @@ public extension AlgorithmIdentifier {
       }
       
       self.init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
-                parameters: try ASN1Encoder(schema: Schemas.ECParameters).encode(curve))
+                parameters: .objectIdentifier(curve.fields))
     }
   }
 
