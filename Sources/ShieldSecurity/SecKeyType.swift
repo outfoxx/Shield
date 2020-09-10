@@ -13,18 +13,17 @@ import Foundation
 
 public enum SecKeyType: UInt32, CaseIterable, Codable {
 
+  /// RSA Key
   case rsa
+  /// Elliptical Curve Key with curve of P-192, P-256, P-384 or P-521 (based on key size).
   case ec
-  case ecSECPrimeRandom
 
   public init?(systemValue: CFString) {
     switch systemValue {
     case kSecAttrKeyTypeRSA:
       self = .rsa
-    case kSecAttrKeyTypeEC:
-      self = .ec
     case kSecAttrKeyTypeECSECPrimeRandom:
-      self = .ecSECPrimeRandom
+      self = .ec
     default:
       return nil
     }
@@ -35,8 +34,6 @@ public enum SecKeyType: UInt32, CaseIterable, Codable {
     case .rsa:
       return kSecAttrKeyTypeRSA
     case .ec:
-      return kSecAttrKeyTypeEC
-    case .ecSECPrimeRandom:
       return kSecAttrKeyTypeECSECPrimeRandom
     }
   }

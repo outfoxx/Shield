@@ -22,7 +22,7 @@ public extension Schemas {
 
   static let ECParameters: Schema =
     .choiceOf([
-      .objectIdentifier(), // -- named curve
+      .objectIdentifier(),  // -- named curve
       // .null              // -- implicit curve
       // SpecifiedECDomain, // -- specified curve
     ])

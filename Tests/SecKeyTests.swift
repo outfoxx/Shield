@@ -149,4 +149,15 @@ class SecKeyTests: ParameterizedTestCase {
     XCTAssertEqual(plainText, plainText2)
   }
   
+  func testECGeneration() throws {
+    
+    try [192, 256, 384, 521].forEach { keySize in
+      
+      let keyPair = try SecKeyPair.Builder(type: .ec, keySize: keySize).generate(label: "Test")
+      defer { try! keyPair.delete() }
+      
+      _ = try AlgorithmIdentifier(publicKey: keyPair.publicKey)
+    }
+  }
+  
 }

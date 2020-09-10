@@ -12,12 +12,14 @@ import Foundation
 import ShieldCrypto
 import ShieldOID
 import ShieldX509
-
+import ShieldPKCS
+import PotentASN1
 
 public extension AlgorithmIdentifier {
 
   enum Error: Swift.Error {
     case unsupportedAlgorithm
+    case unsupportedECKeySize
   }
 
   init(digestAlgorithm: Digester.Algorithm) throws {
@@ -41,12 +43,31 @@ public extension AlgorithmIdentifier {
   }
 
   init(publicKey: SecKey) throws {
-    switch try publicKey.keyType(class: kSecAttrKeyClassPublic) {
+    switch try publicKey.keyType() {
     case .rsa:
       self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid, parameters: nil)
-
-    default:
-      fatalError("unsupported public key type")
+      
+    case .ec:
+      let curve: OID
+      switch try publicKey.attributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
+      case 192:
+        // P-192, secp192r1
+        curve = iso.memberBody.us.ansix962.curves.prime.prime192v1.oid
+      case 256:
+        // P-256, secp256r1
+        curve = iso.memberBody.us.ansix962.curves.prime.prime256v1.oid
+      case 384:
+        // P-384, secp384r1
+        curve = iso.org.certicom.curve.ansip384r1.oid
+      case 521:
+        // P-521, secp521r1
+        curve = iso.org.certicom.curve.ansip521r1.oid
+      default:
+        throw Error.unsupportedECKeySize
+      }
+      
+      self.init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
+                parameters: try ASN1Encoder(schema: Schemas.ECParameters).encode(curve))
     }
   }
 
