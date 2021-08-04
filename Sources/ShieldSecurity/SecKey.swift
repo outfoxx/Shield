@@ -312,87 +312,55 @@ public extension SecKey {
   }
 
   func signHash(digest: Data, digestAlgorithm: Digester.Algorithm) throws -> Data {
-
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      var signature = Data(count: maxSignatureBufferLen)
-      var signatureLen: Int = signature.count
-      let status =
-        digest.withUnsafeBytes { digestPtr in
-          signature.withUnsafeMutableBytes { signaturePtr in
-            SecKeyRawSign(self,
-                          SecKey.paddingOf(digestAlgorithm: digestAlgorithm),
-                          digestPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          digestPtr.count,
-                          signaturePtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          &signatureLen)
-          }
-        }
-
-      if status != errSecSuccess {
-        throw SecKeyError.build(error: .signFailed, message: "Sign failed", status: status)
-      }
-
-      return signature.subdata(in: 0 ..< signatureLen)
-
-    #elseif os(macOS)
-
-      var error: Unmanaged<CFError>?
-
-      guard let transform = SecSignTransformCreate(self, &error) else {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecInputIsAttributeName, kSecInputIsDigest, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecPaddingKey, kSecPaddingPKCS1Key, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let digestType: CFString
+      let digestType: SecKeyAlgorithm
 
       switch digestAlgorithm {
       case .sha1:
-        digestType = kSecDigestSHA1
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA1
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA1
+        }
 
       case .sha224:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA224
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA224
+        }
 
       case .sha256:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA256
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA256
+        }
 
       case .sha384:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA384
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA384
+        }
 
       case .sha512:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA512
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA512
+        }
 
       default:
         fatalError("unsupported digest algorithm")
       }
 
-      if !SecTransformSetAttribute(transform, kSecDigestTypeAttribute, digestType, &error) {
+      var error: Unmanaged<CFError>?
+
+      guard let signature = SecKeyCreateSignature(self, digestType, digest as CFData, &error) else {
         throw error!.takeRetainedValue()
       }
 
-      if !SecTransformSetAttribute(transform, kSecDigestLengthAttribute, digestAlgorithm.hashBitLength as CFNumber, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecTransformInputAttributeName, digest as CFData, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let signature: CFTypeRef? = SecTransformExecute(transform, &error)
-      if signature == nil {
-        throw error!.takeRetainedValue()
-      }
-
-      return signature as! Data
-
-    #endif
+      return signature as Data
   }
 
   func verify(data: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
@@ -403,89 +371,51 @@ public extension SecKey {
   }
 
   func verifyHash(digest: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
-
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      let status =
-        digest.withUnsafeBytes { digestPtr in
-          signature.withUnsafeBytes { signaturePtr in
-            SecKeyRawVerify(self,
-                            SecKey.paddingOf(digestAlgorithm: digestAlgorithm),
-                            digestPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                            digestPtr.count,
-                            signaturePtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                            signature.count)
-          }
-        }
-
-      switch status {
-      case errSecSuccess:
-        return true
-      case errSSLCrypto:
-        return false
-      default:
-        throw SecKeyError.build(error: .verifyFailed, message: "Verify failed", status: status)
-      }
-
-    #elseif os(macOS)
-
-
-      var error: Unmanaged<CFError>?
-
-      guard let transform = SecVerifyTransformCreate(self, signature as CFData, &error) else {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecInputIsAttributeName, kSecInputIsDigest, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecPaddingKey, kSecPaddingPKCS1Key, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let digestType: CFString
+      let digestType: SecKeyAlgorithm
 
       switch digestAlgorithm {
       case .sha1:
-        digestType = kSecDigestSHA1
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA1
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA1
+        }
 
       case .sha224:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA224
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA224
+        }
 
       case .sha256:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA256
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA256
+        }
 
       case .sha384:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA384
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA384
+        }
 
       case .sha512:
-        digestType = kSecDigestSHA2
+        if try! self.keyType() == .rsa {
+          digestType = .rsaSignatureDigestPKCS1v15SHA512
+        } else {
+          digestType = .ecdsaSignatureDigestX962SHA512
+        }
 
       default:
         fatalError("unsupported digest algorithm")
       }
 
-      if !SecTransformSetAttribute(transform, kSecDigestTypeAttribute, digestType, &error) {
-        throw error!.takeRetainedValue()
-      }
+      var error: Unmanaged<CFError>? = nil
 
-      if !SecTransformSetAttribute(transform, kSecDigestLengthAttribute, digestAlgorithm.hashBitLength as CFNumber, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecTransformInputAttributeName, digest as CFData, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let result: CFTypeRef? = SecTransformExecute(transform, &error)
-      if result == nil {
-        throw error!.takeRetainedValue()
-      }
-
-      return (result as! CFBoolean) == kCFBooleanTrue
-
-    #endif
+      return SecKeyVerifySignature(self, digestType, digest as CFData, signature as CFData, &error)
   }
 
 }
