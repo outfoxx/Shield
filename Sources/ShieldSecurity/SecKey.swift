@@ -87,8 +87,8 @@ public extension SecKey {
       kSecClass as String: kSecClassKey,
       kSecAttrKeyClass as String: keyClass,
       kSecAttrKeyType as String: type,
-      ] as CFDictionary
-    
+    ] as CFDictionary
+
     var error: Unmanaged<CFError>?
     
     guard let key = SecKeyCreateWithData(data as CFData, attrs, &error), error == nil else {
@@ -180,6 +180,13 @@ public extension SecKey {
     }
   }
 
+  /// Encrypt data using RSA encryption with the chosen padding.
+  ///
+  /// - Note: Only supported for RSA keys
+  /// - Parameters:
+  ///   - plainText: Data to be encrypted
+  ///   - padding: Padding scheme
+  /// - Returns: Encrypted data
   func encrypt(plainText: Data, padding: SecEncryptionPadding) throws -> Data {
 
     guard try self.keyType() == .rsa else {
@@ -196,6 +203,17 @@ public extension SecKey {
       algorithm = .rsaEncryptionRaw
     }
     
+    return try encrypt(plainText: plainText, using: algorithm)
+  }
+
+  /// Encrypt data using a supported algorithm.
+  ///
+  /// - Parameters:
+  ///   - plainText: Data to be encrypted
+  ///   - algorithm: Encryption algorithm to encrypt `plainText` with
+  /// - Returns: Encrypted data
+  func encrypt(plainText: Data, using algorithm: SecKeyAlgorithm) throws -> Data {
+    
     var error: Unmanaged<CFError>?
     
     guard let cipherText = SecKeyCreateEncryptedData(self, algorithm, plainText as CFData, &error) else {
@@ -208,7 +226,14 @@ public extension SecKey {
     
     return cipherText as Data
   }
-
+  
+  /// Decrypt using RSA encryption with the chosen padding.
+  ///
+  /// - Note: Only supported for RSA keys
+  /// - Parameters:
+  ///   - cipherText: Data to be decrypted
+  ///   - padding: Padding scheme
+  /// - Returns: Decrypted data
   func decrypt(cipherText: Data, padding: SecEncryptionPadding) throws -> Data {
 
     guard try self.keyType() == .rsa else {
@@ -224,7 +249,18 @@ public extension SecKey {
     case .none:
       algorithm = .rsaEncryptionRaw
     }
-    
+   
+    return try decrypt(cipherText: cipherText, algorithm: algorithm)
+  }
+
+  /// Decrypt data using a supported algorithm.
+  ///
+  /// - Parameters:
+  ///   - cipherText: Data to be decrypted
+  ///   - algorithm: Encryption algorithm to decrypt `cipherText` with
+  /// - Returns: Decrypted data
+  func decrypt(cipherText: Data, algorithm: SecKeyAlgorithm) throws -> Data {
+
     var error: Unmanaged<CFError>?
     
     guard let plainText = SecKeyCreateDecryptedData(self, algorithm, cipherText as CFData, &error) else {
@@ -238,6 +274,14 @@ public extension SecKey {
     return plainText as Data
   }
 
+  /// Generate digital signature from the `SHA` digest of some data,
+  /// using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  ///- Note: Key must be a private `RSA` or `EC` key.
+  /// - Parameters:
+  ///   - data: Data to be signed
+  ///   - digestAlgorithm: `SHA` algorithm with which to generate digest of `data`
+  /// - Returns: The signature over `data`
   func sign(data: Data, digestAlgorithm: Digester.Algorithm) throws -> Data {
 
     let digest = Digester.digest(data, using: digestAlgorithm)
@@ -245,111 +289,200 @@ public extension SecKey {
     return try signHash(digest: digest, digestAlgorithm: digestAlgorithm)
   }
 
+  /// Generate digital signature from the `SHA` digest of some data,
+  /// using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  ///- Note: Key must be a private `RSA` or `EC` key.
+  /// - Parameters:
+  ///   - digest: Data digest to be signed
+  ///   - digestAlgorithm: `SHA` algorithm that was used to generate `digest`
+  /// - Returns: The signature over `digest`
   func signHash(digest: Data, digestAlgorithm: Digester.Algorithm) throws -> Data {
-      let digestType: SecKeyAlgorithm
+    let digestType: SecKeyAlgorithm
 
-      switch digestAlgorithm {
-      case .sha1:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA1
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA1
-        }
-
-      case .sha224:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA224
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA224
-        }
-
-      case .sha256:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA256
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA256
-        }
-
-      case .sha384:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA384
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA384
-        }
-
-      case .sha512:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA512
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA512
-        }
-
-      default:
-        fatalError("unsupported digest algorithm")
+    switch digestAlgorithm {
+    case .sha1:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA1
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA1
       }
 
-      var error: Unmanaged<CFError>?
-
-      guard let signature = SecKeyCreateSignature(self, digestType, digest as CFData, &error) else {
-        throw error!.takeRetainedValue()
+    case .sha224:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA224
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA224
       }
 
-      return signature as Data
+    case .sha256:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA256
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA256
+      }
+
+    case .sha384:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA384
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA384
+      }
+
+    case .sha512:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA512
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA512
+      }
+
+    default:
+      fatalError("unsupported digest algorithm")
+    }
+    
+    return try sign(data: digest, algorithm: digestType)
   }
 
+  /// Generate digital signature from data using a supported signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - data: Data to be signed
+  ///   - digestAlgorithm: `SHA` algorithm with which to generate digest of `data`
+  /// - Returns: The signature over `data`
+  func sign(data: Data, algorithm: SecKeyAlgorithm) throws -> Data {
+    
+    var error: Unmanaged<CFError>?
+
+    guard let signature = SecKeyCreateSignature(self, algorithm, data as CFData, &error) else {
+      throw error!.takeRetainedValue()
+    }
+
+    return signature as Data
+  }
+
+  /// Verify digital signature that was generated from the `SHA` digest of some
+  /// data, using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - data: Data to be verified
+  ///   - digestAlgorithm: `SHA` algorithm with which to generate digest of `data`
+  /// - Returns: The signature over `data`
   func verify(data: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
-
-    let digest = Digester.digest(data, using: digestAlgorithm)
-
-    return try verifyHash(digest: digest, againstSignature: signature, digestAlgorithm: digestAlgorithm)
+    var error: Error? = nil
+    return try verify(data: data, againstSignature: signature, digestAlgorithm: digestAlgorithm, failureReason: &error)
   }
-
+  
+  /// Verify digital signature that was generated from the `SHA` digest of some
+  /// data, using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - data: Data to be verified
+  ///   - digestAlgorithm: `SHA` algorithm with which to generate digest of `data`
+  ///   - failureReason: Error describing the reason for verification failure
+  /// - Returns: The signature over `data`
+  func verify(data: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm, failureReason: inout Error?) throws -> Bool {
+    
+    let digest = Digester.digest(data, using: digestAlgorithm)
+    
+    return try verifyHash(digest: digest, againstSignature: signature, digestAlgorithm: digestAlgorithm, failureReason: &failureReason)
+  }
+  
+  /// Verify digital signature that was generated from the `SHA` digest of some
+  /// data, using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - digest: Data digest to be verified
+  ///   - digestAlgorithm: `SHA` algorithm that was used to generate `digest`
+  /// - Returns: True if signature could be verified, false otherwise
   func verifyHash(digest: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
-      let digestType: SecKeyAlgorithm
+    var error: Error? = nil
+    return try verifyHash(digest: digest, againstSignature: signature, digestAlgorithm: digestAlgorithm, failureReason: &error)
+  }
+  
+  /// Verify digital signature that was generated from the `SHA` digest of some
+  /// data, using either `RSA with PKCS1` or `EC` signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - digest: Data digest to be verified
+  ///   - digestAlgorithm: `SHA` algorithm that was used to generate `digest`
+  ///   - failureReason: Error describing the reason for verification failure
+  /// - Returns: True if signature could be verified, false otherwise
+  func verifyHash(digest: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm, failureReason: inout Error?) throws -> Bool {
+    let digestType: SecKeyAlgorithm
 
-      switch digestAlgorithm {
-      case .sha1:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA1
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA1
-        }
-
-      case .sha224:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA224
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA224
-        }
-
-      case .sha256:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA256
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA256
-        }
-
-      case .sha384:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA384
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA384
-        }
-
-      case .sha512:
-        if try! self.keyType() == .rsa {
-          digestType = .rsaSignatureDigestPKCS1v15SHA512
-        } else {
-          digestType = .ecdsaSignatureDigestX962SHA512
-        }
-
-      default:
-        fatalError("unsupported digest algorithm")
+    switch digestAlgorithm {
+    case .sha1:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA1
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA1
       }
 
-      var error: Unmanaged<CFError>? = nil
+    case .sha224:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA224
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA224
+      }
 
-      return SecKeyVerifySignature(self, digestType, digest as CFData, signature as CFData, &error)
+    case .sha256:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA256
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA256
+      }
+
+    case .sha384:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA384
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA384
+      }
+
+    case .sha512:
+      if try! self.keyType() == .rsa {
+        digestType = .rsaSignatureDigestPKCS1v15SHA512
+      } else {
+        digestType = .ecdsaSignatureDigestX962SHA512
+      }
+
+    default:
+      fatalError("unsupported digest algorithm")
+    }
+
+    return try verify(data: digest, againstSignature: signature, algorithm: digestType, failureReason: &failureReason)
+  }
+
+  /// Verify digital signature that was generated from data, using a supported signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - data: Data to be verified
+  ///   - algorithm: Algorithm with which to generate digest of `data`
+  ///   - failureReason: Error describing the reason for verification failure
+  /// - Returns: The signature over `data`
+  func verify(data: Data, againstSignature signature: Data, algorithm: SecKeyAlgorithm) throws -> Bool {
+    var error: Error? = nil
+    return try verify(data: data, againstSignature: signature, algorithm: algorithm, failureReason: &error)
+  }
+  
+  /// Verify digital signature that was generated from data, using a supported signature algorithm.
+  ///
+  /// - Parameters:
+  ///   - data: Data to be verified
+  ///   - algorithm: Algorithm with which to generate digest of `data`
+  ///   - failureReason: Error describing the reason for verification failure
+  /// - Returns: The signature over `data`
+  func verify(data: Data, againstSignature signature: Data, algorithm: SecKeyAlgorithm, failureReason: inout Error?) throws -> Bool {
+
+    var error: Unmanaged<CFError>? = nil
+    
+    let result = SecKeyVerifySignature(self, algorithm, data as CFData, signature as CFData, &error)
+    
+    if let error = error {
+      failureReason = error.takeRetainedValue() as Error
+    }
+    
+    return result
   }
 
 }
