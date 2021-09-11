@@ -24,6 +24,7 @@ public enum SecKeyError: Int, Error {
   case saveFailed
   case saveDuplicate
   case deleteFailed
+  case invalidOperation
 
   public static func build(error: SecKeyError, message: String, status: OSStatus) -> NSError {
     let error = error as NSError
@@ -169,140 +170,61 @@ public extension SecKey {
 
   func encrypt(plainText: Data, padding: SecEncryptionPadding) throws -> Data {
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      var cipherText = Data(count: SecKeyGetBlockSize(self))
-      var cipherTextLen = cipherText.count
-      let status =
-        plainText.withUnsafeBytes { plainTextPtr in
-          cipherText.withUnsafeMutableBytes { cipherTextPtr in
-            SecKeyEncrypt(self,
-                          padding == .oaep ? .OAEP : .PKCS1,
-                          plainTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          plainTextPtr.count,
-                          cipherTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          &cipherTextLen)
-          }
-        }
-
-      if status != errSecSuccess {
-        throw SecKeyError.build(error: .encryptionFailed, message: "Encryption failed", status: status)
+    guard try self.keyType() == .rsa else {
+      throw SecKeyError.invalidOperation
+    }
+    
+    let algorithm: SecKeyAlgorithm
+    switch padding {
+    case .pkcs1:
+      algorithm = .rsaEncryptionPKCS1
+    case .oaep:
+      algorithm = .rsaEncryptionOAEPSHA1
+    case .none:
+      algorithm = .rsaEncryptionRaw
+    }
+    
+    var error: Unmanaged<CFError>?
+    
+    guard let cipherText = SecKeyCreateEncryptedData(self, algorithm, plainText as CFData, &error) else {
+      if let error = error {
+        throw error.takeRetainedValue()
+      } else {
+        throw SecKeyError.decryptionFailed
       }
-
-      return cipherText.subdata(in: 0 ..< cipherTextLen)
-
-    #elseif os(macOS)
-
-      // To ensure compatibility with iOS version above
-      if plainText.count > SecKeyGetBlockSize(self) {
-        throw SecKeyError.encryptionFailed
-      }
-
-      var error: Unmanaged<CFError>?
-
-      let transform = SecEncryptTransformCreate(self, &error)
-      if error != nil {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecPaddingKey, padding == .oaep ? kSecPaddingOAEPKey : kSecPaddingPKCS1Key, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecTransformInputAttributeName, plainText as CFData, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let cipherText: CFTypeRef? = SecTransformExecute(transform, &error)
-      if cipherText == nil {
-        throw error!.takeRetainedValue()
-      }
-
-      return cipherText as! Data
-
-    #endif
+    }
+    
+    return cipherText as Data
   }
 
   func decrypt(cipherText: Data, padding: SecEncryptionPadding) throws -> Data {
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      var plainText = Data(count: SecKeyGetBlockSize(self))
-      var plainTextLen = plainText.count
-      let status =
-        cipherText.withUnsafeBytes { cipherTextPtr in
-          plainText.withUnsafeMutableBytes { plainTextPtr in
-            SecKeyDecrypt(self,
-                          padding == .oaep ? .OAEP : .PKCS1,
-                          cipherTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          cipherTextPtr.count,
-                          plainTextPtr.baseAddress!.assumingMemoryBound(to: UInt8.self),
-                          &plainTextLen)
-          }
-        }
-
-      if status != errSecSuccess {
-        throw SecKeyError.build(error: .decryptionFailed, message: "Decryption failed", status: status)
-      }
-      return plainText.subdata(in: 0 ..< plainTextLen)
-
-    #elseif os(macOS)
-
-      var error: Unmanaged<CFError>?
-
-      let transform = SecDecryptTransformCreate(self, &error)
-      if error != nil {
-        throw error!.takeRetainedValue()
-      }
-
-      let secPadding: CFString
-      switch padding {
-      case .oaep:
-        secPadding = kSecPaddingOAEPKey
-      case .pkcs1:
-        secPadding = kSecPaddingPKCS1Key
-      case .none:
-        secPadding = kSecPaddingNoneKey
-      }
-
-      if !SecTransformSetAttribute(transform, kSecPaddingKey, secPadding, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      if !SecTransformSetAttribute(transform, kSecTransformInputAttributeName, cipherText as CFData, &error) {
-        throw error!.takeRetainedValue()
-      }
-
-      let plainText: CFTypeRef? = SecTransformExecute(transform, &error)
-      if plainText == nil {
-        throw error!.takeRetainedValue()
-      }
-
-      return plainText as! Data
-
-    #endif
-  }
-
-  #if os(iOS) || os(watchOS) || os(tvOS)
-    private static func paddingOf(digestAlgorithm: Digester.Algorithm) -> SecPadding {
-      switch digestAlgorithm {
-      case .md2, .md4:
-        return .PKCS1MD2
-      case .md5:
-        return .PKCS1MD5
-      case .sha1:
-        return .PKCS1SHA1
-      case .sha224:
-        return .PKCS1SHA224
-      case .sha256:
-        return .PKCS1SHA256
-      case .sha384:
-        return .PKCS1SHA384
-      case .sha512:
-        return .PKCS1SHA512
+    guard try self.keyType() == .rsa else {
+      throw SecKeyError.invalidOperation
+    }
+    
+    let algorithm: SecKeyAlgorithm
+    switch padding {
+    case .pkcs1:
+      algorithm = .rsaEncryptionPKCS1
+    case .oaep:
+      algorithm = .rsaEncryptionOAEPSHA1
+    case .none:
+      algorithm = .rsaEncryptionRaw
+    }
+    
+    var error: Unmanaged<CFError>?
+    
+    guard let plainText = SecKeyCreateDecryptedData(self, algorithm, cipherText as CFData, &error) else {
+      if let error = error {
+        throw error.takeRetainedValue()
+      } else {
+        throw SecKeyError.decryptionFailed
       }
     }
-  #endif
+    
+    return plainText as Data
+  }
 
   func sign(data: Data, digestAlgorithm: Digester.Algorithm) throws -> Data {
 
