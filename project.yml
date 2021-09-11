@@ -10,7 +10,7 @@ options:
 targets:
   ShieldWrap:
     type: framework.static
-    platform: [iOS, tvOS, watchOS]
+    platform: [macOS, iOS, tvOS, watchOS]
     deploymentTarget:
       macOS: 10.12
       iOS: 10.0
@@ -24,9 +24,16 @@ targets:
         - ShieldTests_${platform}
     dependencies:
       - package: Shield
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: io.outfoxx.ShieldWrap
   ShieldHost:
     type: application
-    platform: [iOS, tvOS, watchOS]
+    platform: [macOS, iOS, tvOS, watchOS]
+    deploymentTarget:
+      macOS: 10.12
+      iOS: 10.0
+      tvOS: 10.0
+      watchOS: 3.0
     sources:
       - path: TestHosts/${platform}
         createIntermediateGroups: true
@@ -36,9 +43,17 @@ targets:
       path: Project/${platform}Host/Host.entitlements
       properties:
         keychain-access-groups: []
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: io.outfoxx.ShieldHost
+  
+
   ShieldTests:
     type: bundle.unit-test
     platform: [iOS, tvOS, watchOS]
+    deploymentTarget:
+      iOS: 10.0
+      tvOS: 10.0
+      watchOS: 3.0
     sources: [Tests]
     dependencies:
       - target: ShieldWrap_${platform}
@@ -46,4 +61,19 @@ targets:
       - target: ShieldHost_${platform}
         link: false
     settings:
+      GENERATE_INFOPLIST_FILE: true
       TEST_HOST: $(BUILT_PRODUCTS_DIR)/ShieldHost.app/ShieldHost
+  
+  ShieldTests_macOS:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: 10.12
+    sources: [Tests]
+    dependencies:
+      - target: ShieldWrap_macOS
+        link: true
+      - target: ShieldHost_macOS
+        link: false
+    settings:
+      GENERATE_INFOPLIST_FILE: true
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ShieldHost.app/Contents/MacOS/ShieldHost

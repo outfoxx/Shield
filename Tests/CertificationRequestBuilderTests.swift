@@ -15,7 +15,7 @@ import XCTest
 
 class CertificationRequestBuilderTests: XCTestCase {
 
-  let outputEnabled = false
+  static let outputEnabled = false
   static var keyPair: SecKeyPair!
   
   override class func setUp() {
@@ -33,8 +33,8 @@ class CertificationRequestBuilderTests: XCTestCase {
     let csr =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
-        .alternativeNames(names: .dnsName("outfoxx.io"))
-        .publicKey(keyPair: Self.keyPair, usage: [.keyEncipherment])
+        .alternativeNames(names: .dnsName("outfoxx.io"))        
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
         .extendedKeyUsage(keyPurposes: [kp.clientAuth.oid, kp.serverAuth.oid], isCritical: true)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
 
@@ -44,12 +44,12 @@ class CertificationRequestBuilderTests: XCTestCase {
     XCTAssertEqual(csr, csr2)
 
     let csrAttrs = csr.certificationRequestInfo.attributes
-    XCTAssertEqual(try csrAttrs.first(Extensions.self)?.first(KeyUsage.self), [.keyEncipherment])
+    XCTAssertEqual(try csrAttrs.first(Extensions.self)?.first(KeyUsage.self), [.keyCertSign, .cRLSign])
     XCTAssertEqual(try csrAttrs.first(Extensions.self)?.first(SubjectAltName.self), .init(names: [.dnsName("outfoxx.io")]))
   }
 
   func output(_ value: Encodable & SchemaSpecified) {
-    guard outputEnabled else { return }
+    guard Self.outputEnabled else { return }
     guard let data = try? value.encoded().base64EncodedString() else { return }
     print(data)
   }

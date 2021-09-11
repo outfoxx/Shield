@@ -13,6 +13,7 @@ import XCTest
 
 class SecCertificateTests: XCTestCase {
 
+  static let outputEnabled = false
   static var keyPair: SecKeyPair!
   
   override class func setUp() {
@@ -26,21 +27,30 @@ class SecCertificateTests: XCTestCase {
 
   func testCertificateProperties() throws {
 
-    let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+    
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
 
     let certData =
       try Certificate.Builder()
-        .subject(name: name)
-        .issuer(name: name)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyEncipherment])
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
+    output(certData)
+
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    XCTAssertTrue(name == cert.issuerName!)
-    XCTAssertTrue(name == cert.subjectName!)
+    XCTAssertTrue(subjectName == cert.subjectName!)
+    XCTAssertTrue(issuerName == cert.issuerName!)
   }
 
   func testInvalidCertificate() throws {
@@ -58,12 +68,12 @@ class SecCertificateTests: XCTestCase {
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    do {
-      _ = try cert.publicKeyValidated(trustedCertificates: [])
-      XCTFail("Should have thrown an error")
-    }
-    catch {
-      print(error)
-    }
+    XCTAssertThrowsError(try cert.publicKeyValidated(trustedCertificates: []))
   }
+
+  func output(_ data: Data) {
+    guard Self.outputEnabled else { return }
+    print(data.base64EncodedString())
+  }
+
 }

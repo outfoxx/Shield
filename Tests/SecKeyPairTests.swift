@@ -26,9 +26,9 @@ class SecKeyPairTests: XCTestCase {
   
   override func tearDownWithError() throws {
     
-    try rsaKeyPair?.delete()
-    try ecKeyPair?.delete()
-    
+    try? rsaKeyPair?.delete()
+    try? ecKeyPair?.delete()
+
     try super.tearDownWithError()
   }
   

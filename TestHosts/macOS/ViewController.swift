@@ -6,7 +6,7 @@
 //  Copyright © 2016 Outfoxx, Inc. All rights reserved.
 //
 
-import UIKit
+import AppKit
 
-class ViewController: UIViewController {
+class ViewController: NSViewController {
 }
