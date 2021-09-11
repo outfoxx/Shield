@@ -68,9 +68,6 @@ class SecKeyPairTests: XCTestCase {
 
     let exportedKeyData = try rsaKeyPair.export(password: "123")
 
-    try rsaKeyPair.delete()
-    defer { rsaKeyPair = nil }
-
     let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 
     let plainText = try Random.generate(count: 171)
@@ -86,5 +83,15 @@ class SecKeyPairTests: XCTestCase {
     let plainText3 = try rsaKeyPair.privateKey.decrypt(cipherText: cipherText2, padding: .oaep)
 
     XCTAssertEqual(plainText, plainText3)
+
+    try rsaKeyPair.delete()
+    defer { rsaKeyPair = nil }
+
+    let cipherText3 = try importedKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
+    
+    let plainText4 = try importedKeyPair.privateKey.decrypt(cipherText: cipherText3, padding: .oaep)
+    
+    XCTAssertEqual(plainText, plainText4)
+
   }
 }
