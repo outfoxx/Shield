@@ -25,6 +25,7 @@ public enum SecKeyError: Int, Error {
   case saveDuplicate
   case deleteFailed
   case invalidOperation
+  case noAttributes
 
   public static func build(error: SecKeyError, message: String, status: OSStatus) -> NSError {
     let error = error as NSError
@@ -109,15 +110,22 @@ public extension SecKey {
   }
 
   func attributes() throws -> [String: Any] {
-
-    return SecKeyCopyAttributes(self) as! [String: Any]
+    
+    guard let attrs = SecKeyCopyAttributes(self) as? [String: Any] else {
+      throw SecKeyError.noAttributes
+    }
+    
+    return attrs
   }
 
   func keyType() throws -> SecKeyType {
-    let secType = try self.type() as CFString
-    guard let type = SecKeyType(systemValue: secType) else {
+    
+    let typeStr = try self.type() as CFString
+    
+    guard let type = SecKeyType(systemValue: typeStr) else {
       fatalError("Unsupported key type")
     }
+    
     return type
   }
 
@@ -126,7 +134,11 @@ public extension SecKey {
     let attrs = try attributes()
 
     // iOS 10 SecKeyCopyAttributes returns string values, SecItemCopyMatching returns number values
-    return (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ?? (attrs[kSecAttrKeyType as String] as! String)
+    guard let type = (attrs[kSecAttrKeyType as String] as? NSNumber)?.stringValue ?? (attrs[kSecAttrKeyType as String] as? String) else {
+      fatalError("Invalid key type")
+    }
+    
+    return type
   }
 
   func save() throws {
