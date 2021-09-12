@@ -150,7 +150,6 @@ class SecKeyTests: ParameterizedTestCase {
   }
   
   func testECGeneration() throws {
-    
     try [192, 256, 384, 521].forEach { keySize in
       
       let keyPair = try SecKeyPair.Builder(type: .ec, keySize: keySize).generate(label: "Test")

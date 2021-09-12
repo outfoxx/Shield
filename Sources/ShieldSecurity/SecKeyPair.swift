@@ -29,6 +29,10 @@ public struct SecKeyPair {
 
 
   public class Builder {
+    
+    public enum Flag {
+      case secureEnclave
+    }
 
     public let type: SecKeyType?
     public let keySize: Int?
@@ -46,31 +50,44 @@ public struct SecKeyPair {
       return Builder(type: type, keySize: keySize)
     }
 
-    public func generate(label: String? = nil) throws -> SecKeyPair {
+    public func generate(label: String? = nil, flags: Set<Flag> = []) throws -> SecKeyPair {
       guard let type = type else { fatalError("missing key type") }
       guard let keySize = keySize else { fatalError("missing key size") }
 
-      var attrs: [String: Any] = [
-        kSecAttrKeyType as String: type.systemValue,
-        kSecAttrKeySizeInBits as String: keySize,
+      var attrs: [CFString: Any] = [
+        kSecAttrKeyType: type.systemValue,
+        kSecAttrKeySizeInBits: keySize
       ]
       
       if let label = label {
-        attrs[kSecAttrLabel as String] = label
+        attrs[kSecAttrLabel] = label
+      }
+
+      if flags.contains(.secureEnclave) {
+        attrs[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave
       }
 
       var publicKey: SecKey?, privateKey: SecKey?
       let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
-      if status != errSecSuccess {
+      if status != errSecSuccess {        
         throw SecKeyPair.Error.generateFailed
       }
 
-      #if os(iOS) || os(watchOS) || os(tvOS)
+#if os(iOS) || os(watchOS) || os(tvOS)
 
+      if !flags.contains(.secureEnclave) {
+        try privateKey!.save()
+      }
+      
       try publicKey!.save()
-      try privateKey!.save()
 
-      #endif
+#elseif os(macOS)
+
+      if flags.contains(.secureEnclave) {
+        try publicKey!.save()
+      }
+
+#endif
 
       return SecKeyPair(privateKey: privateKey!, publicKey: publicKey!)
     }
@@ -120,6 +137,7 @@ public struct SecKeyPair {
 
     try publicKey.delete()
     try privateKey.delete()
+
   }
 
   public func persistentReferences() throws -> (Data, Data) {

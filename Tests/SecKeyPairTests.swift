@@ -94,4 +94,15 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertEqual(plainText, plainText4)
 
   }
+  
+  func testGenerateSecureEnclave() throws {
+    try XCTSkipIf(true, "Only runs on iPhone/iPad/AppleTV or a Mac with T2")
+
+    let keyPairBuilder = SecKeyPair.Builder(type: .ec, keySize: 256)
+
+    var keyPair: SecKeyPair? = nil
+    XCTAssertNoThrow(keyPair = try keyPairBuilder.generate(label: "Test Secure Key", flags: [.secureEnclave]))
+    XCTAssertNoThrow(try keyPair?.delete())
+  }
+
 }
