@@ -285,9 +285,9 @@ public extension Certificate {
 
 private func time(of date: Date) -> AnyTime {
   if date < maxUTCTime {
-    return AnyTime(date.secondPrecision, kind: .utc)
+    return AnyTime(date: date.secondPrecision, timeZone: .utc, kind: .utc)
   }
-  return AnyTime(date.millisecondPrecision, kind: .generalized)
+  return AnyTime(date: date.millisecondPrecision, timeZone: .utc, kind: .generalized)
 }
 
 private let maxUTCTime: Date = {
