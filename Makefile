@@ -12,11 +12,7 @@ clean:
 make-test-results-dir:
 	mkdir -p TestResults
 
-define buildtestpkg
-	xcodebuild -scheme $(project) -resultBundleVersion 3 -resultBundlePath ./TestResults/$(1) -destination '$(2)' test
-endef
-
-define buildtestprj
+define buildtest
 	xcodebuild -scheme $(project)Wrap_$(1) -resultBundleVersion 3 -resultBundlePath ./TestResults/$(1) -destination '$(2)' test
 endef
 
@@ -24,13 +20,13 @@ generate-project:
 	xcodegen
 
 build-test-macos:
-	$(call buildtestpkg,macOS,platform=macOS)
+	swift test --enable-code-coverage
 
 build-test-ios: generate-project
-	$(call buildtestprj,iOS,name=iPhone 8)
+	$(call buildtest,iOS,name=iPhone 8)
 
 build-test-tvos: generate-project
-	$(call buildtestprj,tvOS,name=Apple TV)
+	$(call buildtest,tvOS,name=Apple TV)
 
 format:	
 	swiftformat --config .swiftformat Sources/ Tests/
