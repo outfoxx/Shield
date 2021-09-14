@@ -2,7 +2,7 @@
 //  SecCertificateTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -15,14 +15,17 @@ class SecCertificateTests: XCTestCase {
 
   static let outputEnabled = false
   static var keyPair: SecKeyPair!
-  
+
   override class func setUp() {
     // Keys are comparatively slow to generate... so we do it once
-    keyPair  = try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    guard let keyPair = try? SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test") else {
+      return XCTFail("Key pair generation failed")
+    }
+    Self.keyPair = keyPair
   }
-  
+
   override class func tearDown() {
-    try! keyPair.delete()
+    try? keyPair.delete()
   }
 
   func testCertificateProperties() throws {
@@ -31,7 +34,7 @@ class SecCertificateTests: XCTestCase {
       .add("Unit Testing", forTypeName: "CN")
       .add("123456", forTypeName: "UID")
       .name
-    
+
     let issuerName = try NameBuilder()
       .add("Test Issuer", forTypeName: "CN")
       .name

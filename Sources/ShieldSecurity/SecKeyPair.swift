@@ -2,7 +2,7 @@
 //  SecKeyPair.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -29,7 +29,7 @@ public struct SecKeyPair {
 
 
   public class Builder {
-    
+
     public enum Flag {
       case secureEnclave
     }
@@ -56,9 +56,9 @@ public struct SecKeyPair {
 
       var attrs: [CFString: Any] = [
         kSecAttrKeyType: type.systemValue,
-        kSecAttrKeySizeInBits: keySize
+        kSecAttrKeySizeInBits: keySize,
       ]
-      
+
       if let label = label {
         attrs[kSecAttrLabel] = label
       }
@@ -69,25 +69,25 @@ public struct SecKeyPair {
 
       var publicKey: SecKey?, privateKey: SecKey?
       let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
-      if status != errSecSuccess {        
+      if status != errSecSuccess {
         throw SecKeyPair.Error.generateFailed
       }
 
-#if os(iOS) || os(watchOS) || os(tvOS)
+      #if os(iOS) || os(watchOS) || os(tvOS)
 
-      if !flags.contains(.secureEnclave) {
-        try privateKey!.save()
-      }
-      
-      try publicKey!.save()
+        if !flags.contains(.secureEnclave) {
+          try privateKey!.save()
+        }
 
-#elseif os(macOS)
-
-      if flags.contains(.secureEnclave) {
         try publicKey!.save()
-      }
 
-#endif
+      #elseif os(macOS)
+
+        if flags.contains(.secureEnclave) {
+          try publicKey!.save()
+        }
+
+      #endif
 
       return SecKeyPair(privateKey: privateKey!, publicKey: publicKey!)
     }
@@ -113,18 +113,22 @@ public struct SecKeyPair {
 
   public init(type: SecKeyType, privateKeyData: Data) throws {
 
-    privateKey = try SecKey.decode(fromData: privateKeyData,
-                                   type: type.systemValue,
-                                   class: kSecAttrKeyClassPrivate)
+    privateKey = try SecKey.decode(
+      fromData: privateKeyData,
+      type: type.systemValue,
+      class: kSecAttrKeyClassPrivate
+    )
 
     // Assemble public key from private key
     let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: privateKeyData)
     let publicKeyData =
       try ASN1Encoder.encode(RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent))
 
-    publicKey = try SecKey.decode(fromData: publicKeyData,
-                                  type: type.systemValue,
-                                  class: kSecAttrKeyClassPublic)
+    publicKey = try SecKey.decode(
+      fromData: publicKeyData,
+      type: type.systemValue,
+      class: kSecAttrKeyClassPublic
+    )
   }
 
   public func save() throws {
@@ -178,45 +182,75 @@ public struct SecKeyPair {
     public var keyMaterial: Data
   }
 
-  public func export(password: String,
-                     derivedKeyLength: Int = exportDerivedKeyLengthDefault,
-                     keyDerivationTiming: TimeInterval = exportKeyDerivationTimingDefault) throws -> Data {
+  public func export(
+    password: String,
+    derivedKeyLength: Int = exportDerivedKeyLengthDefault,
+    keyDerivationTiming: TimeInterval = exportKeyDerivationTimingDefault
+  ) throws -> Data {
 
     let passwordData = password.data(using: String.Encoding.utf8)!
 
     let exportKeySalt = try Random.generate(count: derivedKeyLength)
 
     let exportKeyRounds =
-      try PBKDF.calibrate(passwordLength: passwordData.count, saltLength: exportKeySalt.count,
-                          keyLength: derivedKeyLength, using: .pbkdf2, psuedoRandomAlgorithm: .sha512,
-                          taking: keyDerivationTiming)
+      try PBKDF.calibrate(
+        passwordLength: passwordData.count,
+        saltLength: exportKeySalt.count,
+        keyLength: derivedKeyLength,
+        using: .pbkdf2,
+        psuedoRandomAlgorithm: .sha512,
+        taking: keyDerivationTiming
+      )
 
-    let exportKey = try PBKDF.derive(length: derivedKeyLength, from: passwordData, salt: exportKeySalt,
-                                     using: .pbkdf2, psuedoRandomAlgorithm: .sha512, rounds: exportKeyRounds)
+    let exportKey = try PBKDF.derive(
+      length: derivedKeyLength,
+      from: passwordData,
+      salt: exportKeySalt,
+      using: .pbkdf2,
+      psuedoRandomAlgorithm: .sha512,
+      rounds: exportKeyRounds
+    )
 
     let keyMaterial = try encodedPrivateKey()
-    let encryptedKeyMaterial = try Cryptor.encrypt(data: keyMaterial, using: .aes, options: [.pkcs7Padding],
-                                                   key: exportKey, iv: exportKeySalt)
+    let encryptedKeyMaterial = try Cryptor.encrypt(
+      data: keyMaterial,
+      using: .aes,
+      options: [.pkcs7Padding],
+      key: exportKey,
+      iv: exportKeySalt
+    )
 
     let keyType = try privateKey.keyType()
 
-    return try ASN1Encoder.encode(ExportedKey(keyType: keyType,
-                                              exportKeyLength: UInt64(derivedKeyLength),
-                                              exportKeyRounds: UInt64(exportKeyRounds),
-                                              exportKeySalt: exportKeySalt,
-                                              keyMaterial: encryptedKeyMaterial))
+    return try ASN1Encoder.encode(ExportedKey(
+      keyType: keyType,
+      exportKeyLength: UInt64(derivedKeyLength),
+      exportKeyRounds: UInt64(exportKeyRounds),
+      exportKeySalt: exportKeySalt,
+      keyMaterial: encryptedKeyMaterial
+    ))
   }
 
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
     let info = try ASN1Decoder.decode(ExportedKey.self, from: data)
 
-    let exportKey = try PBKDF.derive(length: Int(info.exportKeyLength),
-                                     from: password.data(using: .utf8)!, salt: info.exportKeySalt,
-                                     using: .pbkdf2, psuedoRandomAlgorithm: .sha512, rounds: Int(info.exportKeyRounds))
+    let exportKey = try PBKDF.derive(
+      length: Int(info.exportKeyLength),
+      from: password.data(using: .utf8)!,
+      salt: info.exportKeySalt,
+      using: .pbkdf2,
+      psuedoRandomAlgorithm: .sha512,
+      rounds: Int(info.exportKeyRounds)
+    )
 
-    let keyMaterial = try Cryptor.decrypt(data: info.keyMaterial, using: .aes, options: .pkcs7Padding,
-                                          key: exportKey, iv: info.exportKeySalt)
+    let keyMaterial = try Cryptor.decrypt(
+      data: info.keyMaterial,
+      using: .aes,
+      options: .pkcs7Padding,
+      key: exportKey,
+      iv: info.exportKeySalt
+    )
 
     return try Self(type: info.keyType, privateKeyData: keyMaterial)
   }

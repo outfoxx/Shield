@@ -2,7 +2,7 @@
 //  SecIdentity.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -53,7 +53,7 @@ public extension SecIdentity {
     let status = SecItemAdd(query as CFDictionary, &data)
 
     if status != errSecSuccess {
-      do { try privateKey.delete() } catch {}
+      try? privateKey.delete()
       throw Error.saveFailed
     }
 
@@ -79,7 +79,7 @@ public extension SecIdentity {
       throw Error.loadFailed
     }
 
-    return result as! SecIdentity
+    return result as! SecIdentity // swiftlint:disable:this force_cast
   }
 
   func privateKey() throws -> SecKey {

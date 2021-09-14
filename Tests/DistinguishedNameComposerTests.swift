@@ -2,7 +2,7 @@
 //  DistinguishedNameComposerTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -28,7 +28,10 @@ class DistinguishedNameComposerTests: XCTestCase {
       .add("www2.connect4.com.au", forType: iso_itu.ds.attributeType.commonName.oid)
       .name
     let composed = try NameStringComposer.compose(built)
-    XCTAssertEqual(composed, "c=AU,st=Victoria,l=South Melbourne,o=Connect 4 Pty Ltd,ou=Webserver Team,cn=www2.connect4.com.au")
+    XCTAssertEqual(
+      composed,
+      "c=AU,st=Victoria,l=South Melbourne,o=Connect 4 Pty Ltd,ou=Webserver Team,cn=www2.connect4.com.au"
+    )
   }
 
   func testComposeBasic2() throws {
@@ -57,7 +60,10 @@ class DistinguishedNameComposerTests: XCTestCase {
 
     let built = NameBuilder()
       .add("*.canal-plus.com", forType: iso_itu.ds.attributeType.commonName.oid)
-      .add("Provided by TBS INTERNET http://www.tbs-certificats.com/", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
+      .add(
+        "Provided by TBS INTERNET http://www.tbs-certificats.com/",
+        forType: iso_itu.ds.attributeType.organizationalUnitName.oid
+      )
       .add(" CANAL +", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
       .add("CANAL+DISTRIBUTION", forType: iso_itu.ds.attributeType.organizationName.oid)
       .add("issy les moulineaux", forType: iso_itu.ds.attributeType.localityName.oid)
@@ -65,7 +71,11 @@ class DistinguishedNameComposerTests: XCTestCase {
       .add("FR", forType: iso_itu.ds.attributeType.countryName.oid)
       .name
     let composed = try NameStringComposer.compose(built)
-    XCTAssertEqual(composed, #"cn=*.canal-plus.com,ou=Provided by TBS INTERNET http://www.tbs-certificats.com/,ou=\ CANAL \+,o=CANAL\+DISTRIBUTION,l=issy les moulineaux,st=Hauts de Seine,c=FR"#)
+    XCTAssertEqual(
+      composed,
+      // swiftlint:disable:next line_length
+      #"cn=*.canal-plus.com,ou=Provided by TBS INTERNET http://www.tbs-certificats.com/,ou=\ CANAL \+,o=CANAL\+DISTRIBUTION,l=issy les moulineaux,st=Hauts de Seine,c=FR"#
+    )
   }
 
   func testComposeEscaped2() throws {
@@ -95,7 +105,10 @@ class DistinguishedNameComposerTests: XCTestCase {
     let built = NameBuilder()
       .add("US", forType: iso_itu.ds.attributeType.countryName.oid)
       .add("National Aeronautics and Space Administration", forType: iso_itu.ds.attributeType.organizationName.oid)
-      .add(multiValued: (iso_itu.ds.attributeType.serialNumber.oid, "16"), (iso_itu.ds.attributeType.commonName.oid, "Steve Schoch"))
+      .add(
+        multiValued: (iso_itu.ds.attributeType.serialNumber.oid, "16"),
+        (iso_itu.ds.attributeType.commonName.oid, "Steve Schoch")
+      )
       .name
     let composed = try NameStringComposer.compose(built)
     XCTAssertEqual(composed, "c=US,o=National Aeronautics and Space Administration,serialNumber=16+cn=Steve Schoch")

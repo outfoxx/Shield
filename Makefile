@@ -9,6 +9,9 @@ clean:
 	rm -rf Project
 	rm -rf TestResults
 
+make-test-results-dir:
+	mkdir -p TestResults
+
 define buildtestpkg
 	xcodebuild -scheme $(project) -resultBundleVersion 3 -resultBundlePath ./TestResults/$(1) -destination '$(2)' test
 endef
@@ -28,3 +31,12 @@ build-test-iOS: generate-project
 
 build-test-tvOS: generate-project
 	$(call buildtestprj,tvOS,name=Apple TV)
+
+format:	
+	swiftformat --config .swiftformat Sources/ Tests/
+
+lint: make-test-results-dir
+	swiftlint lint --reporter html > TestResults/lint.html || true
+
+view_lint: lint
+	open TestResults/lint.html

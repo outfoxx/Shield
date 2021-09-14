@@ -19,12 +19,23 @@ public typealias RelativeDistinguishedName<Mapper: AttributeValueMapper> = [Attr
 
 public extension Schemas {
 
+  @available(*, deprecated, message: "Use relativeDistinguishedName(Schema.DynamicMap, unknownTypeSchema: Schema) instead")
+  // swiftlint:disable:next identifier_name
   static func RelativeDistinguishedName(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
-    .setOf(AttributeTypeAndValue(valueSet, unknownTypeSchema: unknownTypeSchema), size: .min(1))
+    return relativeDistinguishedName(valueSet, unknownTypeSchema: unknownTypeSchema)
   }
 
+  static func relativeDistinguishedName(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
+    .setOf(attributeTypeAndValue(valueSet, unknownTypeSchema: unknownTypeSchema), size: .min(1))
+  }
+
+  @available(*, deprecated, message: "Use rdnSequence(Schema.DynamicMap, unknownTypeSchema: Schema) instead")
   static func RDNSequence(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
-    .sequenceOf(RelativeDistinguishedName(valueSet, unknownTypeSchema: unknownTypeSchema))
+    return rdnSequence(valueSet, unknownTypeSchema: unknownTypeSchema)
+  }
+
+  static func rdnSequence(_ valueSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
+    .sequenceOf(relativeDistinguishedName(valueSet, unknownTypeSchema: unknownTypeSchema))
   }
 
 }

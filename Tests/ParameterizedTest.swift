@@ -2,7 +2,7 @@
 //  ParameterizedTest.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -18,7 +18,9 @@ class ParameterizedTestCase: XCTestCase {
     let testSuite = XCTestSuite(forTestCaseClass: self)
     (1 ..< parameterSets.count).forEach { parameterSetIdx in
       testInvocations.forEach { invocation in
-        let testCase = testClass.init(invocation: invocation) as! ParameterizedTestCase
+        guard let testCase = testClass.init(invocation: invocation) as? ParameterizedTestCase else {
+          fatalError("Must be ParameterizedTestCase")
+        }
         testCase.parameterSetIdx = parameterSetIdx
         testSuite.addTest(testCase)
       }
@@ -27,7 +29,7 @@ class ParameterizedTestCase: XCTestCase {
   }
 
   open class var parameterSets: [Any] { [""] }
-  
-  public var parameterSetIdx: Int? = nil
+
+  public var parameterSetIdx: Int?
 
 }

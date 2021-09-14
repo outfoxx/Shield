@@ -2,7 +2,7 @@
 //  CertificationRequest.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -20,7 +20,11 @@ public struct CertificationRequest: Equatable, Hashable, Codable {
   public var signatureAlgorithm: AlgorithmIdentifier
   public var signature: Data
 
-  public init(certificationRequestInfo: CertificationRequestInfo, signatureAlgorithm: AlgorithmIdentifier, signature: Data) {
+  public init(
+    certificationRequestInfo: CertificationRequestInfo,
+    signatureAlgorithm: AlgorithmIdentifier,
+    signature: Data
+  ) {
     self.certificationRequestInfo = certificationRequestInfo
     self.signatureAlgorithm = signatureAlgorithm
     self.signature = signature
@@ -44,7 +48,7 @@ public extension Schemas {
   static let CertificationRequest: Schema =
     .sequence([
       "certificationRequestInfo": CertificationRequestInfo,
-      "signatureAlgorithm": AlgorithmIdentifier(SignatureAlgorithms),
+      "signatureAlgorithm": algorithmIdentifier(SignatureAlgorithms),
       "signature": .bitString(),
     ])
 

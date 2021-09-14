@@ -202,7 +202,7 @@ public struct Digester {
 }
 
 
-public struct _Digester<Engine: DigestEngine>: AnyDigester {
+public struct DigesterEngine<Engine: DigestEngine>: AnyDigester {
 
   public static var hashLength: Int {
     return Int(Engine.hashLength)
@@ -238,12 +238,12 @@ public struct _Digester<Engine: DigestEngine>: AnyDigester {
 }
 
 
-public typealias MD2Digester = _Digester<MD2Engine>
-public typealias MD4Digester = _Digester<MD4Engine>
-public typealias MD5Digester = _Digester<MD5Engine>
+public typealias MD2Digester = DigesterEngine<MD2Engine>
+public typealias MD4Digester = DigesterEngine<MD4Engine>
+public typealias MD5Digester = DigesterEngine<MD5Engine>
 
-public typealias SHA1Digester = _Digester<SHA1Engine>
-public typealias SHA224Digester = _Digester<SHA224Engine>
-public typealias SHA256Digester = _Digester<SHA256Engine>
-public typealias SHA384Digester = _Digester<SHA384Engine>
-public typealias SHA512Digester = _Digester<SHA512Engine>
+public typealias SHA1Digester = DigesterEngine<SHA1Engine>
+public typealias SHA224Digester = DigesterEngine<SHA224Engine>
+public typealias SHA256Digester = DigesterEngine<SHA256Engine>
+public typealias SHA384Digester = DigesterEngine<SHA384Engine>
+public typealias SHA512Digester = DigesterEngine<SHA512Engine>

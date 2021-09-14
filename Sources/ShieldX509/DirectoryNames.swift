@@ -2,7 +2,7 @@
 //  DirectoryNames.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -66,16 +66,22 @@ public extension Schemas {
     iso.memberBody.us.rsadsi.pkcs.pkcs9.emailAddress.asn1: .string(kind: .ia5, size: .range(1, 255)),
   ]
 
-  static let X520Name = DirectoryString(max: 32768)
-  static let X520CommonName = DirectoryString(max: 64)
-  static let X520LocalityName = DirectoryString(max: 128)
-  static let X520StateOrProvinceName = DirectoryString(max: 128)
-  static let X520OrganizationName = DirectoryString(max: 64)
-  static let X520OrganizationalUnitName = DirectoryString(max: 64)
-  static let X520Title = DirectoryString(max: 64)
-  static let X520Pseudonym = DirectoryString(max: 128)
+  static let X520Name = directoryString(max: 32768)
+  static let X520CommonName = directoryString(max: 64)
+  static let X520LocalityName = directoryString(max: 128)
+  static let X520StateOrProvinceName = directoryString(max: 128)
+  static let X520OrganizationName = directoryString(max: 64)
+  static let X520OrganizationalUnitName = directoryString(max: 64)
+  static let X520Title = directoryString(max: 64)
+  static let X520Pseudonym = directoryString(max: 128)
 
+  @available(*, deprecated, message: "Use directoryString(max:) instead")
+  // swiftlint:disable:next identifier_name
   static func DirectoryString(max: Int = .max) -> Schema {
+    return directoryString(max: max)
+  }
+
+  static func directoryString(max: Int = .max) -> Schema {
     .choiceOf([
       .string(kind: .utf8, size: .range(1, max)),
       .string(kind: .printable, size: .range(1, max)),

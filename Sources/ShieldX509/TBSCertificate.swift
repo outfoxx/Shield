@@ -2,7 +2,7 @@
 //  TBSCertificate.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -50,11 +50,18 @@ public struct TBSCertificate: Equatable, Hashable, Codable {
   public var subjectUniqueID: UniqueIdentifier?
   public var extensions: Extensions?
 
-  public init(version: Version, serialNumber: Integer, signature: AlgorithmIdentifier,
-              issuer: Name, validity: Validity,
-              subject: Name, subjectPublicKeyInfo: SubjectPublicKeyInfo,
-              issuerUniqueID: UniqueIdentifier?, subjectUniqueID: UniqueIdentifier?,
-              extensions: Extensions?) {
+  public init(
+    version: Version,
+    serialNumber: Integer,
+    signature: AlgorithmIdentifier,
+    issuer: Name,
+    validity: Validity,
+    subject: Name,
+    subjectPublicKeyInfo: SubjectPublicKeyInfo,
+    issuerUniqueID: UniqueIdentifier?,
+    subjectUniqueID: UniqueIdentifier?,
+    extensions: Extensions?
+  ) {
     self.version = version
     self.serialNumber = serialNumber
     self.signature = signature
@@ -102,7 +109,7 @@ public extension Schemas {
     .sequence([
       "version": .version(.explicit(0, Version)),
       "serialNumber": CertificateSerialNumber,
-      "signature": AlgorithmIdentifier(SignatureAlgorithms),
+      "signature": algorithmIdentifier(SignatureAlgorithms),
       "issuer": Name,
       "validity": Validity,
       "subject": Name,

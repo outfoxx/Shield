@@ -2,7 +2,7 @@
 //  ExtensionKeyUsage.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -50,14 +50,14 @@ public extension Schemas {
 
 // MARK: KeyUsage Conformances
 
-extension KeyUsage {
+public extension KeyUsage {
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     let bitString = try decoder.singleValueContainer().decode(BitString.self)
     self = Self(rawValue: bitString.integer(UInt16.self))
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(BitString(bitPattern: rawValue))
   }

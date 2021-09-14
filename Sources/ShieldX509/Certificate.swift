@@ -44,7 +44,7 @@ public extension Schemas {
   static let Certificate: Schema =
     .sequence([
       "tbsCertificate": TBSCertificate,
-      "signatureAlgorithm": AlgorithmIdentifier(SignatureAlgorithms),
+      "signatureAlgorithm": algorithmIdentifier(SignatureAlgorithms),
       "signature": .bitString(),
     ])
 

@@ -2,7 +2,7 @@
 //  ECParameters.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -22,7 +22,7 @@ public extension Schemas {
 
   static let ECParameters: Schema =
     .choiceOf([
-      .objectIdentifier(),  // -- named curve
+      .objectIdentifier(), // -- named curve
       // .null              // -- implicit curve
       // SpecifiedECDomain, // -- specified curve
     ])

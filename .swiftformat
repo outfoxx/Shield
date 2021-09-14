@@ -1,13 +1,14 @@
 --swiftversion 5.1
 --indent 2
+--maxwidth 120
 --elseposition next-line
 --patternlet inline
 --stripunusedargs closure-only
---wraparguments after-first
+--wraparguments before-first
 --binarygrouping none
 --decimalgrouping none
 --hexgrouping none
 --octalgrouping none
 --header "//\n//  {file}\n//  Shield\n//\n//  Copyright © {created.year} Outfox, inc.\n//\n//\n//  Distributed under the MIT License, See LICENSE for details.\n//"
 --enable blankLinesBetweenScopes
---disable consecutiveBlankLines,blankLinesAtStartOfScope,blankLinesAtEndOfScope
+--disable consecutiveBlankLines,blankLinesAtEndOfScope,blankLinesAtStartOfScope,redundantReturn,wrapMultilineStatementBraces

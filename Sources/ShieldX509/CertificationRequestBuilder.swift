@@ -2,7 +2,7 @@
 //  CertificationRequestBuilder.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -67,9 +67,11 @@ public extension CertificationRequest {
       return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: attributes)
     }
 
-    public func publicKey(_ publicKey: Data,
-                          algorithm: AlgorithmIdentifier,
-                          usage keyUsage: KeyUsage? = nil) throws -> Builder {
+    public func publicKey(
+      _ publicKey: Data,
+      algorithm: AlgorithmIdentifier,
+      usage keyUsage: KeyUsage? = nil
+    ) throws -> Builder {
 
       var builder = self
 
@@ -105,10 +107,12 @@ public extension CertificationRequest {
       guard let subject = self.subject else { throw Error.missingParameter("subject") }
       guard let subjectPKInfo = self.subjectPKInfo else { throw Error.missingParameter("subjectPKInfo") }
       let attributes = self.attributes ?? CRAttributes()
-      return CertificationRequestInfo(version: .v1,
-                                      subject: subject,
-                                      subjectPKInfo: subjectPKInfo,
-                                      attributes: attributes)
+      return CertificationRequestInfo(
+        version: .v1,
+        subject: subject,
+        subjectPKInfo: subjectPKInfo,
+        attributes: attributes
+      )
     }
 
   }

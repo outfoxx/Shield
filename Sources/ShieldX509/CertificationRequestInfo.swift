@@ -48,7 +48,7 @@ public extension Schemas {
 
   static let CRIAttributes: Schema.DynamicMap = [
     iso.memberBody.us.rsadsi.pkcs.pkcs9.extensionRequest.asn1: Extensions,
-    iso.memberBody.us.rsadsi.pkcs.pkcs9.extendedCertificateAttributes.asn1: Attributes([:], unknownTypeSchema: .any),
+    iso.memberBody.us.rsadsi.pkcs.pkcs9.extendedCertificateAttributes.asn1: attributes([:], unknownTypeSchema: .any),
   ]
 
   static let CertificationRequestInfo: Schema =
@@ -56,7 +56,7 @@ public extension Schemas {
       "version": .version(.integer(allowed: 0 ..< 1)),
       "subject": Name,
       "subjectPKInfo": SubjectPublicKeyInfo,
-      "attributes": .implicit(0, Attributes(CRIAttributes)),
+      "attributes": .implicit(0, attributes(CRIAttributes)),
     ])
 
 }

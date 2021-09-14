@@ -15,7 +15,7 @@ import XCTest
 class DigestTests: XCTestCase {
 
 
-  let data = try! Random.generate(count: 3619)
+  let data = try! Random.generate(count: 3619) // swiftlint:disable:this force_try
 
 
   func exec(_ digester: AnyDigester) throws -> Data {

@@ -1,8 +1,8 @@
 //
-//  SecIdentityBuilderTests.swift
+//  SecIdentityTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -38,15 +38,13 @@ class SecIdentityTests: XCTestCase {
       SecItemDelete([
         kSecClass as String: kSecClassCertificate,
         kSecMatchItemList as String: [cert] as CFArray,
-        kSecMatchLimit as String: kSecMatchLimitOne
+        kSecMatchLimit as String: kSecMatchLimitOne,
       ] as CFDictionary)
     }
 
     // Ensure all went well
     let ident = try SecIdentity.create(certificate: cert, keyPair: keyPair)
-    defer {
-      
-    }
+    defer {}
 
     XCTAssertNotNil(ident)
     XCTAssertNotNil(try ident.certificate())

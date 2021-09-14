@@ -2,7 +2,7 @@
 //  PBKDF.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -12,7 +12,7 @@ import CommonCrypto.CommonKeyDerivation
 import Foundation
 
 
-public struct PBKDF {
+public enum PBKDF {
 
   public enum Error: Swift.Error {
     case calibrationFailed
@@ -58,19 +58,30 @@ public struct PBKDF {
     }
   }
 
-  public static func derive(length keyLength: Int, from password: Data, salt: Data,
-                            using algorithm: Algorithm, psuedoRandomAlgorithm: PsuedoRandomAlgorithm,
-                            rounds: Int) throws -> Data {
+  public static func derive(
+    length keyLength: Int,
+    from password: Data,
+    salt: Data,
+    using algorithm: Algorithm,
+    psuedoRandomAlgorithm: PsuedoRandomAlgorithm,
+    rounds: Int
+  ) throws -> Data {
 
     var key = Data(repeating: 0, count: keyLength)
     try key.withUnsafeMutableBytes { keyPtr in
       try password.withUnsafeBytes { passwordPtr in
         try salt.withUnsafeBytes { saltPtr in
-          let status = CCKeyDerivationPBKDF(algorithm.rawValue,
-                                            passwordPtr.bindMemory(to: Int8.self).baseAddress, passwordPtr.count,
-                                            saltPtr.bindMemory(to: UInt8.self).baseAddress!, saltPtr.count,
-                                            psuedoRandomAlgorithm.rawValue, UInt32(rounds),
-                                            keyPtr.bindMemory(to: UInt8.self).baseAddress!, keyPtr.count)
+          let status = CCKeyDerivationPBKDF(
+            algorithm.rawValue,
+            passwordPtr.bindMemory(to: Int8.self).baseAddress,
+            passwordPtr.count,
+            saltPtr.bindMemory(to: UInt8.self).baseAddress!,
+            saltPtr.count,
+            psuedoRandomAlgorithm.rawValue,
+            UInt32(rounds),
+            keyPtr.bindMemory(to: UInt8.self).baseAddress!,
+            keyPtr.count
+          )
           if status != kCCSuccess {
             throw CCError(rawValue: status)
           }
@@ -81,12 +92,22 @@ public struct PBKDF {
     return key
   }
 
-  public static func calibrate(passwordLength: Int, saltLength: Int, keyLength: Int,
-                               using algorithm: Algorithm = .pbkdf2,
-                               psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .sha512,
-                               taking: TimeInterval) throws -> Int {
-    let rounds = CCCalibratePBKDF(algorithm.rawValue, passwordLength, saltLength,
-                                  psuedoRandomAlgorithm.rawValue, keyLength, UInt32(taking * 1000))
+  public static func calibrate(
+    passwordLength: Int,
+    saltLength: Int,
+    keyLength: Int,
+    using algorithm: Algorithm = .pbkdf2,
+    psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .sha512,
+    taking: TimeInterval
+  ) throws -> Int {
+    let rounds = CCCalibratePBKDF(
+      algorithm.rawValue,
+      passwordLength,
+      saltLength,
+      psuedoRandomAlgorithm.rawValue,
+      keyLength,
+      UInt32(taking * 1000)
+    )
     if rounds == UInt32.max {
       throw Error.calibrationFailed
     }

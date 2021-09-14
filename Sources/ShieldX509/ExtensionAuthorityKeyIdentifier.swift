@@ -2,7 +2,7 @@
 //  ExtensionAuthorityKeyIdentifier.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -22,9 +22,11 @@ public struct AuthorityKeyIdentifier: Equatable, Hashable, Codable, NonCriticalE
   public var authorityCertIssuer: GeneralNames?
   public var authorityCertSerialNumber: TBSCertificate.SerialNumber?
 
-  public init(keyIdentifier: KeyIdentifier? = nil,
-              authorityCertIssuer: GeneralNames? = nil,
-              authorityCertSerialNumber: TBSCertificate.SerialNumber? = nil) {
+  public init(
+    keyIdentifier: KeyIdentifier? = nil,
+    authorityCertIssuer: GeneralNames? = nil,
+    authorityCertSerialNumber: TBSCertificate.SerialNumber? = nil
+  ) {
     self.keyIdentifier = keyIdentifier
     self.authorityCertIssuer = authorityCertIssuer
     self.authorityCertSerialNumber = authorityCertSerialNumber

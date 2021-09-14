@@ -99,7 +99,13 @@ extension AttributeTypeAndValue: Equatable, Hashable, Codable {
 
 public extension Schemas {
 
+  @available(*, deprecated, message: "Use attributeTypeAndValue(Schema.DynamicMap, unknownTypeSchema: Schema)")
+  // swiftlint:disable:next identifier_name
   static func AttributeTypeAndValue(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
+    return attributeTypeAndValue(ioSet, unknownTypeSchema: unknownTypeSchema)
+  }
+
+  static func attributeTypeAndValue(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema) -> Schema {
     .sequence([
       "type": .type(.objectIdentifier()),
       "value": .dynamic(unknownTypeSchema: unknownTypeSchema, ioSet),

@@ -2,7 +2,7 @@
 //  HMAC.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -91,7 +91,14 @@ public struct HMAC {
     hash.withUnsafeMutableBytes { hashPtr in
       data.withUnsafeBytes { dataPtr in
         key.withUnsafeBytes { keyPtr in
-          CCHmac(algorithm.rawValue, keyPtr.baseAddress!, keyPtr.count, dataPtr.baseAddress!, dataPtr.count, hashPtr.baseAddress!)
+          CCHmac(
+            algorithm.rawValue,
+            keyPtr.baseAddress!,
+            keyPtr.count,
+            dataPtr.baseAddress!,
+            dataPtr.count,
+            hashPtr.baseAddress!
+          )
         }
       }
     }

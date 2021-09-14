@@ -39,7 +39,7 @@ public extension Schemas {
 
   static let SubjectPublicKeyInfo: Schema =
     .sequence([
-      "algorithm": AlgorithmIdentifier(PKInfoAlgorithms),
+      "algorithm": algorithmIdentifier(PKInfoAlgorithms),
       "subjectPublicKey": .bitString(),
     ])
 

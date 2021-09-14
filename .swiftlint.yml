@@ -1,0 +1,68 @@
+opt_in_rules:
+- file_header
+
+disabled_rules:
+- cyclomatic_complexity
+
+included:
+- Sources
+- Tests
+
+excluded:
+- Sources/SundayServer/Routable.swift
+
+opt_in_rules:
+- file_header
+
+vertical_whitespace:
+  max_empty_lines: 3
+
+nesting:
+  type_level: 2
+
+statement_position:
+  statement_mode: uncuddled_else
+
+identifier_name:
+  excluded: [id, ok, in, is, at, of, ec, iv, ca, v1, v2, v3, to]
+
+trailing_comma:
+  mandatory_comma: true
+
+function_parameter_count:
+  - 8
+  - 10
+  
+file_length:
+  warning: 800
+  error: 1000
+  ignore_comment_only_lines: true
+
+line_length:
+  - 150
+  - 175
+
+function_body_length:
+  - 300
+  - 350  
+
+type_body_length:
+  - 400
+  - 450
+
+large_tuple:
+  - 4
+  - 5
+
+file_header:
+  required_pattern: |-
+    \Q//
+    //  \E[a-zA-Z0-9-_.]+\Q
+    //  Shield
+    //
+    //  Copyright © \E\d{4}\Q Outfox, inc.
+    //
+    //
+    //  Distributed under the MIT License, See LICENSE for details.
+    //
+    \E

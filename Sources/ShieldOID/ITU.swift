@@ -12,6 +12,7 @@ import Foundation
 import PotentASN1
 
 // swiftformat:disable consecutiveSpaces
+// swiftlint:disable type_name nesting
 
 /// International Telecommunication Union - Telecommunication standardization sector (ITU-T)
 ///

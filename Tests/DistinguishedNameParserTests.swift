@@ -2,7 +2,7 @@
 //  DistinguishedNameParserTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -27,7 +27,8 @@ class DistinguishedNameParserTests: XCTestCase {
       .add("Webserver Team", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
       .add("www2.connect4.com.au", forType: iso_itu.ds.attributeType.commonName.oid)
       .name
-    let parsed = try NameBuilder.parse(string: "C=AU,ST=Victoria,L=South Melbourne,O=Connect 4 Pty Ltd,OU=Webserver Team,CN=www2.connect4.com.au")
+    let parsed = try NameBuilder
+      .parse(string: "C=AU,ST=Victoria,L=South Melbourne,O=Connect 4 Pty Ltd,OU=Webserver Team,CN=www2.connect4.com.au")
     XCTAssertEqual(built, parsed)
   }
 
@@ -57,14 +58,21 @@ class DistinguishedNameParserTests: XCTestCase {
 
     let built = NameBuilder()
       .add("*.canal-plus.com", forType: iso_itu.ds.attributeType.commonName.oid)
-      .add("Provided by TBS INTERNET http://www.tbs-certificats.com/", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
+      .add(
+        "Provided by TBS INTERNET http://www.tbs-certificats.com/",
+        forType: iso_itu.ds.attributeType.organizationalUnitName.oid
+      )
       .add(" CANAL +", forType: iso_itu.ds.attributeType.organizationalUnitName.oid)
       .add("CANAL+DISTRIBUTION", forType: iso_itu.ds.attributeType.organizationName.oid)
       .add("issy les moulineaux", forType: iso_itu.ds.attributeType.localityName.oid)
       .add("Hauts de Seine", forType: iso_itu.ds.attributeType.stateOrProvinceName.oid)
       .add("FR", forType: iso_itu.ds.attributeType.countryName.oid)
       .name
-    let parsed = try NameBuilder.parse(string: #"CN=*.canal-plus.com,OU=Provided by TBS INTERNET http://www.tbs-certificats.com/,OU=\ CANAL \+,O=CANAL\+DISTRIBUTION,L=issy les moulineaux,ST=Hauts de Seine,C=FR"#)
+    let parsed = try NameBuilder
+      .parse(
+        // swiftlint:disable:next line_length
+        string: #"CN=*.canal-plus.com,OU=Provided by TBS INTERNET http://www.tbs-certificats.com/,OU=\ CANAL \+,O=CANAL\+DISTRIBUTION,L=issy les moulineaux,ST=Hauts de Seine,C=FR"#
+      )
     XCTAssertEqual(built, parsed)
   }
 
@@ -95,9 +103,13 @@ class DistinguishedNameParserTests: XCTestCase {
     let built = NameBuilder()
       .add("US", forType: iso_itu.ds.attributeType.countryName.oid)
       .add("National Aeronautics and Space Administration", forType: iso_itu.ds.attributeType.organizationName.oid)
-      .add(multiValued: (iso_itu.ds.attributeType.serialNumber.oid, "16"), (iso_itu.ds.attributeType.commonName.oid, "Steve Schoch"))
+      .add(
+        multiValued: (iso_itu.ds.attributeType.serialNumber.oid, "16"),
+        (iso_itu.ds.attributeType.commonName.oid, "Steve Schoch")
+      )
       .name
-    let parsed = try NameBuilder.parse(string: "C=US,O=National Aeronautics and Space Administration,SERIALNUMBER=16+CN=Steve Schoch")
+    let parsed = try NameBuilder
+      .parse(string: "C=US,O=National Aeronautics and Space Administration,SERIALNUMBER=16+CN=Steve Schoch")
     XCTAssertEqual(built, parsed)
   }
 

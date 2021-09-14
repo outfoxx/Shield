@@ -2,7 +2,7 @@
 //  CryptorTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -21,8 +21,7 @@ import XCTest
 ///
 class CryptorPaddedTests: ParameterizedTestCase {
 
-  static let plainTexts = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 368, 512]
-    .map { try! Random.generate(count: $0) }
+  static let plainTextSizes = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 368, 512]
 
   static let bufferSize = 33
   static let bufferSize2 = 16
@@ -33,19 +32,22 @@ class CryptorPaddedTests: ParameterizedTestCase {
 
   override class var parameterSets: [Any] {
     var sets = [Any]()
-    for plainText in plainTexts {
+    for plainTextSize in plainTextSizes {
       for algorithm in Cryptor.Algorithm.allCases {
         for keySize in algorithm.keySizes.testValues {
-          sets.append((plainText, algorithm, keySize))
+          sets.append((plainTextSize, algorithm, keySize))
         }
       }
     }
     return sets
   }
 
-  override func setUp() {
-    let parameters = Self.parameterSets[parameterSetIdx ?? 0] as! (Data, Cryptor.Algorithm, Int)
-    plainText = parameters.0
+  override func setUpWithError() throws {
+    guard let parameters = Self.parameterSets[parameterSetIdx ?? 0] as? (Int, Cryptor.Algorithm, Int) else {
+      return XCTFail("Invalid Parameters")
+    }
+    let plainTextSize = parameters.0
+    plainText = try Random.generate(count: plainTextSize)
     algorithm = parameters.1
     keySize = parameters.2
   }
@@ -61,9 +63,15 @@ class CryptorPaddedTests: ParameterizedTestCase {
 
     let cipherText = try exec(encryptor, source: plainText, bufferSize: Self.bufferSize)
 
-    XCTAssertEqual(cipherText, try Cryptor.encrypt(data: plainText, using: algorithm, options: [.pkcs7Padding], key: key, iv: iv))
+    XCTAssertEqual(
+      cipherText,
+      try Cryptor.encrypt(data: plainText, using: algorithm, options: [.pkcs7Padding], key: key, iv: iv)
+    )
     XCTAssertEqual(plainText, try exec(decryptor, source: cipherText, bufferSize: Self.bufferSize2))
-    XCTAssertEqual(plainText, try Cryptor.decrypt(data: cipherText, using: algorithm, options: [.pkcs7Padding], key: key, iv: iv))
+    XCTAssertEqual(
+      plainText,
+      try Cryptor.decrypt(data: cipherText, using: algorithm, options: [.pkcs7Padding], key: key, iv: iv)
+    )
   }
 
 }
@@ -94,11 +102,13 @@ class CryptorUnpaddedTests: ParameterizedTestCase {
     return sets
   }
 
-  override func setUp() {
-    let parameters = Self.parameterSets[parameterSetIdx ?? 0] as! (Cryptor.Algorithm, Int)
+  override func setUpWithError() throws {
+    guard let parameters = Self.parameterSets[parameterSetIdx ?? 0] as? (Cryptor.Algorithm, Int) else {
+      return XCTFail("Invalid Parameters")
+    }
     algorithm = parameters.0
     keySize = parameters.1
-    plainText = try! Random.generate(count: algorithm.blockSize)
+    plainText = try Random.generate(count: algorithm.blockSize)
   }
 
   /// Tests encryption with padding disabled

@@ -2,7 +2,7 @@
 //  Attributes.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -47,7 +47,7 @@ public protocol AttributeValueHandler {
   static func encode(_ value: Any, to container: inout UnkeyedEncodingContainer) throws
   static func decode(from container: inout UnkeyedDecodingContainer) throws -> Any
   static func hash(_ value: Any, into: inout Hasher)
-  static func equal(_ a: Any, _ b: Any) -> Bool
+  static func equal(_ lhs: Any, _ rhs: Any) -> Bool
 }
 
 public protocol AttributeValuesHandler {
@@ -69,56 +69,48 @@ public struct Attributes<Handler: AttributeValuesHandler>: Equatable, Hashable, 
 
   public func all<AV: AttributeValue>(_ type: AV.Type) throws -> [[AV]] {
     var found: [[AV]] = []
-    for attribute in storage {
-      if attribute.attrType == AV.attributeType {
-        guard let attrValues = attribute.attrValues as? [AV] else {
-          throw Error.invalidElement
-        }
-        found.append(attrValues)
+    for attribute in storage where attribute.attrType == AV.attributeType {
+      guard let attrValues = attribute.attrValues as? [AV] else {
+        throw Error.invalidElement
       }
+      found.append(attrValues)
     }
     return found
   }
 
   public func all<AV: SingleAttributeValue>(_ type: AV.Type) throws -> [AV] {
     var found: [AV] = []
-    for attribute in storage {
-      if attribute.attrType == AV.attributeType {
-        guard let attrValues = attribute.attrValues as? [AV] else {
-          throw Error.invalidElement
-        }
-        guard attrValues.count == 1 else {
-          throw Error.singleValueRequired
-        }
-        found.append(attrValues[0])
+    for attribute in storage where attribute.attrType == AV.attributeType {
+      guard let attrValues = attribute.attrValues as? [AV] else {
+        throw Error.invalidElement
       }
+      guard attrValues.count == 1 else {
+        throw Error.singleValueRequired
+      }
+      found.append(attrValues[0])
     }
     return found
   }
 
   public func first<AV: AttributeValue>(_ type: AV.Type) throws -> [AV]? {
-    for attribute in storage {
-      if attribute.attrType == AV.attributeType {
-        guard let attrValues = attribute.attrValues as? [AV] else {
-          fatalError("Attribute's attrValues contains invalid elements")
-        }
-        return attrValues
+    for attribute in storage where attribute.attrType == AV.attributeType {
+      guard let attrValues = attribute.attrValues as? [AV] else {
+        fatalError("Attribute's attrValues contains invalid elements")
       }
+      return attrValues
     }
     return nil
   }
 
   public func first<AV: SingleAttributeValue>(_ type: AV.Type) throws -> AV? {
-    for attribute in storage {
-      if attribute.attrType == AV.attributeType {
-        guard let attrValues = attribute.attrValues as? [AV] else {
-          throw Error.invalidElement
-        }
-        guard attrValues.count == 1 else {
-          throw Error.singleValueRequired
-        }
-        return attrValues[0]
+    for attribute in storage where attribute.attrType == AV.attributeType {
+      guard let attrValues = attribute.attrValues as? [AV] else {
+        throw Error.invalidElement
       }
+      guard attrValues.count == 1 else {
+        throw Error.singleValueRequired
+      }
+      return attrValues[0]
     }
     return nil
   }
@@ -172,11 +164,24 @@ extension Attributes: Collection, BidirectionalCollection, RandomAccessCollectio
 
 public extension Schemas {
 
+  @available(*, deprecated, message: "Use attributes(Schema.DynamicMap, unknownTypeSchema: Schema?) instead")
+  // swiftlint:disable:next identifier_name
   static func Attributes(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
-    .setOf(Attribute(ioSet, unknownTypeSchema: unknownTypeSchema))
+    return attributes(ioSet, unknownTypeSchema: unknownTypeSchema)
   }
 
+  static func attributes(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
+    .setOf(attribute(ioSet, unknownTypeSchema: unknownTypeSchema))
+  }
+
+
+  @available(*, deprecated, message: "Use attribute(Schema.DynamicMap, unknownTypeSchema: Schema?) instead")
+  // swiftlint:disable:next identifier_name
   static func Attribute(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
+    return attribute(ioSet, unknownTypeSchema: unknownTypeSchema)
+  }
+
+  static func attribute(_ ioSet: Schema.DynamicMap, unknownTypeSchema: Schema? = nil) -> Schema {
     .sequence([
       "attrType": .type(.objectIdentifier()),
       "attrValues": .setOf(.dynamic(unknownTypeSchema: unknownTypeSchema, ioSet)),
@@ -188,9 +193,9 @@ public extension Schemas {
 
 // MARK: Attributes Conformances
 
-extension Attributes {
+public extension Attributes {
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     var container = try decoder.unkeyedContainer()
     var attrs = [Attribute]()
     for _ in 0 ..< (container.count ?? 0) {
@@ -208,7 +213,7 @@ extension Attributes {
     storage = attrs
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
     for attr in storage {
       var attrContainer = container.nestedContainer(keyedBy: Attribute.CodingKeys.self)
@@ -221,7 +226,7 @@ extension Attributes {
     }
   }
 
-  public func hash(into hasher: inout Hasher) {
+  func hash(into hasher: inout Hasher) {
     for attr in storage {
       hasher.combine(attr.attrType)
       let attrHandler = Handler.handler(for: attr.attrType)
@@ -231,30 +236,30 @@ extension Attributes {
     }
   }
 
-  public static func == (_ lhs: Attributes, _ rhs: Attributes) -> Bool {
+  static func == (_ lhs: Attributes, _ rhs: Attributes) -> Bool {
     guard lhs.storage.count == rhs.storage.count else { return false }
-    return zip(lhs.storage, rhs.storage).allSatisfy { l, r in
-      guard l.attrType == r.attrType, l.attrValues.count == r.attrValues.count else { return false }
-      let attrHandler = Handler.handler(for: l.attrType)
-      return zip(l.attrValues, r.attrValues).allSatisfy { lv, rv in attrHandler.equal(lv, rv) }
+    return zip(lhs.storage, rhs.storage).allSatisfy { lhss, rhss in
+      guard lhss.attrType == rhss.attrType, lhss.attrValues.count == rhss.attrValues.count else { return false }
+      let attrHandler = Handler.handler(for: lhss.attrType)
+      return zip(lhss.attrValues, rhss.attrValues).allSatisfy { lhssv, rhssv in attrHandler.equal(lhssv, rhssv) }
     }
   }
 
 }
 
-extension Attributes {
+public extension Attributes {
 
-  public typealias Index = Array<Attribute>.Index
+  typealias Index = Array<Attribute>.Index
 
-  public typealias Iterator = Array<Attribute>.Iterator
+  typealias Iterator = Array<Attribute>.Iterator
 
-  public var startIndex: Index { storage.startIndex }
-  public var endIndex: Index { storage.endIndex }
+  var startIndex: Index { storage.startIndex }
+  var endIndex: Index { storage.endIndex }
 
-  public __consuming func makeIterator() -> Iterator {
+  __consuming func makeIterator() -> Iterator {
     return storage.makeIterator()
   }
 
-  public subscript(position: Index) -> Attribute { storage[position] }
+  subscript(position: Index) -> Attribute { storage[position] }
 
 }

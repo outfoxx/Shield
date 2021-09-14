@@ -2,7 +2,7 @@
 //  SecCertificate.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -145,7 +145,7 @@ public extension SecCertificate {
 
     #endif
 
-    return data as! [String: Any]
+    return data as! [String: Any] // swiftlint:disable:this force_cast
   }
 
   func save() throws {
@@ -164,7 +164,11 @@ public extension SecCertificate {
     }
   }
 
-  static func load(resourceName: String, inDirectory dir: String? = nil, in bundle: Bundle? = nil) throws -> [SecCertificate]? {
+  static func load(
+    resourceName: String,
+    inDirectory dir: String? = nil,
+    in bundle: Bundle? = nil
+  ) throws -> [SecCertificate]? {
 
     let bundle = bundle ?? Bundle.main
 
@@ -179,7 +183,11 @@ public extension SecCertificate {
     return nil
   }
 
-  static func load(derResourceName: String, inDirectory dir: String? = nil, in bundle: Bundle? = nil) throws -> SecCertificate? {
+  static func load(
+    derResourceName: String,
+    inDirectory dir: String? = nil,
+    in bundle: Bundle? = nil
+  ) throws -> SecCertificate? {
 
     let bundle = bundle ?? Bundle.main
 
@@ -203,7 +211,11 @@ public extension SecCertificate {
     return cert
   }
 
-  static func load(pemResourceName: String, inDirectory dir: String? = nil, in bundle: Bundle? = nil) throws -> [SecCertificate]? {
+  static func load(
+    pemResourceName: String,
+    inDirectory dir: String? = nil,
+    in bundle: Bundle? = nil
+  ) throws -> [SecCertificate]? {
 
     let bundle = bundle ?? Bundle.main
 
@@ -221,7 +233,8 @@ public extension SecCertificate {
     return try load(pem: certsPEM)
   }
 
-  private static let pemRegex = Regex(#"-----BEGIN CERTIFICATE-----\s*([a-zA-Z0-9\s/+]+=*)\s*-----END CERTIFICATE-----"#)
+  private static let pemRegex =
+    Regex(#"-----BEGIN CERTIFICATE-----\s*([a-zA-Z0-9\s/+]+=*)\s*-----END CERTIFICATE-----"#)
   private static let pemWhitespaceRegex = Regex(#"[\n\t\s]+"#)
 
   static func load(pem: String) throws -> [SecCertificate] {

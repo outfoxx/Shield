@@ -2,7 +2,7 @@
 //  ISO.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -12,6 +12,7 @@ import Foundation
 import PotentASN1
 
 // swiftformat:disable consecutiveSpaces
+// swiftlint:disable type_name nesting
 
 /// International Organization for Standardization (ISO)
 ///
@@ -131,19 +132,19 @@ public struct iso: OIDBranch {
             case prime256v1 =                       "1.2.840.10045.3.1.7"
           }
         }
-        
+
         public enum signatures: OID, CaseIterable, OIDBranch, OIDLeaf {
           public static let id: UInt64 = 4
           public static let names = ["signatures"]
           internal static let children: [OIDNode.Type] = [ecdsaWithSHA2.self]
-          
+
           case ecdsaWithSHA1 =                      "1.2.840.10045.4.1"
           case ecdsaWithRecommended =               "1.2.840.10045.4.2"
-          
+
           public enum ecdsaWithSHA2: OID, CaseIterable, OIDLeaf {
             public static let id: UInt64 = 3
             public static let names = ["ecdsaWithSHA2"]
-            
+
             case ecdsaWithSHA224 =                  "1.2.840.10045.4.3.1"
             case ecdsaWithSHA256 =                  "1.2.840.10045.4.3.2"
             case ecdsaWithSHA384 =                  "1.2.840.10045.4.3.3"

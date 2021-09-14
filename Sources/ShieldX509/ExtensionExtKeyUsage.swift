@@ -1,8 +1,8 @@
 //
-//  ExtensionKeyUsage.swift
+//  ExtensionExtKeyUsage.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -38,9 +38,9 @@ public extension Schemas {
 
 // MARK: KeyUsage Conformances
 
-extension ExtKeyUsage {
+public extension ExtKeyUsage {
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     var container = try decoder.unkeyedContainer()
     var keyPurposes = Set<OID>()
     for _ in 0 ..< (container.count ?? 0) {
@@ -49,7 +49,7 @@ extension ExtKeyUsage {
     self.keyPurposes = keyPurposes
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
     for keyPurpose in keyPurposes {
       try container.encode(keyPurpose)

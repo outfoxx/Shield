@@ -2,7 +2,7 @@
 //  Certificate.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -18,15 +18,19 @@ import ShieldX509
 public extension Certificate.Builder {
 
   func publicKey(keyPair: SecKeyPair, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {
-    return try publicKey(keyPair.encodedPublicKey(),
-                         algorithm: .init(publicKey: keyPair.publicKey),
-                         usage: keyUsage)
+    return try publicKey(
+      keyPair.encodedPublicKey(),
+      algorithm: .init(publicKey: keyPair.publicKey),
+      usage: keyUsage
+    )
   }
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {
-    return try self.publicKey(publicKey.encode(),
-                              algorithm: .init(publicKey: publicKey),
-                              usage: keyUsage)
+    return try self.publicKey(
+      publicKey.encode(),
+      algorithm: .init(publicKey: publicKey),
+      usage: keyUsage
+    )
   }
 
   func build(signingKey: SecKey, digestAlgorithm: Digester.Algorithm) throws -> Certificate {

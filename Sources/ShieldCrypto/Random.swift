@@ -2,7 +2,7 @@
 //  Random.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -12,7 +12,7 @@ import CommonCrypto.Random
 import Foundation
 
 
-public struct Random {
+public enum Random {
 
   public static func generate(count: Int) throws -> Data {
     var data = Data(repeating: 0, count: count)

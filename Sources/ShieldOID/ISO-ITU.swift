@@ -11,6 +11,7 @@
 import Foundation
 
 // swiftformat:disable consecutiveSpaces
+// swiftlint:disable type_name identifier_name
 
 /// Areas of joint work between ISO/IEC (International Organization for Standardization/International Electrotechnical Commission)
 /// and ITU-T (International Telecommunication Union - Telecommunication standardization sector), and other international work

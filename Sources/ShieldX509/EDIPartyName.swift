@@ -26,8 +26,8 @@ public extension Schemas {
 
   static let EDIPartyName: Schema =
     .sequence([
-      "nameAssigner": .implicit(0, .optional(DirectoryString())),
-      "value": .implicit(1, DirectoryString()),
+      "nameAssigner": .implicit(0, .optional(directoryString())),
+      "value": .implicit(1, directoryString()),
     ])
 
 }

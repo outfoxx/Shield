@@ -15,7 +15,7 @@ import XCTest
 class HmacTests: XCTestCase {
 
   let key = "secret".data(using: .utf8)!
-  let data = try! Random.generate(count: 3619)
+  let data = try! Random.generate(count: 3619) // swiftlint:disable:this force_try
 
   func exec(_ hmac: HMAC) -> Data {
     var hmac = hmac

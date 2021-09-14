@@ -22,7 +22,8 @@ public struct SimpleAttributeValueHandler<AttributeValue: Codable & Hashable>: A
   }
 
   public static func encode(_ value: Any, to container: inout UnkeyedEncodingContainer) throws {
-    try container.encode(value as! AttributeValue)
+    guard let value = value as? AttributeValue else { fatalError("Invalid attribute value") }
+    try container.encode(value)
   }
 
   public static func equal(_ lhs: Any, _ rhs: Any) -> Bool {

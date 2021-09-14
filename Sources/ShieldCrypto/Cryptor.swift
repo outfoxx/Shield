@@ -101,8 +101,15 @@ public class Cryptor {
       try key.withUnsafeBytes { keyPtr in
         try iv.withUnsafeBytes { ivPtr in
           var ref = CCCryptorRef(bitPattern: 0)
-          let status = CCCryptorCreate(operation.rawValue, algorithm.rawValue, options.rawValue,
-                                       keyPtr.baseAddress!, keyPtr.count, ivPtr.baseAddress, &ref)
+          let status = CCCryptorCreate(
+            operation.rawValue,
+            algorithm.rawValue,
+            options.rawValue,
+            keyPtr.baseAddress!,
+            keyPtr.count,
+            ivPtr.baseAddress,
+            &ref
+          )
           guard let value = ref, status == kCCSuccess else {
             throw CCError(rawValue: status)
           }
@@ -200,8 +207,14 @@ public class Cryptor {
     return result
   }
 
-  public static func crypt(_ data: Data, operation: Operation, using algorithm: Algorithm, options: Options,
-                           key: Data, iv: Data) throws -> Data {
+  public static func crypt(
+    _ data: Data,
+    operation: Operation,
+    using algorithm: Algorithm,
+    options: Options,
+    key: Data,
+    iv: Data
+  ) throws -> Data {
     var result = Data(repeating: 0, count: data.count + algorithm.blockSize)
     let moved =
       try result.withUnsafeMutableBytes { resultPtr -> Int in
@@ -209,10 +222,19 @@ public class Cryptor {
           try key.withUnsafeBytes { keyPtr -> Int in
             try iv.withUnsafeBytes { ivPtr -> Int in
               var moved = 0
-              let status = CCCrypt(operation.rawValue, algorithm.rawValue, options.rawValue,
-                                   keyPtr.baseAddress!, keyPtr.count, ivPtr.baseAddress!,
-                                   dataPtr.baseAddress!, dataPtr.count,
-                                   resultPtr.baseAddress!, resultPtr.count, &moved)
+              let status = CCCrypt(
+                operation.rawValue,
+                algorithm.rawValue,
+                options.rawValue,
+                keyPtr.baseAddress!,
+                keyPtr.count,
+                ivPtr.baseAddress!,
+                dataPtr.baseAddress!,
+                dataPtr.count,
+                resultPtr.baseAddress!,
+                resultPtr.count,
+                &moved
+              )
               guard status == kCCSuccess else {
                 throw CCError(rawValue: status)
               }
@@ -224,13 +246,23 @@ public class Cryptor {
     return result.prefix(upTo: moved)
   }
 
-  public static func encrypt(data: Data, using algorithm: Algorithm, options: Options,
-                             key: Data, iv: Data) throws -> Data {
+  public static func encrypt(
+    data: Data,
+    using algorithm: Algorithm,
+    options: Options,
+    key: Data,
+    iv: Data
+  ) throws -> Data {
     return try crypt(data, operation: .encrypt, using: algorithm, options: options, key: key, iv: iv)
   }
 
-  public static func decrypt(data: Data, using algorithm: Algorithm, options: Options,
-                             key: Data, iv: Data) throws -> Data {
+  public static func decrypt(
+    data: Data,
+    using algorithm: Algorithm,
+    options: Options,
+    key: Data,
+    iv: Data
+  ) throws -> Data {
     return try crypt(data, operation: .decrypt, using: algorithm, options: options, key: key, iv: iv)
   }
 

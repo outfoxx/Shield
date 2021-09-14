@@ -2,7 +2,7 @@
 //  CertificationRequest.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -17,15 +17,19 @@ import ShieldX509
 public extension CertificationRequest.Builder {
 
   func publicKey(keyPair: SecKeyPair, usage keyUsage: KeyUsage? = nil) throws -> CertificationRequest.Builder {
-    return try publicKey(keyPair.encodedPublicKey(),
-                         algorithm: .init(publicKey: keyPair.publicKey),
-                         usage: keyUsage)
+    return try publicKey(
+      keyPair.encodedPublicKey(),
+      algorithm: .init(publicKey: keyPair.publicKey),
+      usage: keyUsage
+    )
   }
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> CertificationRequest.Builder {
-    return try self.publicKey(publicKey.encode(),
-                              algorithm: .init(publicKey: publicKey),
-                              usage: keyUsage)
+    return try self.publicKey(
+      publicKey.encode(),
+      algorithm: .init(publicKey: publicKey),
+      usage: keyUsage
+    )
   }
 
   func build(signingKey: SecKey, digestAlgorithm: Digester.Algorithm) throws -> CertificationRequest {
@@ -44,9 +48,11 @@ public extension CertificationRequestInfo {
 
     let signature = try signingKey.sign(data: infoData, digestAlgorithm: digestAlgorithm)
 
-    return CertificationRequest(certificationRequestInfo: self,
-                                signatureAlgorithm: signatureAlgorithm,
-                                signature: signature)
+    return CertificationRequest(
+      certificationRequestInfo: self,
+      signatureAlgorithm: signatureAlgorithm,
+      signature: signature
+    )
   }
 
 }

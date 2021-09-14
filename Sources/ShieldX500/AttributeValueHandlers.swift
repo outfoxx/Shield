@@ -22,16 +22,19 @@ public struct AnyStringAttributeValueHandler: AttributeValueHandler {
   }
 
   public func encode(_ value: Any, to encoder: Encoder) throws {
+    guard let value = value as? AnyString else { fatalError("Invalid attribute value") }
     var container = encoder.singleValueContainer()
-    try container.encode(value as! AnyString)
+    try container.encode(value)
   }
 
   public func equals(_ lhs: Any, _ rhs: Any) -> Bool {
-    return (lhs as! AnyString) == (rhs as! AnyString)
+    guard let lhs = lhs as? AnyString, let rhs = rhs as? AnyString else { fatalError("Invalid attribute value") }
+    return lhs == rhs
   }
 
   public func hash(_ value: Any, into hasher: inout Hasher) {
-    (value as! AnyString).hash(into: &hasher)
+    guard let value = value as? AnyString else { fatalError("Invalid attribute value") }
+    value.hash(into: &hasher)
   }
 
 }
@@ -47,17 +50,19 @@ public struct UnknownAttributeValueHandler: AttributeValueHandler {
   }
 
   public func encode(_ value: Any, to encoder: Encoder) throws {
+    guard let value = value as? ASN1 else { fatalError("Invalid attribute value") }
     var container = encoder.singleValueContainer()
-    try container.encode(value as! ASN1)
+    try container.encode(value)
   }
 
   public func equals(_ lhs: Any, _ rhs: Any) -> Bool {
-    return (lhs as! ASN1) == (rhs as! ASN1)
+    guard let lhs = lhs as? ASN1, let rhs = rhs as? ASN1 else { fatalError("Invalid attribute value") }
+    return lhs == rhs
   }
 
   public func hash(_ value: Any, into hasher: inout Hasher) {
-    (value as! ASN1).hash(into: &hasher)
+    guard let value = value as? ASN1 else { fatalError("Invalid attribute value") }
+    value.hash(into: &hasher)
   }
 
 }
-

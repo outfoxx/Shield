@@ -1,8 +1,8 @@
 //
-//  CertificateBuilderTests.swift
+//  CertificateBuilderECTests.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -10,22 +10,25 @@
 
 import BigInt
 import PotentASN1
-import ShieldOID
 @testable import Shield
+import ShieldOID
 import XCTest
 
 class CertificateBuilderECTests: XCTestCase {
 
   let outputEnabled = false
   static var keyPair: SecKeyPair!
-  
+
   override class func setUp() {
     // Keys are comparatively slow to generate... so we do it once
-    keyPair  = try! SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
+    guard let keyPair = try? SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test") else {
+      return XCTFail("Key pair generation failed")
+    }
+    Self.keyPair = keyPair
   }
-  
+
   override class func tearDown() {
-    try! keyPair.delete()
+    try? keyPair.delete()
   }
 
   func testBuildVer1() throws {
@@ -128,8 +131,10 @@ class CertificateBuilderECTests: XCTestCase {
         .subject(name: subject, uniqueID: subjectID)
         .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
         .publicKey(keyPair: Self.keyPair)
-        .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
-                          isCritical: false)
+        .extendedKeyUsage(
+          keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
+          isCritical: false
+        )
         .issuer(name: issuer, uniqueID: issuerID)
         .valid(for: 86400 * 365)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
@@ -179,9 +184,11 @@ class CertificateBuilderECTests: XCTestCase {
         .issuer(name: issuer, uniqueID: issuerID)
         .issuerAlternativeNames(names: .dnsName("github.com/outfoxx/Shield/CA"))
         .basicConstraints(ca: true)
-        .authorityKeyIdentifier(Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
-                                certIssuer: [.dnsName("github.com/outfoxx/Shield/CA")],
-                                certSerialNumber: Integer(sign: .plus, magnitude: BigUInt(Random.generate(count: 19))))
+        .authorityKeyIdentifier(
+          Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
+          certIssuer: [.dnsName("github.com/outfoxx/Shield/CA")],
+          certSerialNumber: Integer(sign: .plus, magnitude: BigUInt(Random.generate(count: 19)))
+        )
         .computeSubjectKeyIdentifier()
         .valid(for: 86400 * 365)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
@@ -232,8 +239,10 @@ class CertificateBuilderECTests: XCTestCase {
         .subject(name: NameBuilder().add("Shield Subject", forTypeName: "CN").name)
         .alternativeNames(names: altNames)
         .publicKey(keyPair: Self.keyPair, usage: [.dataEncipherment])
-        .extendedKeyUsage(keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
-                          isCritical: false)
+        .extendedKeyUsage(
+          keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
+          isCritical: false
+        )
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 

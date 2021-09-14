@@ -2,7 +2,7 @@
 //  CertificateBuilder.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -33,12 +33,17 @@ public extension Certificate {
     let notAfter: AnyTime?
     let extensions: Extensions?
 
-    public init(serialNumber: TBSCertificate.SerialNumber? = nil,
-                issuer: Name? = nil, issuerUniqueID: TBSCertificate.UniqueIdentifier? = nil,
-                subject: Name? = nil, subjectUniqueID: TBSCertificate.UniqueIdentifier? = nil,
-                subjectPublicKeyInfo: SubjectPublicKeyInfo? = nil,
-                notBefore: AnyTime? = nil, notAfter: AnyTime? = nil,
-                extensions: Extensions? = nil) {
+    public init(
+      serialNumber: TBSCertificate.SerialNumber? = nil,
+      issuer: Name? = nil,
+      issuerUniqueID: TBSCertificate.UniqueIdentifier? = nil,
+      subject: Name? = nil,
+      subjectUniqueID: TBSCertificate.UniqueIdentifier? = nil,
+      subjectPublicKeyInfo: SubjectPublicKeyInfo? = nil,
+      notBefore: AnyTime? = nil,
+      notAfter: AnyTime? = nil,
+      extensions: Extensions? = nil
+    ) {
       self.serialNumber = serialNumber
       self.issuer = issuer
       self.issuerUniqueID = issuerUniqueID
@@ -63,24 +68,45 @@ public extension Certificate {
         extensions = currentExtensions
       }
 
-      return Builder(serialNumber: serialNumber,
-                     issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: reqInfo.subject, subjectUniqueID: subjectUniqueID,
-                     subjectPublicKeyInfo: reqInfo.subjectPKInfo,
-                     notBefore: notBefore, notAfter: notAfter,
-                     extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: reqInfo.subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: reqInfo.subjectPKInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func serialNumber(_ serialNumber: TBSCertificate.SerialNumber) -> Builder {
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func issuer(name issuer: Name, uniqueID issuerUniqueID: TBSCertificate.UniqueIdentifier? = nil) -> Builder {
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func addIssuerAlternativeNames(names: GeneralName...) throws -> Builder {
@@ -89,9 +115,17 @@ public extension Certificate {
       let currentNames = try extensions.first(IssuerAltName.self)?.names ?? []
       try extensions.replace(value: IssuerAltName(names: currentNames + names))
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func issuerAlternativeNames(names: GeneralName...) throws -> Builder {
@@ -99,22 +133,48 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       try extensions.replace(value: IssuerAltName(names: names))
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
-    public func subject(name subject: Name,
-                        uniqueID subjectUniqueID: TBSCertificate.UniqueIdentifier? = nil) throws -> Builder {
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+    public func subject(
+      name subject: Name,
+      uniqueID subjectUniqueID: TBSCertificate.UniqueIdentifier? = nil
+    ) throws -> Builder {
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func subjectUniqueID(_ subjectUniqueID: TBSCertificate.UniqueIdentifier) -> Builder {
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func addSubjectAlternativeNames(names: GeneralName...) throws -> Builder {
@@ -123,9 +183,17 @@ public extension Certificate {
       let currentNames = try extensions.first(SubjectAltName.self)?.names ?? []
       try extensions.replace(value: SubjectAltName(names: currentNames + names))
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func subjectAlternativeNames(names: GeneralName...) throws -> Builder {
@@ -133,14 +201,24 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       try extensions.replace(value: SubjectAltName(names: names))
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
-    public func publicKey(_ publicKey: Data,
-                          algorithm: AlgorithmIdentifier,
-                          usage keyUsage: KeyUsage? = nil) throws -> Builder {
+    public func publicKey(
+      _ publicKey: Data,
+      algorithm: AlgorithmIdentifier,
+      usage keyUsage: KeyUsage? = nil
+    ) throws -> Builder {
 
       var extensions = self.extensions
       if let keyUsage = keyUsage {
@@ -150,9 +228,17 @@ public extension Certificate {
 
       let subjectPublicKeyInfo = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func extendedKeyUsage(keyPurposes: Set<OID>, isCritical: Bool) throws -> Builder {
@@ -181,13 +267,17 @@ public extension Certificate {
       return try addExtension(value: SubjectKeyIdentifier(value: value))
     }
 
-    public func authorityKeyIdentifier(_ value: KeyIdentifier,
-                                       certIssuer: GeneralNames? = nil,
-                                       certSerialNumber: TBSCertificate.SerialNumber? = nil) throws -> Builder {
+    public func authorityKeyIdentifier(
+      _ value: KeyIdentifier,
+      certIssuer: GeneralNames? = nil,
+      certSerialNumber: TBSCertificate.SerialNumber? = nil
+    ) throws -> Builder {
 
-      return try addExtension(value: AuthorityKeyIdentifier(keyIdentifier: value,
-                                                            authorityCertIssuer: certIssuer,
-                                                            authorityCertSerialNumber: certSerialNumber))
+      return try addExtension(value: AuthorityKeyIdentifier(
+        keyIdentifier: value,
+        authorityCertIssuer: certIssuer,
+        authorityCertSerialNumber: certSerialNumber
+      ))
     }
 
     public func addExtension<Value>(value: Value, isCritical: Bool) throws -> Builder where Value: ExtensionValue {
@@ -195,9 +285,17 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       try extensions.append(value: value, isCritical: isCritical)
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func addExtension<Value>(value: Value) throws -> Builder where Value: CriticalExtensionValue {
@@ -205,9 +303,17 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       try extensions.append(value: value)
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func addExtension<Value>(value: Value) throws -> Builder where Value: NonCriticalExtensionValue {
@@ -215,9 +321,17 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       try extensions.append(value: value)
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func addExtension(_ ext: Extension) throws -> Builder {
@@ -225,22 +339,46 @@ public extension Certificate {
       var extensions = self.extensions ?? Extensions()
       extensions.append(ext)
 
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: notAfter, extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: notAfter,
+        extensions: extensions
+      )
     }
 
     public func valid(from: Date = Date(), to: Date) -> Builder {
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: time(of: from), notAfter: time(of: to), extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: time(of: from),
+        notAfter: time(of: to),
+        extensions: extensions
+      )
     }
 
     public func valid(for timeInterval: TimeInterval) -> Builder {
       let validityEnd = Date().addingTimeInterval(timeInterval)
-      return Builder(serialNumber: serialNumber, issuer: issuer, issuerUniqueID: issuerUniqueID,
-                     subject: subject, subjectUniqueID: subjectUniqueID, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                     notBefore: notBefore, notAfter: time(of: validityEnd), extensions: extensions)
+      return Builder(
+        serialNumber: serialNumber,
+        issuer: issuer,
+        issuerUniqueID: issuerUniqueID,
+        subject: subject,
+        subjectUniqueID: subjectUniqueID,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        notBefore: notBefore,
+        notAfter: time(of: validityEnd),
+        extensions: extensions
+      )
     }
 
     public func buildInfo(signatureAlgorithm: AlgorithmIdentifier) throws -> TBSCertificate {
@@ -251,12 +389,18 @@ public extension Certificate {
       let serialNumber = try self.serialNumber ?? Self.randomSerialNumber()
       let notBefore = self.notBefore ?? time(of: Date().addingTimeInterval(-Self.defaultValidityBeforeAllowance))
       let version = recommendedVersion
-      return TBSCertificate(version: version, serialNumber: serialNumber, signature: signatureAlgorithm,
-                            issuer: issuer,
-                            validity: .init(notBefore: notBefore, notAfter: notAfter),
-                            subject: subject, subjectPublicKeyInfo: subjectPublicKeyInfo,
-                            issuerUniqueID: issuerUniqueID, subjectUniqueID: subjectUniqueID,
-                            extensions: extensions)
+      return TBSCertificate(
+        version: version,
+        serialNumber: serialNumber,
+        signature: signatureAlgorithm,
+        issuer: issuer,
+        validity: .init(notBefore: notBefore, notAfter: notAfter),
+        subject: subject,
+        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        issuerUniqueID: issuerUniqueID,
+        subjectUniqueID: subjectUniqueID,
+        extensions: extensions
+      )
     }
 
     private var recommendedVersion: TBSCertificate.Version {

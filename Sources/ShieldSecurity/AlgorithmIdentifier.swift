@@ -2,18 +2,18 @@
 //  AlgorithmIdentifier.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
+import PotentASN1
 import ShieldCrypto
 import ShieldOID
-import ShieldX509
 import ShieldPKCS
-import PotentASN1
+import ShieldX509
 
 public extension AlgorithmIdentifier {
 
@@ -68,7 +68,7 @@ public extension AlgorithmIdentifier {
     switch try publicKey.keyType() {
     case .rsa:
       self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid)
-      
+
     case .ec:
       let curve: OID
       switch try publicKey.attributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
@@ -87,9 +87,11 @@ public extension AlgorithmIdentifier {
       default:
         throw Error.unsupportedECKeySize
       }
-      
-      self.init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
-                parameters: .objectIdentifier(curve.fields))
+
+      self.init(
+        algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
+        parameters: .objectIdentifier(curve.fields)
+      )
     }
   }
 

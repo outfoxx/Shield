@@ -2,7 +2,7 @@
 //  Extensions.swift
 //  Shield
 //
-//  Copyright © 2019 Outfox, inc.
+//  Copyright © 2021 Outfox, inc.
 //
 //
 //  Distributed under the MIT License, See LICENSE for details.
@@ -30,19 +30,19 @@ public struct Extension: Equatable, Hashable, Codable {
   public init<Value: ExtensionValue>(value: Value, critical: Bool) throws {
     extnID = Value.extensionID
     self.critical = critical
-    self.extnValue = try ASN1Encoder.encode(value)
+    extnValue = try ASN1Encoder.encode(value)
   }
 
   public init<Value: CriticalExtensionValue>(value: Value) throws {
     extnID = Value.extensionID
-    self.critical = true
-    self.extnValue = try ASN1Encoder.encode(value)
+    critical = true
+    extnValue = try ASN1Encoder.encode(value)
   }
 
   public init<Value: NonCriticalExtensionValue>(value: Value) throws {
     extnID = Value.extensionID
-    self.critical = false
-    self.extnValue = try ASN1Encoder.encode(value)
+    critical = false
+    extnValue = try ASN1Encoder.encode(value)
   }
 }
 
@@ -157,9 +157,9 @@ public extension Schemas {
 
 // MARK: Extensions Conformances
 
-extension Extensions {
+public extension Extensions {
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     var container = try decoder.unkeyedContainer()
     var extensions: [Extension] = []
     for _ in 0 ..< (container.count ?? 0) {
@@ -168,32 +168,30 @@ extension Extensions {
     storage = extensions
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.unkeyedContainer()
-    for extension_ in storage {
-      try container.encode(extension_)
-    }
+    try storage.forEach { try container.encode($0) }
   }
 
 }
 
 
-extension Extensions {
+public extension Extensions {
 
-  public typealias Index = Array<Extension>.Index
-  public typealias Iterator = Array<Extension>.Iterator
+  typealias Index = Array<Extension>.Index
+  typealias Iterator = Array<Extension>.Iterator
 
-  public var startIndex: Index { storage.startIndex }
-  public var endIndex: Index { storage.endIndex }
+  var startIndex: Index { storage.startIndex }
+  var endIndex: Index { storage.endIndex }
 
-  public __consuming func makeIterator() -> Iterator {
+  __consuming func makeIterator() -> Iterator {
     return storage.makeIterator()
   }
 
-  public init(arrayLiteral elements: Extension...) {
+  init(arrayLiteral elements: Extension...) {
     storage = elements
   }
 
-  public subscript(position: Index) -> Extension { storage[position] }
+  subscript(position: Index) -> Extension { storage[position] }
 
 }
