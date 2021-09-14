@@ -13,16 +13,27 @@ import XCTest
 
 class SecKeyTests: ParameterizedTestCase {
 
-  static let keyPairs: [SecKeyPair] = [
-    try! SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test"), // swiftlint:disable:this force_try
-    try! SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test"),   // swiftlint:disable:this force_try
-  ]
+  static let rsaKeyPair: SecKeyPair = {
+    do {
+      return try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    } catch {
+      fatalError("Failed to generate key pair:\n\(error)")
+    }
+  }()
+
+  static let ecKeyPair: SecKeyPair = {
+    do {
+      return try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
+    } catch {
+      fatalError("Failed to generate key pair:\n\(error)")
+    }
+  }()
 
   override class func tearDown() {
     parameterSets.forEach { try? ($0 as? SecKeyPair)?.delete() }
   }
 
-  override class var parameterSets: [Any] { keyPairs }
+  override class var parameterSets: [Any] { [rsaKeyPair, ecKeyPair] }
 
   private var keyPair: SecKeyPair!
 
