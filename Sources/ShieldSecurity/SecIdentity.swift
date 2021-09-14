@@ -35,7 +35,7 @@ public extension SecIdentity {
     do {
       try privateKey.save()
     }
-    catch SecKeyError.saveDuplicate {
+    catch SecKey.Error.saveDuplicate {
       // Allowable...
     }
     catch {

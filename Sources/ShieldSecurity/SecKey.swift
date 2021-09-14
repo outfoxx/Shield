@@ -12,38 +12,8 @@ import Foundation
 import ShieldCrypto
 
 
-public enum SecKeyError: Int, Error {
-
-  case queryFailed
-  case decryptionFailed
-  case encryptionFailed
-  case signFailed
-  case verifyFailed
-  case importFailed
-  case exportFailed
-  case saveFailed
-  case saveDuplicate
-  case deleteFailed
-  case invalidOperation
-  case noAttributes
-  case persistFailed
-  case loadFailed
-
-  public static func build(error: SecKeyError, message: String, status: OSStatus) -> NSError {
-    let error = error as NSError
-    return NSError(
-      domain: error.domain,
-      code: error.code,
-      userInfo: [NSLocalizedDescriptionKey: message, "status": Int(status) as NSNumber]
-    )
-  }
-
-  public var status: OSStatus? {
-    return (self as NSError).userInfo["status"] as? OSStatus
-  }
-
-}
-
+@available(*, deprecated, message: "Use SecKey.Error instead")
+public typealias SecKeyError = SecKey.Error
 
 public enum SecEncryptionPadding {
   case pkcs1
@@ -57,6 +27,39 @@ private let maxSignatureBufferLen = 512
 
 public extension SecKey {
 
+  enum Error: Int, Swift.Error {
+
+    case queryFailed
+    case decryptionFailed
+    case encryptionFailed
+    case signFailed
+    case verifyFailed
+    case importFailed
+    case exportFailed
+    case saveFailed
+    case saveDuplicate
+    case deleteFailed
+    case invalidOperation
+    case noAttributes
+    case persistFailed
+    case loadFailed
+
+    public static func build(error: Error, message: String, status: OSStatus) -> NSError {
+      let error = error as NSError
+      return NSError(
+        domain: error.domain,
+        code: error.code,
+        userInfo: [NSLocalizedDescriptionKey: message, "status": Int(status) as NSNumber]
+      )
+    }
+
+    public var status: OSStatus? {
+      return (self as NSError).userInfo["status"] as? OSStatus
+    }
+
+  }
+
+
   func persistentReference() throws -> Data {
 
     let query: [String: Any] = [
@@ -67,10 +70,10 @@ public extension SecKey {
     var ref: CFTypeRef?
     let status = SecItemCopyMatching(query as CFDictionary, &ref)
     if status != errSecSuccess {
-      throw SecKeyError.build(error: .queryFailed, message: "Unable to locate transient reference", status: status)
+      throw Error.build(error: .queryFailed, message: "Unable to locate transient reference", status: status)
     }
     guard let refData = ref as? Data else {
-      throw SecKeyError.persistFailed
+      throw Error.persistFailed
     }
     return refData
   }
@@ -85,10 +88,10 @@ public extension SecKey {
     var ref: CFTypeRef?
     let status = SecItemCopyMatching(query as CFDictionary, &ref)
     if status != errSecSuccess {
-      throw SecKeyError.build(error: .queryFailed, message: "Unable to load persistent reference", status: status)
+      throw Error.build(error: .queryFailed, message: "Unable to load persistent reference", status: status)
     }
     guard ref != nil else {
-      throw SecKeyError.loadFailed
+      throw Error.loadFailed
     }
     return ref as! SecKey // swiftlint:disable:this force_cast
   }
@@ -124,7 +127,7 @@ public extension SecKey {
   func attributes() throws -> [String: Any] {
 
     guard let attrs = SecKeyCopyAttributes(self) as? [String: Any] else {
-      throw SecKeyError.noAttributes
+      throw Error.noAttributes
     }
 
     return attrs
@@ -167,10 +170,10 @@ public extension SecKey {
     let status = SecItemAdd(query as CFDictionary, nil)
 
     if status == errSecDuplicateItem {
-      throw SecKeyError.saveDuplicate
+      throw Error.saveDuplicate
     }
     else if status != errSecSuccess {
-      throw SecKeyError.build(error: .saveFailed, message: "Item add failed", status: status)
+      throw Error.build(error: .saveFailed, message: "Item add failed", status: status)
     }
 
   }
@@ -189,7 +192,7 @@ public extension SecKey {
 
     let status = SecItemDelete(query as CFDictionary)
     if status != errSecSuccess {
-      throw SecKeyError.deleteFailed
+      throw Error.deleteFailed
     }
   }
 
@@ -203,7 +206,7 @@ public extension SecKey {
   func encrypt(plainText: Data, padding: SecEncryptionPadding) throws -> Data {
 
     guard try keyType() == .rsa else {
-      throw SecKeyError.invalidOperation
+      throw Error.invalidOperation
     }
 
     let algorithm: SecKeyAlgorithm
@@ -234,7 +237,7 @@ public extension SecKey {
         throw error.takeRetainedValue()
       }
       else {
-        throw SecKeyError.decryptionFailed
+        throw Error.decryptionFailed
       }
     }
 
@@ -251,7 +254,7 @@ public extension SecKey {
   func decrypt(cipherText: Data, padding: SecEncryptionPadding) throws -> Data {
 
     guard try keyType() == .rsa else {
-      throw SecKeyError.invalidOperation
+      throw Error.invalidOperation
     }
 
     let algorithm: SecKeyAlgorithm
@@ -282,7 +285,7 @@ public extension SecKey {
         throw error.takeRetainedValue()
       }
       else {
-        throw SecKeyError.decryptionFailed
+        throw Error.decryptionFailed
       }
     }
 
@@ -388,7 +391,7 @@ public extension SecKey {
   ///   - digestAlgorithm: `SHA` algorithm with which to generate digest of `data`
   /// - Returns: The signature over `data`
   func verify(data: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
-    var error: Error?
+    var error: Swift.Error?
     return try verify(data: data, againstSignature: signature, digestAlgorithm: digestAlgorithm, failureReason: &error)
   }
 
@@ -404,7 +407,7 @@ public extension SecKey {
     data: Data,
     againstSignature signature: Data,
     digestAlgorithm: Digester.Algorithm,
-    failureReason: inout Error?
+    failureReason: inout Swift.Error?
   ) throws -> Bool {
 
     let digest = Digester.digest(data, using: digestAlgorithm)
@@ -425,7 +428,7 @@ public extension SecKey {
   ///   - digestAlgorithm: `SHA` algorithm that was used to generate `digest`
   /// - Returns: True if signature could be verified, false otherwise
   func verifyHash(digest: Data, againstSignature signature: Data, digestAlgorithm: Digester.Algorithm) throws -> Bool {
-    var error: Error?
+    var error: Swift.Error?
     return try verifyHash(
       digest: digest,
       againstSignature: signature,
@@ -446,7 +449,7 @@ public extension SecKey {
     digest: Data,
     againstSignature signature: Data,
     digestAlgorithm: Digester.Algorithm,
-    failureReason: inout Error?
+    failureReason: inout Swift.Error?
   ) throws -> Bool {
     let digestType: SecKeyAlgorithm
 
@@ -506,7 +509,7 @@ public extension SecKey {
   ///   - failureReason: Error describing the reason for verification failure
   /// - Returns: The signature over `data`
   func verify(data: Data, againstSignature signature: Data, algorithm: SecKeyAlgorithm) throws -> Bool {
-    var error: Error?
+    var error: Swift.Error?
     return try verify(data: data, againstSignature: signature, algorithm: algorithm, failureReason: &error)
   }
 
@@ -521,7 +524,7 @@ public extension SecKey {
     data: Data,
     againstSignature signature: Data,
     algorithm: SecKeyAlgorithm,
-    failureReason: inout Error?
+    failureReason: inout Swift.Error?
   ) throws -> Bool {
 
     var error: Unmanaged<CFError>?
@@ -529,7 +532,7 @@ public extension SecKey {
     let result = SecKeyVerifySignature(self, algorithm, data as CFData, signature as CFData, &error)
 
     if let error = error {
-      failureReason = error.takeRetainedValue() as Error
+      failureReason = error.takeRetainedValue() as Swift.Error
     }
 
     return result

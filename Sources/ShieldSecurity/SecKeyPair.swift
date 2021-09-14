@@ -20,11 +20,25 @@ public struct SecKeyPair {
   public static let exportDerivedKeyLengthDefault = 32
   public static let exportKeyDerivationTimingDefault = TimeInterval(0.5)
 
-  public enum Error: Swift.Error {
+  public enum Error: Int, Swift.Error {
     case generateFailed
     case noMatchingKey
     case itemAddFailed
     case itemDeleteFailed
+
+    public static func build(error: Error, message: String, status: OSStatus) -> NSError {
+      let error = error as NSError
+      return NSError(
+        domain: error.domain,
+        code: error.code,
+        userInfo: [NSLocalizedDescriptionKey: message, "status": Int(status) as NSNumber]
+      )
+    }
+
+    public var status: OSStatus? {
+      return (self as NSError).userInfo["status"] as? OSStatus
+    }
+
   }
 
 

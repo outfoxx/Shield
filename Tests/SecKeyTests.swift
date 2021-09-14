@@ -16,16 +16,18 @@ class SecKeyTests: ParameterizedTestCase {
   static let rsaKeyPair: SecKeyPair = {
     do {
       return try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
-    } catch {
-      fatalError("Failed to generate key pair:\n\(error)")
+    }
+    catch {
+      fatalError("Failed to generate key pair: \(error)")
     }
   }()
 
   static let ecKeyPair: SecKeyPair = {
     do {
       return try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
-    } catch {
-      fatalError("Failed to generate key pair:\n\(error)")
+    }
+    catch {
+      fatalError("Failed to generate key pair: \(error)")
     }
   }()
 
