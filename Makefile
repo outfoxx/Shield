@@ -23,13 +23,13 @@ endef
 generate-project:
 	xcodegen
 
-build-test-macOS:
+build-test-macos:
 	$(call buildtestpkg,macOS,platform=macOS)
 
-build-test-iOS: generate-project
+build-test-ios: generate-project
 	$(call buildtestprj,iOS,name=iPhone 8)
 
-build-test-tvOS: generate-project
+build-test-tvos: generate-project
 	$(call buildtestprj,tvOS,name=Apple TV)
 
 format:	
