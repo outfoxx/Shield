@@ -8,7 +8,6 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
-import BigInt
 import PotentASN1
 @testable import Shield
 import ShieldOID
@@ -187,7 +186,7 @@ class CertificateBuilderRSATests: XCTestCase {
         .authorityKeyIdentifier(
           Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
           certIssuer: [.dnsName("github.com/outfoxx/Shield/CA")],
-          certSerialNumber: Integer(sign: .plus, magnitude: BigUInt(Random.generate(count: 19)))
+          certSerialNumber: Integer(sign: .plus, magnitude: .randomInteger(withExactWidth: 19 * 8))
         )
         .computeSubjectKeyIdentifier()
         .valid(for: 86400 * 365)

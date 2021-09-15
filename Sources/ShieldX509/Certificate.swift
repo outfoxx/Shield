@@ -8,7 +8,6 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
-import BigInt
 import Foundation
 import PotentASN1
 import ShieldX500
