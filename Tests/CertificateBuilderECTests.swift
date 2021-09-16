@@ -186,7 +186,7 @@ class CertificateBuilderECTests: XCTestCase {
         .authorityKeyIdentifier(
           Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
           certIssuer: [.dnsName("github.com/outfoxx/Shield/CA")],
-          certSerialNumber: Integer(sign: .plus, magnitude: .randomInteger(withExactWidth: 19 * 8))
+          certSerialNumber: Certificate.Builder.randomSerialNumber()
         )
         .computeSubjectKeyIdentifier()
         .valid(for: 86400 * 365)
