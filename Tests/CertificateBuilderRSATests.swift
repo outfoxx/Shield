@@ -215,7 +215,7 @@ class CertificateBuilderRSATests: XCTestCase {
     let csr = try ASN1Decoder.decode(CertificationRequest.self, from: csrData)
     output(csr)
 
-    XCTAssertNil(try csr.certificationRequestInfo.attributes.first(Extensions.self))
+    XCTAssertNil(try csr.certificationRequestInfo.attributes?.first(Extensions.self))
 
     let cert =
       try Certificate.Builder()
@@ -248,7 +248,7 @@ class CertificateBuilderRSATests: XCTestCase {
     let csr = try ASN1Decoder.decode(CertificationRequest.self, from: csrData)
     output(csr)
 
-    XCTAssertNotNil(try csr.certificationRequestInfo.attributes.first(Extensions.self))
+    XCTAssertNotNil(try csr.certificationRequestInfo.attributes?.first(Extensions.self))
 
     let cert =
       try Certificate.Builder()

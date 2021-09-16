@@ -106,7 +106,6 @@ public extension CertificationRequest {
     public func buildInfo() throws -> CertificationRequestInfo {
       guard let subject = self.subject else { throw Error.missingParameter("subject") }
       guard let subjectPKInfo = self.subjectPKInfo else { throw Error.missingParameter("subjectPKInfo") }
-      let attributes = self.attributes ?? CRAttributes()
       return CertificationRequestInfo(
         version: .v1,
         subject: subject,

@@ -62,7 +62,7 @@ public extension Certificate {
     public func request(_ reqInfo: CertificationRequestInfo) throws -> Builder {
 
       var extensions: Extensions?
-      if let requestExtensions = try reqInfo.attributes.first(Extensions.self) {
+      if let requestExtensions = try reqInfo.attributes?.first(Extensions.self) {
         var currentExtensions = self.extensions ?? Extensions()
         currentExtensions.replaceAll(requestExtensions)
         extensions = currentExtensions
@@ -420,7 +420,7 @@ public extension Certificate {
     public static func randomSerialNumber() throws -> Integer {
       var data = (0 ..< 20).map { _ in UInt8.random(in: 0 ... UInt8.max) } // max is 20 octets
       data[0] &= 0x7F // must be non-negative
-      return Integer(Data(data))
+      return Integer(serialized: Data(data))
     }
 
   }

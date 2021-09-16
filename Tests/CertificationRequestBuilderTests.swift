@@ -47,9 +47,9 @@ class CertificationRequestBuilderTests: XCTestCase {
     XCTAssertEqual(csr, csr2)
 
     let csrAttrs = csr.certificationRequestInfo.attributes
-    XCTAssertEqual(try csrAttrs.first(Extensions.self)?.first(KeyUsage.self), [.keyCertSign, .cRLSign])
+    XCTAssertEqual(try csrAttrs?.first(Extensions.self)?.first(KeyUsage.self), [.keyCertSign, .cRLSign])
     XCTAssertEqual(
-      try csrAttrs.first(Extensions.self)?.first(SubjectAltName.self),
+      try csrAttrs?.first(Extensions.self)?.first(SubjectAltName.self),
       .init(names: [.dnsName("outfoxx.io")])
     )
   }
