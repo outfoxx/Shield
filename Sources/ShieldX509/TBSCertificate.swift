@@ -103,6 +103,11 @@ public extension Schemas {
     iso.memberBody.us.rsadsi.pkcs.pkcs1.sha256WithRSAEncryption.asn1: .optional(.null),
     iso.memberBody.us.rsadsi.pkcs.pkcs1.sha384WithRSAEncryption.asn1: .optional(.null),
     iso.memberBody.us.rsadsi.pkcs.pkcs1.sha512WithRSAEncryption.asn1: .optional(.null),
+    iso.memberBody.us.ansix962.signatures.ecdsaWithSHA1.asn1: .null,
+    iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA224.asn1: .nothing,
+    iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA256.asn1: .nothing,
+    iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA384.asn1: .nothing,
+    iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA512.asn1: .nothing,
   ]
 
   static let TBSCertificate: Schema =
