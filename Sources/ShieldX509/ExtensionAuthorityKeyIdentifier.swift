@@ -27,6 +27,7 @@ public struct AuthorityKeyIdentifier: Equatable, Hashable, Codable, NonCriticalE
     authorityCertIssuer: GeneralNames? = nil,
     authorityCertSerialNumber: TBSCertificate.SerialNumber? = nil
   ) {
+    precondition(authorityCertSerialNumber?.sign != .minus)
     self.keyIdentifier = keyIdentifier
     self.authorityCertIssuer = authorityCertIssuer
     self.authorityCertSerialNumber = authorityCertSerialNumber
