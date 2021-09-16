@@ -21,6 +21,12 @@ public struct AlgorithmIdentifier: Equatable, Hashable, Codable {
     self.algorithm = algorithm
     self.parameters = parameters
   }
+    
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    algorithm = try container.decode(ObjectIdentifier.self, forKey: .algorithm)
+    parameters = try container.decodeIfPresent(ASN1.self, forKey: .parameters) ?? .null
+  }
 
 }
 
