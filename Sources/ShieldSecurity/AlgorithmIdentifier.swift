@@ -61,13 +61,13 @@ public extension AlgorithmIdentifier {
       }
     }
 
-    self.init(algorithm: signingAlgorithmID)
+    self.init(algorithm: signingAlgorithmID, parameters: nil)
   }
 
   init(publicKey: SecKey) throws {
     switch try publicKey.keyType() {
     case .rsa:
-      self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid)
+      self.init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid, parameters: nil)
 
     case .ec:
       let curve: OID
