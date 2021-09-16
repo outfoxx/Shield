@@ -22,9 +22,9 @@ public struct CertificationRequestInfo: Equatable, Hashable, Codable {
   public var version: Version
   public var subject: Name
   public var subjectPKInfo: SubjectPublicKeyInfo
-  public var attributes: CRAttributes
+  public var attributes: CRAttributes?
 
-  public init(version: Version, subject: Name, subjectPKInfo: SubjectPublicKeyInfo, attributes: CRAttributes) {
+  public init(version: Version, subject: Name, subjectPKInfo: SubjectPublicKeyInfo, attributes: CRAttributes?) {
     self.version = version
     self.subject = subject
     self.subjectPKInfo = subjectPKInfo
@@ -56,7 +56,7 @@ public extension Schemas {
       "version": .version(.integer(allowed: 0 ..< 1)),
       "subject": Name,
       "subjectPKInfo": SubjectPublicKeyInfo,
-      "attributes": .implicit(0, attributes(CRIAttributes)),
+      "attributes": .optional(.implicit(0, attributes(CRIAttributes))),
     ])
 
 }
