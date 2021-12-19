@@ -1,5 +1,5 @@
 //
-//  ExtentionValue.swift
+//  ExtensionValue.swift
 //  Shield
 //
 //  Copyright © 2021 Outfox, inc.
