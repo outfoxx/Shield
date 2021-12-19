@@ -110,6 +110,10 @@ public extension Certificate {
     }
 
     public func addIssuerAlternativeNames(names: GeneralName...) throws -> Builder {
+      return try addIssuerAlternativeNames(names: names)
+    }
+
+    public func addIssuerAlternativeNames(names: GeneralNames) throws -> Builder {
 
       var extensions = self.extensions ?? Extensions()
       let currentNames = try extensions.first(IssuerAltName.self)?.names ?? []
@@ -129,6 +133,10 @@ public extension Certificate {
     }
 
     public func issuerAlternativeNames(names: GeneralName...) throws -> Builder {
+      return try issuerAlternativeNames(names: names)
+    }
+
+    public func issuerAlternativeNames(names: GeneralNames) throws -> Builder {
 
       var extensions = self.extensions ?? Extensions()
       try extensions.replace(value: IssuerAltName(names: names))
@@ -178,6 +186,10 @@ public extension Certificate {
     }
 
     public func addSubjectAlternativeNames(names: GeneralName...) throws -> Builder {
+      return try addSubjectAlternativeNames(names: names)
+    }
+
+    public func addSubjectAlternativeNames(names: GeneralNames) throws -> Builder {
 
       var extensions = self.extensions ?? Extensions()
       let currentNames = try extensions.first(SubjectAltName.self)?.names ?? []
@@ -197,7 +209,10 @@ public extension Certificate {
     }
 
     public func subjectAlternativeNames(names: GeneralName...) throws -> Builder {
+      return try subjectAlternativeNames(names: names)
+    }
 
+    public func subjectAlternativeNames(names: GeneralNames) throws -> Builder {
       var extensions = self.extensions ?? Extensions()
       try extensions.replace(value: SubjectAltName(names: names))
 
