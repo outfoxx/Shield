@@ -38,7 +38,7 @@ public extension CertificationRequest {
       return try addAlternativeNames(names: names)
     }
 
-    public func addAlternativeNames(names: [GeneralName]) throws -> Builder {
+    public func addAlternativeNames(names: GeneralNames) throws -> Builder {
 
       var attributes = self.attributes ?? CRAttributes()
       var extensions = try attributes.first(Extensions.self) ?? Extensions()
@@ -55,7 +55,7 @@ public extension CertificationRequest {
       return try alternativeNames(names: names)
     }
 
-    public func alternativeNames(names: [GeneralName]) throws -> Builder {
+    public func alternativeNames(names: GeneralNames) throws -> Builder {
 
       var attributes = self.attributes ?? CRAttributes()
       var extensions = try attributes.first(Extensions.self) ?? Extensions()
