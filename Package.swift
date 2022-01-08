@@ -30,22 +30,22 @@ let package = Package(
     ),
     .target(
       name: "ShieldX500",
-      dependencies: ["ShieldOID"]
+      dependencies: ["ShieldOID", "PotentCodables"]
     ),
     .target(
       name: "ShieldPKCS",
-      dependencies: ["ShieldX500"]
+      dependencies: ["ShieldX500", "PotentCodables"]
     ),
     .target(
       name: "ShieldX509",
-      dependencies: ["ShieldX500", "ShieldPKCS"]
+      dependencies: ["ShieldCrypto", "ShieldX500", "ShieldOID", "ShieldPKCS", "PotentCodables"]
     ),
     .target(
       name: "ShieldCrypto"
     ),
     .target(
       name: "ShieldSecurity",
-      dependencies: ["ShieldX509", "Regex"]
+      dependencies: ["ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX500", "ShieldX509", "PotentCodables", "Regex"]
     ),
     .testTarget(
       name: "ShieldTests",
