@@ -36,7 +36,43 @@ class CertificationRequestBuilderTests: XCTestCase {
     let csr =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
-        .alternativeNames(names: .dnsName("outfoxx.io"))
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .extendedKeyUsage(keyPurposes: [keyPurpose.clientAuth.oid, keyPurpose.serverAuth.oid], isCritical: true)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+
+    output(csr)
+
+
+    let csr2 = try ASN1Decoder.decode(CertificationRequest.self, from: csr.encoded())
+    XCTAssertEqual(csr, csr2)
+
+    let csrAttrs = csr.certificationRequestInfo.attributes
+    XCTAssertEqual(try csrAttrs?.first(Extensions.self)?.first(KeyUsage.self), [.keyCertSign, .cRLSign])
+  }
+
+  func testSANs() throws {
+
+    let dirName = NameBuilder()
+      .add("123", forType: iso_itu.ds.attributeType.title.oid)
+      .name
+
+    let sans: [GeneralName] = [
+      .otherName(OtherName(typeId: [1, 3, 6, 1, 4, 1, 311, 20, 2, 3], value: .utf8String("123"))),
+      .rfc822Name("test@example.com"),
+      .dnsName("outfoxx.io"),
+      .directoryName(dirName),
+      .ediPartyName(EDIPartyName(nameAssigner: "test", partyName: "example")),
+      .uniformResourceIdentifier("https://example.com"),
+      .ipAddress(Data([1, 2, 3, 4])),
+      .ipAddress(Data([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160])),
+      .registeredID(iso_itu.ds.attributeType.title.oid),
+    ]
+
+    let keyPurpose = iso.org.dod.internet.security.mechanisms.pkix.kp.self
+    let csr =
+      try CertificationRequest.Builder()
+        .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
+        .alternativeNames(names: sans)
         .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
         .extendedKeyUsage(keyPurposes: [keyPurpose.clientAuth.oid, keyPurpose.serverAuth.oid], isCritical: true)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
@@ -46,12 +82,10 @@ class CertificationRequestBuilderTests: XCTestCase {
     let csr2 = try ASN1Decoder.decode(CertificationRequest.self, from: csr.encoded())
     XCTAssertEqual(csr, csr2)
 
-    let csrAttrs = csr.certificationRequestInfo.attributes
-    XCTAssertEqual(try csrAttrs?.first(Extensions.self)?.first(KeyUsage.self), [.keyCertSign, .cRLSign])
-    XCTAssertEqual(
-      try csrAttrs?.first(Extensions.self)?.first(SubjectAltName.self),
-      .init(names: [.dnsName("outfoxx.io")])
-    )
+    let csrExts = try csr.certificationRequestInfo.attributes?.first(Extensions.self)
+
+    let csrSANs = try csrExts?.first(SubjectAltName.self)
+    XCTAssertEqual(csrSANs?.names, sans)
   }
 
   func output(_ value: Encodable & SchemaSpecified) {
