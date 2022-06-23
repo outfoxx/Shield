@@ -14,8 +14,13 @@ import ShieldX500
 
 
 public struct EDIPartyName: Equatable, Hashable, Codable {
-  public var nameAssigner: DirectoryName?
-  public var partyName: DirectoryName
+  public var nameAssigner: AnyString?
+  public var partyName: AnyString
+
+  public init(nameAssigner: AnyString? = nil, partyName: AnyString) {
+    self.nameAssigner = nameAssigner
+    self.partyName = partyName
+  }
 }
 
 
@@ -26,8 +31,8 @@ public extension Schemas {
 
   static let EDIPartyName: Schema =
     .sequence([
-      "nameAssigner": .implicit(0, .optional(directoryString())),
-      "value": .implicit(1, directoryString()),
+      "nameAssigner": .explicit(0, .optional(directoryString())),
+      "partyName": .explicit(1, directoryString()),
     ])
 
 }
