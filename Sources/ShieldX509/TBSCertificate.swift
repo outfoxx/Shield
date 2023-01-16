@@ -23,7 +23,7 @@ public struct TBSCertificate: Equatable, Hashable, Codable {
     case v3 = 2
   }
 
-  public typealias SerialNumber = Integer
+  public typealias SerialNumber = ASN1.Integer
 
   public struct Validity: Equatable, Hashable, Codable {
 
@@ -52,7 +52,7 @@ public struct TBSCertificate: Equatable, Hashable, Codable {
 
   public init(
     version: Version,
-    serialNumber: Integer,
+    serialNumber: ASN1.Integer,
     signature: AlgorithmIdentifier,
     issuer: Name,
     validity: Validity,

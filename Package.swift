@@ -1,14 +1,14 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.3
 
 import PackageDescription
 
 let package = Package(
   name: "Shield",
   platforms: [
-    .iOS("10.0"),
-    .macOS("10.12"),
-    .watchOS("3.0"),
-    .tvOS("10.0"),
+    .iOS(.v14),
+    .macOS(.v11),
+    .watchOS(.v7),
+    .tvOS(.v14),
   ],
   products: [
     .library(
@@ -16,7 +16,7 @@ let package = Package(
       targets: ["Shield", "ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "2.3.0"),
+    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "2.4.1"),
     .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0")
   ],
   targets: [

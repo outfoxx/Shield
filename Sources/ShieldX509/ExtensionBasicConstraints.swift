@@ -36,7 +36,7 @@ public extension Schemas {
   static let BasicConstraints: Schema =
     .sequence([
       "ca": .boolean(default: false),
-      "pathLenConstraint": .integer(allowed: 0 ..< Int.max),
+      "pathLenConstraint": .integer(allowed: 0 ..< ASN1.Integer(Int.max)),
     ])
 
 }

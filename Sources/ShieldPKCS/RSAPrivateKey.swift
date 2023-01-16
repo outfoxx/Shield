@@ -20,20 +20,20 @@ public struct RSAPrivateKey: Equatable, Hashable, Codable {
   }
 
   public struct OtherPrimeInfo: Equatable, Hashable, Codable {
-    public var prime: Integer
-    public var exponent: Integer
-    public var coefficient: Integer
+    public var prime: ASN1.Integer
+    public var exponent: ASN1.Integer
+    public var coefficient: ASN1.Integer
   }
 
   public var version: Version
-  public var modulus: Integer
-  public var publicExponent: Integer
-  public var privateExponent: Integer
-  public var prime1: Integer
-  public var prime2: Integer
-  public var exponent1: Integer
-  public var exponent2: Integer
-  public var coefficient: Integer
+  public var modulus: ASN1.Integer
+  public var publicExponent: ASN1.Integer
+  public var privateExponent: ASN1.Integer
+  public var prime1: ASN1.Integer
+  public var prime2: ASN1.Integer
+  public var exponent1: ASN1.Integer
+  public var exponent2: ASN1.Integer
+  public var coefficient: ASN1.Integer
   public var otherPrimeInfos: [OtherPrimeInfo]?
 }
 
