@@ -1,0 +1,957 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA2151F02975D9CF0072F6CA /* ShieldHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */; };
+		AA2151F42975D9D00072F6CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F32975D9D00072F6CA /* Assets.xcassets */; };
+		AA2151F82975D9D00072F6CA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */; };
+		AA2152422975DF5F0072F6CA /* CertificationRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */; };
+		AA2152432975DF5F0072F6CA /* ParameterizedTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */; };
+		AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152362975DF5F0072F6CA /* HmacTests.swift */; };
+		AA2152452975DF5F0072F6CA /* OIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152372975DF5F0072F6CA /* OIDTests.swift */; };
+		AA2152462975DF5F0072F6CA /* DistinguishedNameComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */; };
+		AA2152472975DF5F0072F6CA /* CryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152392975DF5F0072F6CA /* CryptorTests.swift */; };
+		AA2152482975DF5F0072F6CA /* CertificateBuilderECTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */; };
+		AA2152492975DF5F0072F6CA /* SecKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523B2975DF5F0072F6CA /* SecKeyTests.swift */; };
+		AA21524A2975DF5F0072F6CA /* SecCertificateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523C2975DF5F0072F6CA /* SecCertificateTests.swift */; };
+		AA21524B2975DF5F0072F6CA /* DigestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523D2975DF5F0072F6CA /* DigestTests.swift */; };
+		AA21524C2975DF5F0072F6CA /* CertificateBuilderRSATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523E2975DF5F0072F6CA /* CertificateBuilderRSATests.swift */; };
+		AA21524D2975DF5F0072F6CA /* SecIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */; };
+		AA21524E2975DF5F0072F6CA /* DistinguishedNameParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */; };
+		AA21524F2975DF5F0072F6CA /* SecKeyPairTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152412975DF5F0072F6CA /* SecKeyPairTests.swift */; };
+		AA2152632975E3600072F6CA /* Shield in Frameworks */ = {isa = PBXBuildFile; productRef = AA2152622975E3600072F6CA /* Shield */; };
+		AA5768A12975E7C300142200 /* ShieldHost Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA5768A02975E7C300142200 /* ShieldHost Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA5768A62975E7C300142200 /* ShieldHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5768A52975E7C300142200 /* ShieldHostApp.swift */; };
+		AA5768AA2975E7C400142200 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5768A92975E7C400142200 /* Assets.xcassets */; };
+		AA5768AD2975E7C400142200 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5768AC2975E7C400142200 /* Preview Assets.xcassets */; };
+		AA5768E02975E85E00142200 /* Shield in Frameworks */ = {isa = PBXBuildFile; productRef = AA5768DF2975E85E00142200 /* Shield */; };
+		AA5768E12975E87C00142200 /* HmacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152362975DF5F0072F6CA /* HmacTests.swift */; };
+		AA5768E22975E87C00142200 /* DistinguishedNameComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */; };
+		AA5768E32975E87C00142200 /* SecKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523B2975DF5F0072F6CA /* SecKeyTests.swift */; };
+		AA5768E42975E87C00142200 /* SecCertificateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523C2975DF5F0072F6CA /* SecCertificateTests.swift */; };
+		AA5768E52975E87C00142200 /* CertificationRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */; };
+		AA5768E62975E87C00142200 /* SecKeyPairTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152412975DF5F0072F6CA /* SecKeyPairTests.swift */; };
+		AA5768E72975E87C00142200 /* SecIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */; };
+		AA5768E82975E87C00142200 /* CryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152392975DF5F0072F6CA /* CryptorTests.swift */; };
+		AA5768E92975E87C00142200 /* CertificateBuilderRSATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523E2975DF5F0072F6CA /* CertificateBuilderRSATests.swift */; };
+		AA5768EA2975E87C00142200 /* ParameterizedTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */; };
+		AA5768EB2975E87C00142200 /* OIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152372975DF5F0072F6CA /* OIDTests.swift */; };
+		AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523D2975DF5F0072F6CA /* DigestTests.swift */; };
+		AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */; };
+		AA5768EE2975E87C00142200 /* DistinguishedNameParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA2151FE2975D9D00072F6CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA2151E42975D9CF0072F6CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA2151EB2975D9CF0072F6CA;
+			remoteInfo = ShieldHost;
+		};
+		AA5768A22975E7C300142200 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA2151E42975D9CF0072F6CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA57689F2975E7C300142200;
+			remoteInfo = "ShieldHost Watch App";
+		};
+		AA5768B32975E7C400142200 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA2151E42975D9CF0072F6CA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA57689F2975E7C300142200;
+			remoteInfo = "ShieldHost Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AA5768C72975E7C500142200 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AA5768A12975E7C300142200 /* ShieldHost Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AA2151EC2975D9CF0072F6CA /* ShieldHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShieldHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
+		AA2151F12975D9CF0072F6CA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA2151F32975D9D00072F6CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA2151F52975D9D00072F6CA /* ShieldHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShieldHost.entitlements; sourceTree = "<group>"; };
+		AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AA2151FD2975D9D00072F6CA /* ShieldHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShieldHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA21521F2975DCA40072F6CA /* Shield */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Shield; path = ..; sourceTree = "<group>"; };
+		AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificationRequestBuilderTests.swift; sourceTree = "<group>"; };
+		AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterizedTest.swift; sourceTree = "<group>"; };
+		AA2152362975DF5F0072F6CA /* HmacTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HmacTests.swift; sourceTree = "<group>"; };
+		AA2152372975DF5F0072F6CA /* OIDTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OIDTests.swift; sourceTree = "<group>"; };
+		AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DistinguishedNameComposerTests.swift; sourceTree = "<group>"; };
+		AA2152392975DF5F0072F6CA /* CryptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptorTests.swift; sourceTree = "<group>"; };
+		AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateBuilderECTests.swift; sourceTree = "<group>"; };
+		AA21523B2975DF5F0072F6CA /* SecKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecKeyTests.swift; sourceTree = "<group>"; };
+		AA21523C2975DF5F0072F6CA /* SecCertificateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecCertificateTests.swift; sourceTree = "<group>"; };
+		AA21523D2975DF5F0072F6CA /* DigestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DigestTests.swift; sourceTree = "<group>"; };
+		AA21523E2975DF5F0072F6CA /* CertificateBuilderRSATests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateBuilderRSATests.swift; sourceTree = "<group>"; };
+		AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecIdentityTests.swift; sourceTree = "<group>"; };
+		AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DistinguishedNameParserTests.swift; sourceTree = "<group>"; };
+		AA2152412975DF5F0072F6CA /* SecKeyPairTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecKeyPairTests.swift; sourceTree = "<group>"; };
+		AA57689B2975E7C300142200 /* ShieldHost Watch Container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShieldHost Watch Container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA5768A02975E7C300142200 /* ShieldHost Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShieldHost Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA5768A52975E7C300142200 /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
+		AA5768A72975E7C300142200 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AA5768A92975E7C400142200 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA5768AC2975E7C400142200 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShieldHost Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA2151E92975D9CF0072F6CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2152632975E3600072F6CA /* Shield in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2151FA2975D9D00072F6CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA57689D2975E7C300142200 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA5768E02975E85E00142200 /* Shield in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA5768AF2975E7C400142200 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA2151E32975D9CF0072F6CA = {
+			isa = PBXGroup;
+			children = (
+				AA2152332975DF5F0072F6CA /* Tests */,
+				AA21521E2975DCA40072F6CA /* Packages */,
+				AA2151EE2975D9CF0072F6CA /* ShieldHost */,
+				AA5768A42975E7C300142200 /* ShieldHost Watch App */,
+				AA2151ED2975D9CF0072F6CA /* Products */,
+				AA21529C2975E7410072F6CA /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		AA2151ED2975D9CF0072F6CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA2151EC2975D9CF0072F6CA /* ShieldHost.app */,
+				AA2151FD2975D9D00072F6CA /* ShieldHostTests.xctest */,
+				AA57689B2975E7C300142200 /* ShieldHost Watch Container.app */,
+				AA5768A02975E7C300142200 /* ShieldHost Watch App.app */,
+				AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA2151EE2975D9CF0072F6CA /* ShieldHost */ = {
+			isa = PBXGroup;
+			children = (
+				AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */,
+				AA2151F12975D9CF0072F6CA /* ContentView.swift */,
+				AA2151F32975D9D00072F6CA /* Assets.xcassets */,
+				AA2151F52975D9D00072F6CA /* ShieldHost.entitlements */,
+				AA2151F62975D9D00072F6CA /* Preview Content */,
+			);
+			path = ShieldHost;
+			sourceTree = "<group>";
+		};
+		AA2151F62975D9D00072F6CA /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AA21521E2975DCA40072F6CA /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				AA21521F2975DCA40072F6CA /* Shield */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		AA2152332975DF5F0072F6CA /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */,
+				AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */,
+				AA2152362975DF5F0072F6CA /* HmacTests.swift */,
+				AA2152372975DF5F0072F6CA /* OIDTests.swift */,
+				AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */,
+				AA2152392975DF5F0072F6CA /* CryptorTests.swift */,
+				AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */,
+				AA21523B2975DF5F0072F6CA /* SecKeyTests.swift */,
+				AA21523C2975DF5F0072F6CA /* SecCertificateTests.swift */,
+				AA21523D2975DF5F0072F6CA /* DigestTests.swift */,
+				AA21523E2975DF5F0072F6CA /* CertificateBuilderRSATests.swift */,
+				AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */,
+				AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */,
+				AA2152412975DF5F0072F6CA /* SecKeyPairTests.swift */,
+			);
+			name = Tests;
+			path = ../Tests;
+			sourceTree = "<group>";
+		};
+		AA21529C2975E7410072F6CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA5768A42975E7C300142200 /* ShieldHost Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				AA5768A52975E7C300142200 /* ShieldHostApp.swift */,
+				AA5768A72975E7C300142200 /* ContentView.swift */,
+				AA5768A92975E7C400142200 /* Assets.xcassets */,
+				AA5768AB2975E7C400142200 /* Preview Content */,
+			);
+			path = "ShieldHost Watch App";
+			sourceTree = "<group>";
+		};
+		AA5768AB2975E7C400142200 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				AA5768AC2975E7C400142200 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA2151EB2975D9CF0072F6CA /* ShieldHost */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA2152112975D9D00072F6CA /* Build configuration list for PBXNativeTarget "ShieldHost" */;
+			buildPhases = (
+				AA2151E82975D9CF0072F6CA /* Sources */,
+				AA2151E92975D9CF0072F6CA /* Frameworks */,
+				AA2151EA2975D9CF0072F6CA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShieldHost;
+			packageProductDependencies = (
+				AA2152622975E3600072F6CA /* Shield */,
+			);
+			productName = ShieldHost;
+			productReference = AA2151EC2975D9CF0072F6CA /* ShieldHost.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA2151FC2975D9D00072F6CA /* ShieldHostTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA2152142975D9D00072F6CA /* Build configuration list for PBXNativeTarget "ShieldHostTests" */;
+			buildPhases = (
+				AA2151F92975D9D00072F6CA /* Sources */,
+				AA2151FA2975D9D00072F6CA /* Frameworks */,
+				AA2151FB2975D9D00072F6CA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA2151FF2975D9D00072F6CA /* PBXTargetDependency */,
+			);
+			name = ShieldHostTests;
+			productName = ShieldHostTests;
+			productReference = AA2151FD2975D9D00072F6CA /* ShieldHostTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		AA57689A2975E7C300142200 /* ShieldHost Watch Container */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA5768C82975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch Container" */;
+			buildPhases = (
+				AA5768992975E7C300142200 /* Resources */,
+				AA5768C72975E7C500142200 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA5768A32975E7C300142200 /* PBXTargetDependency */,
+			);
+			name = "ShieldHost Watch Container";
+			productName = ShieldHost;
+			productReference = AA57689B2975E7C300142200 /* ShieldHost Watch Container.app */;
+			productType = "com.apple.product-type.application.watchapp2-container";
+		};
+		AA57689F2975E7C300142200 /* ShieldHost Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA5768C42975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch App" */;
+			buildPhases = (
+				AA57689C2975E7C300142200 /* Sources */,
+				AA57689D2975E7C300142200 /* Frameworks */,
+				AA57689E2975E7C300142200 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ShieldHost Watch App";
+			packageProductDependencies = (
+				AA5768DF2975E85E00142200 /* Shield */,
+			);
+			productName = "ShieldHost Watch App";
+			productReference = AA5768A02975E7C300142200 /* ShieldHost Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA5768B12975E7C400142200 /* ShieldHost Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA5768CB2975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch AppTests" */;
+			buildPhases = (
+				AA5768AE2975E7C400142200 /* Sources */,
+				AA5768AF2975E7C400142200 /* Frameworks */,
+				AA5768B02975E7C400142200 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA5768B42975E7C400142200 /* PBXTargetDependency */,
+			);
+			name = "ShieldHost Watch AppTests";
+			productName = "ShieldHost Watch AppTests";
+			productReference = AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA2151E42975D9CF0072F6CA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1420;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					AA2151EB2975D9CF0072F6CA = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					AA2151FC2975D9D00072F6CA = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = AA2151EB2975D9CF0072F6CA;
+					};
+					AA57689A2975E7C300142200 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					AA57689F2975E7C300142200 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					AA5768B12975E7C400142200 = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = AA57689F2975E7C300142200;
+					};
+				};
+			};
+			buildConfigurationList = AA2151E72975D9CF0072F6CA /* Build configuration list for PBXProject "ShieldHost" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA2151E32975D9CF0072F6CA;
+			productRefGroup = AA2151ED2975D9CF0072F6CA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA2151EB2975D9CF0072F6CA /* ShieldHost */,
+				AA2151FC2975D9D00072F6CA /* ShieldHostTests */,
+				AA57689A2975E7C300142200 /* ShieldHost Watch Container */,
+				AA57689F2975E7C300142200 /* ShieldHost Watch App */,
+				AA5768B12975E7C400142200 /* ShieldHost Watch AppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA2151EA2975D9CF0072F6CA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2151F82975D9D00072F6CA /* Preview Assets.xcassets in Resources */,
+				AA2151F42975D9D00072F6CA /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2151FB2975D9D00072F6CA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA5768992975E7C300142200 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA57689E2975E7C300142200 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA5768AD2975E7C400142200 /* Preview Assets.xcassets in Resources */,
+				AA5768AA2975E7C400142200 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA5768B02975E7C400142200 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA2151E82975D9CF0072F6CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA2151F02975D9CF0072F6CA /* ShieldHostApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2151F92975D9D00072F6CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA21524C2975DF5F0072F6CA /* CertificateBuilderRSATests.swift in Sources */,
+				AA2152482975DF5F0072F6CA /* CertificateBuilderECTests.swift in Sources */,
+				AA2152452975DF5F0072F6CA /* OIDTests.swift in Sources */,
+				AA2152462975DF5F0072F6CA /* DistinguishedNameComposerTests.swift in Sources */,
+				AA2152492975DF5F0072F6CA /* SecKeyTests.swift in Sources */,
+				AA21524D2975DF5F0072F6CA /* SecIdentityTests.swift in Sources */,
+				AA21524A2975DF5F0072F6CA /* SecCertificateTests.swift in Sources */,
+				AA21524E2975DF5F0072F6CA /* DistinguishedNameParserTests.swift in Sources */,
+				AA2152422975DF5F0072F6CA /* CertificationRequestBuilderTests.swift in Sources */,
+				AA2152472975DF5F0072F6CA /* CryptorTests.swift in Sources */,
+				AA21524B2975DF5F0072F6CA /* DigestTests.swift in Sources */,
+				AA21524F2975DF5F0072F6CA /* SecKeyPairTests.swift in Sources */,
+				AA2152432975DF5F0072F6CA /* ParameterizedTest.swift in Sources */,
+				AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA57689C2975E7C300142200 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA5768A62975E7C300142200 /* ShieldHostApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA5768AE2975E7C400142200 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA5768E12975E87C00142200 /* HmacTests.swift in Sources */,
+				AA5768E42975E87C00142200 /* SecCertificateTests.swift in Sources */,
+				AA5768EE2975E87C00142200 /* DistinguishedNameParserTests.swift in Sources */,
+				AA5768E72975E87C00142200 /* SecIdentityTests.swift in Sources */,
+				AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */,
+				AA5768E82975E87C00142200 /* CryptorTests.swift in Sources */,
+				AA5768E22975E87C00142200 /* DistinguishedNameComposerTests.swift in Sources */,
+				AA5768EA2975E87C00142200 /* ParameterizedTest.swift in Sources */,
+				AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */,
+				AA5768E52975E87C00142200 /* CertificationRequestBuilderTests.swift in Sources */,
+				AA5768E32975E87C00142200 /* SecKeyTests.swift in Sources */,
+				AA5768EB2975E87C00142200 /* OIDTests.swift in Sources */,
+				AA5768E92975E87C00142200 /* CertificateBuilderRSATests.swift in Sources */,
+				AA5768E62975E87C00142200 /* SecKeyPairTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA2151FF2975D9D00072F6CA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA2151EB2975D9CF0072F6CA /* ShieldHost */;
+			targetProxy = AA2151FE2975D9D00072F6CA /* PBXContainerItemProxy */;
+		};
+		AA5768A32975E7C300142200 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA57689F2975E7C300142200 /* ShieldHost Watch App */;
+			targetProxy = AA5768A22975E7C300142200 /* PBXContainerItemProxy */;
+		};
+		AA5768B42975E7C400142200 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA57689F2975E7C300142200 /* ShieldHost Watch App */;
+			targetProxy = AA5768B32975E7C400142200 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AA21520F2975D9D00072F6CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TVOS_DEPLOYMENT_TARGET = 14.0;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Debug;
+		};
+		AA2152102975D9D00072F6CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				TVOS_DEPLOYMENT_TARGET = 14.0;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Release;
+		};
+		AA2152122975D9D00072F6CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldHost/ShieldHost.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,3";
+			};
+			name = Debug;
+		};
+		AA2152132975D9D00072F6CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShieldHost/ShieldHost.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,3";
+			};
+			name = Release;
+		};
+		AA2152152975D9D00072F6CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,3";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShieldHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShieldHost";
+			};
+			name = Debug;
+		};
+		AA2152162975D9D00072F6CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,3";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShieldHost.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShieldHost";
+			};
+			name = Release;
+		};
+		AA5768C52975E7C500142200 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
+		AA5768C62975E7C500142200 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKWatchOnly = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA5768C92975E7C500142200 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AA5768CA2975E7C500142200 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA5768CC2975E7C500142200 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShieldHost Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShieldHost Watch App";
+			};
+			name = Debug;
+		};
+		AA5768CD2975E7C500142200 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShieldHost Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShieldHost Watch App";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA2151E72975D9CF0072F6CA /* Build configuration list for PBXProject "ShieldHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA21520F2975D9D00072F6CA /* Debug */,
+				AA2152102975D9D00072F6CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA2152112975D9D00072F6CA /* Build configuration list for PBXNativeTarget "ShieldHost" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA2152122975D9D00072F6CA /* Debug */,
+				AA2152132975D9D00072F6CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA2152142975D9D00072F6CA /* Build configuration list for PBXNativeTarget "ShieldHostTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA2152152975D9D00072F6CA /* Debug */,
+				AA2152162975D9D00072F6CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA5768C42975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5768C52975E7C500142200 /* Debug */,
+				AA5768C62975E7C500142200 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA5768C82975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch Container" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5768C92975E7C500142200 /* Debug */,
+				AA5768CA2975E7C500142200 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA5768CB2975E7C500142200 /* Build configuration list for PBXNativeTarget "ShieldHost Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5768CC2975E7C500142200 /* Debug */,
+				AA5768CD2975E7C500142200 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA2152622975E3600072F6CA /* Shield */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Shield;
+		};
+		AA5768DF2975E85E00142200 /* Shield */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Shield;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = AA2151E42975D9CF0072F6CA /* Project object */;
+}
