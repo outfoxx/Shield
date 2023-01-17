@@ -14,10 +14,10 @@ import PotentASN1
 
 public struct RSAPublicKey: Equatable, Hashable, Codable {
 
-  public var modulus: Integer
-  public var publicExponent: Integer
+  public var modulus: ASN1.Integer
+  public var publicExponent: ASN1.Integer
 
-  public init(modulus: Integer, publicExponent: Integer) {
+  public init(modulus: ASN1.Integer, publicExponent: ASN1.Integer) {
     self.modulus = modulus
     self.publicExponent = publicExponent
   }

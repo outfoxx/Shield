@@ -15,7 +15,7 @@ import PotentASN1
 public typealias GeneralNames = [GeneralName]
 
 
-public enum GeneralName: Equatable, Hashable, TaggedValue {
+public enum GeneralName: Equatable, Hashable, Tagged {
   case otherName(OtherName)
   case rfc822Name(String)
   case dnsName(String)

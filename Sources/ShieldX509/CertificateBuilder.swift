@@ -432,10 +432,10 @@ public extension Certificate {
       return issuerUniqueID != nil || subjectUniqueID != nil
     }
 
-    public static func randomSerialNumber() throws -> Integer {
+    public static func randomSerialNumber() throws -> ASN1.Integer {
       var data = (0 ..< 20).map { _ in UInt8.random(in: 0 ... UInt8.max) } // max is 20 octets
       data[0] &= 0x7F // must be non-negative
-      return Integer(serialized: Data(data))
+      return ASN1.Integer(serialized: Data(data))
     }
 
   }
