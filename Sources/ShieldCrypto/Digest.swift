@@ -40,33 +40,6 @@ public protocol DigestEngine {
   static var digest: Digest { get }
 }
 
-public struct MD2Engine: DigestEngine {
-  public typealias Context = CC_MD2_CTX
-  public static let hashLength = CC_MD2_DIGEST_LENGTH
-  public static let `init`: Init = CC_MD2_Init
-  public static let update: Update = CC_MD2_Update
-  public static let final: Final = CC_MD2_Final
-  public static let digest: Digest = CC_MD2
-}
-
-public struct MD4Engine: DigestEngine {
-  public typealias Context = CC_MD4_CTX
-  public static let hashLength = CC_MD4_DIGEST_LENGTH
-  public static let `init`: Init = CC_MD4_Init
-  public static let update: Update = CC_MD4_Update
-  public static let final: Final = CC_MD4_Final
-  public static let digest: Digest = CC_MD4
-}
-
-public struct MD5Engine: DigestEngine {
-  public typealias Context = CC_MD5_CTX
-  public static let hashLength = CC_MD5_DIGEST_LENGTH
-  public static let `init`: Init = CC_MD5_Init
-  public static let update: Update = CC_MD5_Update
-  public static let final: Final = CC_MD5_Final
-  public static let digest: Digest = CC_MD5
-}
-
 
 public struct SHA1Engine: DigestEngine {
   public typealias Context = CC_SHA1_CTX
@@ -160,9 +133,6 @@ public extension AnyDigester {
 public struct Digester {
 
   public enum Algorithm {
-    case md2
-    case md4
-    case md5
     case sha1
     case sha224
     case sha256
@@ -180,9 +150,6 @@ public struct Digester {
 
   public static func type(_ algorithm: Algorithm) -> AnyDigester.Type {
     switch algorithm {
-    case .md2: return MD2Digester.self
-    case .md4: return MD4Digester.self
-    case .md5: return MD5Digester.self
     case .sha1: return SHA1Digester.self
     case .sha224: return SHA224Digester.self
     case .sha256: return SHA256Digester.self
@@ -237,10 +204,6 @@ public struct DigesterEngine<Engine: DigestEngine>: AnyDigester {
 
 }
 
-
-public typealias MD2Digester = DigesterEngine<MD2Engine>
-public typealias MD4Digester = DigesterEngine<MD4Engine>
-public typealias MD5Digester = DigesterEngine<MD5Engine>
 
 public typealias SHA1Digester = DigesterEngine<SHA1Engine>
 public typealias SHA224Digester = DigesterEngine<SHA224Engine>
