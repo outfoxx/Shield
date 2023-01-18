@@ -72,10 +72,9 @@ public extension SecIdentity {
     ]
 
     var result: CFTypeRef?
-
     let status = SecItemCopyMatching(query as CFDictionary, &result)
 
-    if status != errSecSuccess || result == nil {
+    guard status == errSecSuccess, let result = result else {
       throw Error.loadFailed
     }
 
@@ -86,21 +85,21 @@ public extension SecIdentity {
 
     var key: SecKey?
     let status = SecIdentityCopyPrivateKey(self, &key)
-    if status != errSecSuccess {
+    guard status == errSecSuccess, let key = key else {
       throw Error.copyPrivateKeyFailed
     }
 
-    return key!
+    return key
   }
 
   func certificate() throws -> SecCertificate {
 
-    var crt: SecCertificate?
-    let status = SecIdentityCopyCertificate(self, &crt)
-    if status != errSecSuccess {
+    var certificate: SecCertificate?
+    let status = SecIdentityCopyCertificate(self, &certificate)
+    guard status == errSecSuccess, let certificate = certificate else {
       throw Error.copyCertificateFailed
     }
-    return crt!
+    return certificate
   }
 
 }
