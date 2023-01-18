@@ -49,7 +49,7 @@ public extension SecCertificate {
       return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: subjectData as Data)
     }
     catch {
-      Logger.default.error("Unable to parse subject name: \(error, privacy: .public)")
+      Logger.default.error("Unable to parse subject name: \(error.localizedDescription, privacy: .public)")
       return nil
     }
   }
@@ -62,7 +62,7 @@ public extension SecCertificate {
       return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: issuerData as Data)
     }
     catch {
-      Logger.default.error("Unable to parse issuer name: \(error, privacy: .public)")
+      Logger.default.error("Unable to parse issuer name: \(error.localizedDescription, privacy: .public)")
       return nil
     }
   }
