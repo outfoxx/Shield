@@ -226,9 +226,10 @@ class SecCertificateTests: XCTestCase {
     )!
 
     do {
-      let _ = try await cert.publicKeyValidated(trustedCertificates: [rootCert])
+      _ = try await cert.publicKeyValidated(trustedCertificates: [rootCert])
       XCTFail("Should have thrown error")
-    } catch {
+    }
+    catch {
       guard let secError = error as? SecCertificateError, secError == .trustValidationFailed else {
         return XCTFail("Incorrect error received: \(error)")
       }

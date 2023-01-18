@@ -47,7 +47,8 @@ public extension SecCertificate {
     }
     do {
       return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: subjectData as Data)
-    } catch {
+    }
+    catch {
       Logger.default.error("Unable to parse subject name: \(error, privacy: .public)")
       return nil
     }
@@ -59,7 +60,8 @@ public extension SecCertificate {
     }
     do {
       return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: issuerData as Data)
-    } catch {
+    }
+    catch {
       Logger.default.error("Unable to parse issuer name: \(error, privacy: .public)")
       return nil
     }
@@ -160,7 +162,8 @@ public extension SecCertificate {
     let errorDesc: String
     if let error = error {
       errorDesc = (CFErrorCopyFailureReason(error) ?? CFErrorCopyDescription(error)) as String? ?? ""
-    } else {
+    }
+    else {
       errorDesc = ""
     }
 
@@ -181,8 +184,9 @@ public extension SecCertificate {
     let anchorCertificates: [SecCertificate]
     let anchorCertificatesStatus = SecTrustCopyCustomAnchorCertificates(trust, &anchorCertificatesArray)
     if anchorCertificatesStatus == errSecSuccess, let anchorCertificatesArray = anchorCertificatesArray {
-      anchorCertificates = anchorCertificatesArray as! [SecCertificate]
-    } else {
+      anchorCertificates = anchorCertificatesArray as! [SecCertificate] // swiftlint:disable:this force_cast
+    }
+    else {
       anchorCertificates = []
     }
 
@@ -353,7 +357,7 @@ public extension SecCertificate {
 
 }
 
-extension SecCertificate : CustomStringConvertible {
+extension SecCertificate: CustomStringConvertible {
 
   public var description: String {
     return SecCertificateCopySubjectSummary(self) as String? ?? "<no certificate summary>"
