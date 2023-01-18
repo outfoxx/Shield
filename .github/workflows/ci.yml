@@ -57,16 +57,16 @@ jobs:
         platform: [macos, ios, tvos, watchos]
 
     steps:
-      
-    - uses: actions/checkout@v3
-    
-    - name: Select Xcode
-      run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
 
     - name: Install Tools
       run: |
         brew tap a7ex/homebrew-formulae
         brew install xcbeautify findsimulator
+      
+    - uses: actions/checkout@v3
+    
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
 
     - name: Build/Test
       run: make build-test-${{ matrix.platform }}

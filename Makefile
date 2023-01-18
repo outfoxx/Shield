@@ -4,9 +4,17 @@ project:=ShieldHost
 
 build-test: clean build-test-macos build-test-ios build-test-tvos build-test-watchos
 
+check-tools:
+	@which findsimulator || (echo "findsimulator is required. run 'make install-tools'" && exit 1)
+	@which xcbeautify || (echo "xcbeautify is required. run 'make install-tools'" && exit 1)
+
+install-tools:
+	brew tap a7ex/homebrew-formulae
+	brew install xcbeautify findsimulator
+
 clean:
-	rm -rf TestResults
-	rm -rf .derived-data
+	@rm -rf TestResults
+	@rm -rf .derived-data
 
 make-test-results-dir:
 	mkdir -p TestResults
@@ -19,16 +27,16 @@ define buildtest
 		test | xcbeautify
 endef
 
-build-test-macos:
+build-test-macos: check-tools
 	$(call buildtest,,macOS,platform=macos)
 
-build-test-ios:
+build-test-ios: check-tools
 	$(call buildtest,,iOS,$(shell findsimulator --os-type ios "iPhone"))
 
-build-test-tvos:
+build-test-tvos: check-tools
 	$(call buildtest,,tvOS,$(shell findsimulator --os-type tvos "Apple TV"))
 
-build-test-watchos:
+build-test-watchos: check-tools
 	$(call buildtest,Watch,watchOS,$(shell findsimulator --os-type watchos "Apple Watch"))
 
 format:	
