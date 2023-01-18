@@ -1,6 +1,9 @@
 # 🛡 Shield
-[![Build Status](https://github.com/outfoxx/Shield/workflows/Swift/badge.svg)](https://github.com/outfoxx/Shield/actions)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/outfoxx/Shield)
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/outfoxx/Shield/ci.yml?branch=main)
+![Coverage](https://sonarcloud.io/api/project_badges/measure?project=outfoxx_Shield&metric=coverage)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Foutfoxx%2FShield%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/outfoxx/Shield)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Foutfoxx%2FShield%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/outfoxx/Shield)
 
 ## Security library covering Cryptography, Hashing, HMAC, Random, PBKDF, PKCS, X509, PKCS10
 
