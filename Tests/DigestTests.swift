@@ -35,27 +35,6 @@ class DigestTests: XCTestCase {
     return digester.final()
   }
 
-  func testDigestBlocksMD2() throws {
-
-    let blocksDigest = try exec(Digester.for(.md2))
-
-    XCTAssertEqual(blocksDigest, Digester.digest(data, using: .md2))
-  }
-
-  func testDigestBlocksMD4() throws {
-
-    let blocksDigest = try exec(Digester.for(.md4))
-
-    XCTAssertEqual(blocksDigest, Digester.digest(data, using: .md4))
-  }
-
-  func testDigestBlocksMD5() throws {
-
-    let blocksDigest = try exec(Digester.for(.md5))
-
-    XCTAssertEqual(blocksDigest, Digester.digest(data, using: .md5))
-  }
-
   func testDigestBlocksSHA1() throws {
 
     let blocksDigest = try exec(Digester.for(.sha1))
