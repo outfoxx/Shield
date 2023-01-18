@@ -22,9 +22,6 @@ public enum SecEncryptionPadding {
 }
 
 
-private let maxSignatureBufferLen = 512
-
-
 public extension SecKey {
 
   enum Error: Int, Swift.Error {
@@ -358,9 +355,6 @@ public extension SecKey {
       else {
         digestType = .ecdsaSignatureDigestX962SHA512
       }
-
-    default:
-      fatalError("unsupported digest algorithm")
     }
 
     return try sign(data: digest, algorithm: digestType)
@@ -493,9 +487,6 @@ public extension SecKey {
       else {
         digestType = .ecdsaSignatureDigestX962SHA512
       }
-
-    default:
-      fatalError("unsupported digest algorithm")
     }
 
     return try verify(data: digest, againstSignature: signature, algorithm: digestType, failureReason: &failureReason)

@@ -39,8 +39,6 @@ public extension AlgorithmIdentifier {
         signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha384WithRSAEncryption.oid
       case .sha512:
         signingAlgorithmID = iso.memberBody.us.rsadsi.pkcs.pkcs1.sha512WithRSAEncryption.oid
-      default:
-        throw Error.unsupportedAlgorithm
       }
 
     case .ec:
@@ -56,8 +54,6 @@ public extension AlgorithmIdentifier {
         signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA384.oid
       case .sha512:
         signingAlgorithmID = iso.memberBody.us.ansix962.signatures.ecdsaWithSHA2.ecdsaWithSHA512.oid
-      default:
-        throw Error.unsupportedAlgorithm
       }
     }
 
