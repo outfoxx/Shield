@@ -17,6 +17,7 @@ import ShieldOID
 import ShieldPKCS
 import ShieldX500
 import ShieldX509
+import OSLog
 
 
 public enum SecCertificateError: Int, Error {
@@ -40,77 +41,176 @@ public extension SecCertificate {
     return cert
   }
 
-  private var certificateInfo: TBSCertificate? {
-    return try? ASN1Decoder(schema: Schemas.TBSCertificate).decode(Certificate.self, from: derEncoded).tbsCertificate
+  var subjectName: Name? {
+    guard let subjectData = SecCertificateCopyNormalizedSubjectSequence(self) else {
+      return nil
+    }
+    do {
+      return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: subjectData as Data)
+    }
+    catch {
+      Logger.default.error("Unable to parse subject name: \(error, privacy: .public)")
+      return nil
+    }
   }
 
   var issuerName: Name? {
-    if #available(iOS 10.3, OSX 10.12.4, tvOS 10.3, watchOS 3.3, *) {
-      guard
-        let issuerData = SecCertificateCopyNormalizedIssuerSequence(self),
-        let issuer = try? ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: issuerData as Data)
-      else {
-        fatalError("invalid certificate encoding")
-      }
-      return issuer
+    guard let issuerData = SecCertificateCopyNormalizedIssuerSequence(self) else {
+      return nil
     }
-    else {
-      return certificateInfo?.issuer
+    do {
+      return try ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: issuerData as Data)
+    }
+    catch {
+      Logger.default.error("Unable to parse issuer name: \(error, privacy: .public)")
+      return nil
     }
   }
 
-  var subjectName: Name? {
-    if #available(iOS 10.3, OSX 10.12.4, tvOS 10.3, watchOS 3.3, *) {
-      guard
-        let subjectData = SecCertificateCopyNormalizedSubjectSequence(self),
-        let subject = try? ASN1Decoder(schema: Schemas.Name).decode(Name.self, from: subjectData as Data)
-      else {
-        fatalError("invalid certificate encoding")
-      }
-      return subject
-    }
-    else {
-      return certificateInfo?.subject
-    }
+  var publicKey: SecKey? {
+    return SecCertificateCopyKey(self)
   }
 
   func publicKeyValidated(trustedCertificates: [SecCertificate]) throws -> SecKey {
 
-    let policy = SecPolicyCreateBasicX509()
+    let trust = try createCertificateValidationTrust(anchorCertificates: trustedCertificates)
 
-    var trustResult: SecTrust?
-    var status = SecTrustCreateWithCertificates(self, policy, &trustResult)
-    guard let trust = trustResult, status == errSecSuccess else {
-      throw SecCertificateError.trustCreationFailed
-    }
+    try evaluateTrust(trust)
 
-    status = SecTrustSetAnchorCertificates(trust, trustedCertificates as CFArray)
-    if status != errSecSuccess {
-      throw SecCertificateError.trustCreationFailed
-    }
-
-    var result = SecTrustResultType.deny
-
-    status = SecTrustEvaluate(trust, &result)
-    if status != errSecSuccess {
-      throw SecCertificateError.trustValidationError
-    }
-
-    if
-      result != SecTrustResultType.proceed,
-      result != SecTrustResultType.unspecified {
-      throw SecCertificateError.trustValidationFailed
-    }
-
-    guard let key = SecTrustCopyPublicKey(trust) else {
+    guard let key = SecTrustCopyKey(trust) else {
       throw SecCertificateError.publicKeyRetrievalFailed
     }
 
     return key
   }
 
+  func publicKeyValidated(trustedCertificates: [SecCertificate]) async throws -> SecKey {
+
+    let trust = try createCertificateValidationTrust(anchorCertificates: trustedCertificates)
+
+    try await evaluateTrust(trust)
+
+    guard let key = SecTrustCopyKey(trust) else {
+      throw SecCertificateError.publicKeyRetrievalFailed
+    }
+
+    return key
+  }
+
+  private func createCertificateValidationTrust(anchorCertificates: [SecCertificate]) throws -> SecTrust {
+
+    let policy = SecPolicyCreateBasicX509()
+
+    var trustResult: SecTrust?
+    let status = SecTrustCreateWithCertificates(self, policy, &trustResult)
+    guard let trust = trustResult, status == errSecSuccess else {
+      throw SecCertificateError.trustCreationFailed
+    }
+
+    if SecTrustSetAnchorCertificates(trust, anchorCertificates as CFArray) != errSecSuccess {
+      throw SecCertificateError.trustCreationFailed
+    }
+
+    return trust
+  }
+
+  private func evaluateTrust(_ trust: SecTrust) throws {
+    var error: CFError?
+
+    if !SecTrustEvaluateWithError(trust, &error) {
+      try checkFailedTrustEvaluation(trust, error: error)
+    }
+  }
+
+  private func evaluateTrust(_ trust: SecTrust) async throws {
+
+    let (result, error): (Bool, CFError?) = try await withCheckedThrowingContinuation { continuation in
+
+      let queue = DispatchQueue.global(qos: .default)
+      queue.async {
+
+        let status = SecTrustEvaluateAsyncWithError(trust, queue) { _, result, error in
+          continuation.resume(with: .success((result, error)))
+        }
+
+        if status != errSecSuccess {
+          continuation.resume(with: .failure(SecCertificateError.trustValidationError))
+        }
+
+      }
+    }
+
+    if !result {
+      try checkFailedTrustEvaluation(trust, error: error)
+    }
+  }
+
+  private func checkFailedTrustEvaluation(_ trust: SecTrust, error: CFError?) throws {
+
+    var trustResult: SecTrustResultType = .otherError
+    let trustResultStatus = SecTrustGetTrustResult(trust, &trustResult)
+    if trustResultStatus != errSecSuccess {
+      Logger.default.debug("Unable to retrieve trust result: \(trustResultStatus)")
+      trustResult = .otherError
+    }
+
+    // `proceed` must be allowed
+    if trustResult == SecTrustResultType.proceed {
+      return
+    }
+
+    let errorDesc: String
+    if let error = error {
+      errorDesc = (CFErrorCopyFailureReason(error) ?? CFErrorCopyDescription(error)) as String? ?? ""
+    }
+    else {
+      errorDesc = ""
+    }
+
+    logTrustEvaluation(level: .error,
+                       trust: trust,
+                       result: trustResult,
+                       description: errorDesc)
+
+    throw SecCertificateError.trustValidationFailed
+  }
+
+  private func logTrustEvaluation(level: OSLogType,
+                                  trust: SecTrust,
+                                  result: SecTrustResultType,
+                                  description: String) {
+
+    var anchorCertificatesArray: CFArray?
+    let anchorCertificates: [SecCertificate]
+    let anchorCertificatesStatus = SecTrustCopyCustomAnchorCertificates(trust, &anchorCertificatesArray)
+    if anchorCertificatesStatus == errSecSuccess, let anchorCertificatesArray = anchorCertificatesArray {
+      anchorCertificates = anchorCertificatesArray as! [SecCertificate] // swiftlint:disable:this force_cast
+    }
+    else {
+      anchorCertificates = []
+    }
+
+    Logger.default.log(
+      level: level,
+      """
+      Trust evaulation failed:
+        Result: \(trustResultDescription(result: result), privacy: .public),
+        Description: \(description, privacy: .public)
+        Certificate:
+          \(self, privacy: .public)
+        Anchor Certificates:
+          \(anchorCertificates.enumerated().map { (idx, cert) in
+            "\(idx): \(cert)" }.joined(separator: "\n      "), privacy: .public)
+      """
+    )
+  }
+
   var derEncoded: Data {
     return SecCertificateCopyData(self) as Data
+  }
+
+  func decode() throws -> Certificate {
+    return try ASN1Decoder.decode(Certificate.self, from: derEncoded)
   }
 
   func attributes() throws -> [String: Any] {
@@ -255,6 +355,26 @@ public extension SecCertificate {
       }
   }
 
+}
+
+extension SecCertificate: CustomStringConvertible {
+
+  public var description: String {
+    return SecCertificateCopySubjectSummary(self) as String? ?? "<no certificate summary>"
+  }
+}
+
+private func trustResultDescription(result: SecTrustResultType) -> String {
+  switch result {
+  case .invalid: return "Invalid"
+  case .proceed: return "Proceed"
+  case .deny: return "Deny"
+  case .unspecified: return "Unspecified"
+  case .recoverableTrustFailure: return "Recoverable Trust Failure"
+  case .fatalTrustFailure: return "Fatal Trust Failure"
+  case .otherError: return "Other Error"
+  default: return "Unknown"
+  }
 }
 
 
