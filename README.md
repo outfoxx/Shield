@@ -96,9 +96,6 @@ Supported Algorithms:
 `Digester` provides access to system provided hashing algorithms with streaming and static data interfaces.
 
 Supported Algorithms:
-* MD2
-* MD4
-* MD5
 * SHA1
 * SHA224
 * SHA256
