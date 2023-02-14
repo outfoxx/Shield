@@ -19,7 +19,7 @@ public extension Certificate.Builder {
 
   func publicKey(keyPair: SecKeyPair, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {
     return try publicKey(
-      keyPair.encodedPublicKey(),
+      BitString(bytes: keyPair.encodedPublicKey()),
       algorithm: .init(publicKey: keyPair.publicKey),
       usage: keyUsage
     )
@@ -27,7 +27,7 @@ public extension Certificate.Builder {
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> Certificate.Builder {
     return try self.publicKey(
-      publicKey.encode(),
+      BitString(bytes: publicKey.encode()),
       algorithm: .init(publicKey: publicKey),
       usage: keyUsage
     )
@@ -41,7 +41,9 @@ public extension Certificate.Builder {
 
     let signature = try signingKey.sign(data: tbsCertificate.encoded(), digestAlgorithm: digestAlgorithm)
 
-    return Certificate(tbsCertificate: tbsCertificate, signatureAlgorithm: signatureAlgorithm, signature: signature)
+    return Certificate(tbsCertificate: tbsCertificate,
+                       signatureAlgorithm: signatureAlgorithm,
+                       signature: BitString(bytes: signature))
   }
 
 }

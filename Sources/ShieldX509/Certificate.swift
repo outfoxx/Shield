@@ -17,9 +17,9 @@ public struct Certificate: Equatable, Hashable, Codable {
 
   public var tbsCertificate: TBSCertificate
   public var signatureAlgorithm: AlgorithmIdentifier
-  public var signature: Data
+  public var signature: BitString
 
-  public init(tbsCertificate: TBSCertificate, signatureAlgorithm: AlgorithmIdentifier, signature: Data) {
+  public init(tbsCertificate: TBSCertificate, signatureAlgorithm: AlgorithmIdentifier, signature: BitString) {
     self.tbsCertificate = tbsCertificate
     self.signatureAlgorithm = signatureAlgorithm
     self.signature = signature

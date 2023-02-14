@@ -230,7 +230,7 @@ public extension Certificate {
     }
 
     public func publicKey(
-      _ publicKey: Data,
+      _ publicKey: BitString,
       algorithm: AlgorithmIdentifier,
       usage keyUsage: KeyUsage? = nil
     ) throws -> Builder {
@@ -272,7 +272,7 @@ public extension Certificate {
         throw Error.missingParameter("subjectPublicKeyInfo.subjectPublicKey")
       }
 
-      let keyIdentifier = Digester.digest(subjectPublicKey, using: .sha1)
+      let keyIdentifier = Digester.digest(subjectPublicKey.bytes, using: .sha1)
 
       return try subjectKeyIdentifier(keyIdentifier)
     }
@@ -435,7 +435,7 @@ public extension Certificate {
     public static func randomSerialNumber() throws -> ASN1.Integer {
       var data = (0 ..< 20).map { _ in UInt8.random(in: 0 ... UInt8.max) } // max is 20 octets
       data[0] &= 0x7F // must be non-negative
-      return ASN1.Integer(serialized: Data(data))
+      return ASN1.Integer(derEncoded: Data(data))
     }
 
   }

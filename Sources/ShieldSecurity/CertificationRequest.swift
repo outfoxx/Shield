@@ -18,7 +18,7 @@ public extension CertificationRequest.Builder {
 
   func publicKey(keyPair: SecKeyPair, usage keyUsage: KeyUsage? = nil) throws -> CertificationRequest.Builder {
     return try publicKey(
-      keyPair.encodedPublicKey(),
+      BitString(bytes: keyPair.encodedPublicKey()),
       algorithm: .init(publicKey: keyPair.publicKey),
       usage: keyUsage
     )
@@ -26,7 +26,7 @@ public extension CertificationRequest.Builder {
 
   func publicKey(publicKey: SecKey, usage keyUsage: KeyUsage? = nil) throws -> CertificationRequest.Builder {
     return try self.publicKey(
-      publicKey.encode(),
+      BitString(bytes: publicKey.encode()),
       algorithm: .init(publicKey: publicKey),
       usage: keyUsage
     )

@@ -15,9 +15,9 @@ import PotentASN1
 public struct SubjectPublicKeyInfo: Equatable, Hashable, Codable {
 
   public var algorithm: AlgorithmIdentifier
-  public var subjectPublicKey: Data
+  public var subjectPublicKey: BitString
 
-  public init(algorithm: AlgorithmIdentifier, subjectPublicKey: Data) {
+  public init(algorithm: AlgorithmIdentifier, subjectPublicKey: BitString) {
     self.algorithm = algorithm
     self.subjectPublicKey = subjectPublicKey
   }
