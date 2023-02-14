@@ -68,7 +68,7 @@ public extension CertificationRequest {
     }
 
     public func publicKey(
-      _ publicKey: Data,
+      _ publicKey: BitString,
       algorithm: AlgorithmIdentifier,
       usage keyUsage: KeyUsage? = nil
     ) throws -> Builder {

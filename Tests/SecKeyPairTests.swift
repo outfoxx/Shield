@@ -95,6 +95,19 @@ class SecKeyPairTests: XCTestCase {
 
   }
 
+  func testCodable() throws {
+
+    let rsaData = try JSONEncoder().encode(rsaKeyPair)
+    let testRSAKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: rsaData)
+    XCTAssertEqual(testRSAKeyPair.privateKey, rsaKeyPair.privateKey)
+    XCTAssertEqual(testRSAKeyPair.publicKey, rsaKeyPair.publicKey)
+
+    let ecData = try JSONEncoder().encode(ecKeyPair)
+    let testECKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: ecData)
+    XCTAssertEqual(testECKeyPair.privateKey, ecKeyPair.privateKey)
+    XCTAssertEqual(testECKeyPair.publicKey, ecKeyPair.publicKey)
+  }
+
   func testGenerateSecureEnclave() throws {
     try XCTSkipIf(true, "Only runs on iPhone/iPad/AppleTV or a Mac with T2")
 

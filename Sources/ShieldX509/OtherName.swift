@@ -33,13 +33,14 @@ public struct OtherName: Equatable, Hashable, Codable {
     guard case let ASN1.tagged(_, data) = value else {
       throw DecodingError.dataCorruptedError(forKey: .value, in: container, debugDescription: "Expected tagged value")
     }
-    self.value = try ASN1DERReader.parse(data: data).first ?? .null
+    self.value = try ASN1Serialization.asn1(fromDER: data).first ?? .null
   }
 
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(typeId, forKey: .typeId)
-    try container.encode(ASN1.tagged(ASN1.Tag.tag(from: 0, in: .contextSpecific, constructed: true), ASN1DERWriter.write(value)), forKey: .value)
+    try container.encode(ASN1.tagged(ASN1.Tag.tag(from: 0, in: .contextSpecific, constructed: true),
+                                     ASN1Serialization.der(from: value)), forKey: .value)
   }
 
 }

@@ -281,8 +281,8 @@ extension SecKeyPair: Codable {
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: Self.CodingKeys.self)
-    privateKey = try SecKey.load(persistentReference: container.decode(Data.self, forKey: .private))
-    publicKey = try SecKey.load(persistentReference: container.decode(Data.self, forKey: .public))
+    try self.init(privateKeyRef: container.decode(Data.self, forKey: .private),
+                  publicKeyRef: container.decode(Data.self, forKey: .public))
   }
 
   public func encode(to encoder: Encoder) throws {
