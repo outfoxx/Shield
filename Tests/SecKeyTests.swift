@@ -11,62 +11,61 @@
 @testable import Shield
 import XCTest
 
-class SecKeyTests: ParameterizedTestCase {
+class SecKeyTests: XCTestCase {
 
-  static let rsaKeyPair: SecKeyPair = {
-    do {
-      return try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
-    }
-    catch {
-      fatalError("Failed to generate key pair: \(error)")
-    }
-  }()
+  func testRSA() throws {
+    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    defer { try? keyPair.delete() }
 
-  static let ecKeyPair: SecKeyPair = {
-    do {
-      return try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
-    }
-    catch {
-      fatalError("Failed to generate key pair: \(error)")
-    }
-  }()
+    print("Checking: RSA Encrypt/Decrypt")
+    try testEncryptDecrypt(keyPair)
+    testFailedEncryptError(keyPair)
+    testFailedDecryptError(keyPair)
 
-  override class func tearDown() {
-    parameterSets.forEach { try? ($0 as? SecKeyPair)?.delete() }
+    print("Checking: RSA Sign/Verify")
+    try testSignVerifySHA1(keyPair)
+    try testSignVerifySHA224(keyPair)
+    try testSignVerifySHA256(keyPair)
+    try testSignVerifySHA384(keyPair)
+    try testSignVerifySHA512(keyPair)
+    try testSignVerifyFailed(keyPair)
+
+    print("Checking: RSA Encode/Decode")
+    try testEncodeDecode(keyPair)
+
   }
 
-  override class var parameterSets: [Any] { [rsaKeyPair, ecKeyPair] }
+  func testEC() throws {
+    let keyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
 
-  private var keyPair: SecKeyPair!
+    print("Checking: EC Encrypt/Decrypt")
+    testFailedEncryptError(keyPair)
+    testFailedDecryptError(keyPair)
 
-  override func setUp() {
-    keyPair = Self.parameterSets[parameterSetIdx ?? 0] as? SecKeyPair
+    print("Checking: EC Sign/Verify")
+    try testSignVerifySHA1(keyPair)
+    try testSignVerifySHA224(keyPair)
+    try testSignVerifySHA256(keyPair)
+    try testSignVerifySHA384(keyPair)
+    try testSignVerifySHA512(keyPair)
+    try testSignVerifyFailed(keyPair)
+
+    print("Checking: EC Encode/Decode")
+    try testEncodeDecode(keyPair)
+
   }
 
-  deinit {
-    try? keyPair!.delete()
-    keyPair = nil
-  }
+  func testECGeneration() throws {
+    try [192, 256, 384, 521].forEach { keySize in
 
-  func testFailedEncryptError() {
+      let keyPair = try SecKeyPair.Builder(type: .ec, keySize: keySize).generate(label: "Test")
+      defer { try? keyPair.delete() }
 
-    do {
-      _ = try keyPair.publicKey.encrypt(plainText: try Random.generate(count: 312), padding: .oaep)
-      XCTFail("Encrypt should have thrown an error")
+      _ = try AlgorithmIdentifier(publicKey: keyPair.publicKey)
     }
-    catch _ {}
   }
 
-  func testFailedDecryptError() {
-
-    do {
-      _ = try keyPair.privateKey.decrypt(cipherText: try Random.generate(count: 312), padding: .oaep)
-      XCTFail("Decrypt should have thrown an error")
-    }
-    catch _ {}
-  }
-
-  func testSignVerifySHA1() throws {
+  func testSignVerifySHA1(_ keyPair: SecKeyPair) throws {
 
     let data = try Random.generate(count: 217)
 
@@ -79,7 +78,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testSignVerifySHA224() throws {
+  func testSignVerifySHA224(_ keyPair: SecKeyPair) throws {
 
     let data = try Random.generate(count: 217)
 
@@ -92,7 +91,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testSignVerifySHA256() throws {
+  func testSignVerifySHA256(_ keyPair: SecKeyPair) throws {
 
     let data = try Random.generate(count: 217)
 
@@ -105,7 +104,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testSignVerifySHA384() throws {
+  func testSignVerifySHA384(_ keyPair: SecKeyPair) throws {
 
     let data = try Random.generate(count: 217)
 
@@ -118,7 +117,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testSignVerifySHA512() throws {
+  func testSignVerifySHA512(_ keyPair: SecKeyPair) throws {
 
     let data = try Random.generate(count: 217)
 
@@ -131,7 +130,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testSignVerifyFailed() throws {
+  func testSignVerifyFailed(_ keyPair: SecKeyPair) throws {
 
     let invalidSignature = try keyPair.privateKey.sign(data: try Random.generate(count: 217), digestAlgorithm: .sha1)
 
@@ -142,7 +141,7 @@ class SecKeyTests: ParameterizedTestCase {
     ))
   }
 
-  func testEncodeDecode() throws {
+  func testEncodeDecode(_ keyPair: SecKeyPair) throws {
 
     let encodedPublicKey = try keyPair.publicKey.encode()
     let decodedPublicKey = try SecKey.decode(
@@ -172,8 +171,7 @@ class SecKeyTests: ParameterizedTestCase {
     XCTAssertEqual(plainText, try decodedPrivateKey.decrypt(cipherText: cipherText2, padding: .oaep))
   }
 
-  func testEncryptDecrypt() throws {
-    try XCTSkipIf(keyPair.publicKey.keyType() == .ec)
+  func testEncryptDecrypt(_ keyPair: SecKeyPair) throws {
 
     let plainText = try Random.generate(count: 171)
 
@@ -184,14 +182,22 @@ class SecKeyTests: ParameterizedTestCase {
     XCTAssertEqual(plainText, plainText2)
   }
 
-  func testECGeneration() throws {
-    try [192, 256, 384, 521].forEach { keySize in
+  func testFailedEncryptError(_ keyPair: SecKeyPair) {
 
-      let keyPair = try SecKeyPair.Builder(type: .ec, keySize: keySize).generate(label: "Test")
-      defer { try? keyPair.delete() }
-
-      _ = try AlgorithmIdentifier(publicKey: keyPair.publicKey)
+    do {
+      _ = try keyPair.publicKey.encrypt(plainText: try Random.generate(count: 312), padding: .oaep)
+      XCTFail("Encrypt should have thrown an error")
     }
+    catch _ {}
+  }
+
+  func testFailedDecryptError(_ keyPair: SecKeyPair) {
+
+    do {
+      _ = try keyPair.privateKey.decrypt(cipherText: try Random.generate(count: 312), padding: .oaep)
+      XCTFail("Decrypt should have thrown an error")
+    }
+    catch _ {}
   }
 
 }

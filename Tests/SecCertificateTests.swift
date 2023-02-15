@@ -50,10 +50,37 @@ class SecCertificateTests: XCTestCase {
 
     output(certData)
 
-    let cert = SecCertificateCreateWithData(nil, certData as CFData)!
+    let cert = try SecCertificate.from(data: certData)
 
     XCTAssertTrue(subjectName == cert.subjectName!)
     XCTAssertTrue(issuerName == cert.issuerName!)
+  }
+
+  func testGetPublicKey() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    output(certData)
+
+    let cert = try SecCertificate.from(data: certData)
+
+    XCTAssertEqual(try cert.publicKey?.encode(), try Self.keyPair.publicKey.encode())
   }
 
   func testValidatedPublicKey() throws {
@@ -77,7 +104,7 @@ class SecCertificateTests: XCTestCase {
       .encoded()
     output(rootCertData)
 
-    let rootCert = SecCertificateCreateWithData(nil, rootCertData as CFData)!
+    let rootCert = try SecCertificate.from(data: rootCertData)
 
     let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
     defer { try? certKeyPair.delete() }
@@ -101,7 +128,7 @@ class SecCertificateTests: XCTestCase {
     output(certData)
 
 
-    let cert = SecCertificateCreateWithData(nil, certData as CFData)!
+    let cert = try SecCertificate.from(data: certData)
 
     let publicKey = try cert.publicKeyValidated(trustedCertificates: [rootCert])
 
@@ -129,7 +156,7 @@ class SecCertificateTests: XCTestCase {
       .encoded()
     output(rootCertData)
 
-    let rootCert = SecCertificateCreateWithData(nil, rootCertData as CFData)!
+    let rootCert = try SecCertificate.from(data: rootCertData)
 
     let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
     defer { try? certKeyPair.delete() }
@@ -153,7 +180,7 @@ class SecCertificateTests: XCTestCase {
     output(certData)
 
 
-    let cert = SecCertificateCreateWithData(nil, certData as CFData)!
+    let cert = try SecCertificate.from(data: certData)
 
     let publicKey = try await cert.publicKeyValidated(trustedCertificates: [rootCert])
 
@@ -164,32 +191,30 @@ class SecCertificateTests: XCTestCase {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
 
-    let rootCert = SecCertificateCreateWithData(
-      nil,
+    let rootCert = try SecCertificate.from(data:
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
         .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
-        .encoded() as CFData
-    )!
+        .encoded()
+    )
 
     let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
 
-    let cert = SecCertificateCreateWithData(
-      nil,
+    let cert = try SecCertificate.from(data:
       try Certificate.Builder()
         .subject(name: certName)
         .issuer(name: rootName)
         .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
         .build(signingKey: certKeyPair.privateKey, digestAlgorithm: .sha256)
-        .encoded() as CFData
-    )!
+        .encoded()
+    )
 
     XCTAssertThrowsError(try cert.publicKeyValidated(trustedCertificates: [rootCert]))
   }
@@ -198,32 +223,30 @@ class SecCertificateTests: XCTestCase {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
 
-    let rootCert = SecCertificateCreateWithData(
-      nil,
+    let rootCert = try SecCertificate.from(data:
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
         .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
-        .encoded() as CFData
-    )!
+        .encoded()
+    )
 
     let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
 
-    let cert = SecCertificateCreateWithData(
-      nil,
+    let cert = try SecCertificate.from(data:
       try Certificate.Builder()
         .subject(name: certName)
         .issuer(name: rootName)
         .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
-        .encoded() as CFData
-    )!
+        .encoded()
+    )
 
     do {
       _ = try await cert.publicKeyValidated(trustedCertificates: [rootCert])

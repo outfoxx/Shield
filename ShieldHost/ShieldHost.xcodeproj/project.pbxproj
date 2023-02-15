@@ -11,7 +11,6 @@
 		AA2151F42975D9D00072F6CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F32975D9D00072F6CA /* Assets.xcassets */; };
 		AA2151F82975D9D00072F6CA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */; };
 		AA2152422975DF5F0072F6CA /* CertificationRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */; };
-		AA2152432975DF5F0072F6CA /* ParameterizedTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */; };
 		AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152362975DF5F0072F6CA /* HmacTests.swift */; };
 		AA2152452975DF5F0072F6CA /* OIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152372975DF5F0072F6CA /* OIDTests.swift */; };
 		AA2152462975DF5F0072F6CA /* DistinguishedNameComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */; };
@@ -39,7 +38,6 @@
 		AA5768E72975E87C00142200 /* SecIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */; };
 		AA5768E82975E87C00142200 /* CryptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152392975DF5F0072F6CA /* CryptorTests.swift */; };
 		AA5768E92975E87C00142200 /* CertificateBuilderRSATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523E2975DF5F0072F6CA /* CertificateBuilderRSATests.swift */; };
-		AA5768EA2975E87C00142200 /* ParameterizedTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */; };
 		AA5768EB2975E87C00142200 /* OIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152372975DF5F0072F6CA /* OIDTests.swift */; };
 		AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523D2975DF5F0072F6CA /* DigestTests.swift */; };
 		AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */; };
@@ -464,7 +462,6 @@
 				AA2152472975DF5F0072F6CA /* CryptorTests.swift in Sources */,
 				AA21524B2975DF5F0072F6CA /* DigestTests.swift in Sources */,
 				AA21524F2975DF5F0072F6CA /* SecKeyPairTests.swift in Sources */,
-				AA2152432975DF5F0072F6CA /* ParameterizedTest.swift in Sources */,
 				AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -488,7 +485,6 @@
 				AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */,
 				AA5768E82975E87C00142200 /* CryptorTests.swift in Sources */,
 				AA5768E22975E87C00142200 /* DistinguishedNameComposerTests.swift in Sources */,
-				AA5768EA2975E87C00142200 /* ParameterizedTest.swift in Sources */,
 				AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */,
 				AA5768E52975E87C00142200 /* CertificationRequestBuilderTests.swift in Sources */,
 				AA5768E32975E87C00142200 /* SecKeyTests.swift in Sources */,
