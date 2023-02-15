@@ -8,6 +8,7 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
+import CryptoKit
 @testable import Shield
 import XCTest
 
@@ -109,7 +110,7 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testGenerateSecureEnclave() throws {
-    try XCTSkipIf(true, "Only runs on iPhone/iPad/AppleTV or a Mac with T2")
+    try XCTSkipIf(!isHostedTesting() || !SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV or a Mac with T2")
 
     let keyPairBuilder = SecKeyPair.Builder(type: .ec, keySize: 256)
 
@@ -119,3 +120,29 @@ class SecKeyPairTests: XCTestCase {
   }
 
 }
+
+
+#if canImport(AppKit)
+import AppKit
+
+func isHostedTesting() -> Bool {
+  return NSApplication.shared.delegate != nil
+}
+#elseif canImport(WatchKit)
+import WatchKit
+
+func isHostedTesting() -> Bool {
+  return WKApplication.shared().delegate != nil
+}
+#elseif canImport(UIKit)
+import UIKit
+
+func isHostedTesting() -> Bool {
+  return UIApplication.shared.delegate != nil
+}
+#else
+func isHostedTesting() -> Bool {
+  print("#### Never Hosted")
+  return false
+}
+#endif
