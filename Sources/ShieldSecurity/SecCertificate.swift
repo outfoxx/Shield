@@ -84,6 +84,7 @@ public extension SecCertificate {
     return key
   }
 
+#if swift(>=5.5)
   func publicKeyValidated(trustedCertificates: [SecCertificate]) async throws -> SecKey {
 
     let trust = try createCertificateValidationTrust(anchorCertificates: trustedCertificates)
@@ -96,6 +97,7 @@ public extension SecCertificate {
 
     return key
   }
+#endif
 
   private func createCertificateValidationTrust(anchorCertificates: [SecCertificate]) throws -> SecTrust {
 
@@ -122,6 +124,7 @@ public extension SecCertificate {
     }
   }
 
+#if swift(>=5.5)
   private func evaluateTrust(_ trust: SecTrust) async throws {
 
     let (result, error): (Bool, CFError?) = try await withCheckedThrowingContinuation { continuation in
@@ -144,6 +147,7 @@ public extension SecCertificate {
       try checkFailedTrustEvaluation(trust, error: error)
     }
   }
+#endif
 
   private func checkFailedTrustEvaluation(_ trust: SecTrust, error: CFError?) throws {
 
