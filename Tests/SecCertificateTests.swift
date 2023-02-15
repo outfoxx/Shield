@@ -135,6 +135,7 @@ class SecCertificateTests: XCTestCase {
     XCTAssertEqual(try publicKey.encode(), try certKeyPair.publicKey.encode())
   }
 
+#if swift(>=5.5)
   func testValidatedPublicKeyAsync() async throws {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
@@ -186,6 +187,7 @@ class SecCertificateTests: XCTestCase {
 
     XCTAssertEqual(try publicKey.encode(), try certKeyPair.publicKey.encode())
   }
+#endif
 
   func testValidatedPublicKeyWithInvalidCertificate() throws {
 
@@ -219,6 +221,7 @@ class SecCertificateTests: XCTestCase {
     XCTAssertThrowsError(try cert.publicKeyValidated(trustedCertificates: [rootCert]))
   }
 
+#if swift(>=5.5)
   func testValidatedPublicKeyAsyncWithInvalidCertificate() async throws {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
@@ -258,6 +261,7 @@ class SecCertificateTests: XCTestCase {
       }
     }
   }
+#endif
 
   func output(_ data: Data) {
     guard Self.outputEnabled else { return }
