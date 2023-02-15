@@ -15,6 +15,7 @@ install-tools:
 clean:
 	@rm -rf TestResults
 	@rm -rf .derived-data
+	@rm -rf .build
 
 make-test-results-dir:
 	mkdir -p TestResults
@@ -47,3 +48,17 @@ lint: make-test-results-dir
 
 view_lint: lint
 	open TestResults/lint.html
+
+doc-symbol-graphs:
+	rm -rf .build/all-symbol-graphs || 0
+	rm -rf .build/symbol-graphs || 0
+	mkdir -p .build/all-symbol-graphs
+	mkdir -p .build/symbol-graphs
+	swift build -Xswiftc -emit-symbol-graph -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/all-symbol-graphs
+	cp .build/all-symbol-graphs/Shield*.json .build/symbol-graphs
+
+generate-docs: doc-symbol-graphs
+	swift package --allow-writing-to-directory .build/docs generate-documentation --enable-inherited-docs --additional-symbol-graph-dir .build/symbol-graphs --target Shield --output-path .build/docs --transform-for-static-hosting --hosting-base-path Shield
+
+preview-docs: doc-symbol-graphs
+	swift package --disable-sandbox preview-documentation --enable-inherited-docs --additional-symbol-graph-dir .build/symbol-graphs --target Shield
