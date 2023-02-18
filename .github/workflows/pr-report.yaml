@@ -1,0 +1,94 @@
+name: Report PR
+
+on:
+  workflow_run:
+    workflows: [PR]
+    types: [completed]
+
+jobs:
+  
+  sonar:
+
+    runs-on: macos-12
+
+    if: github.event.workflow_run.conclusion == 'success'
+
+    steps:
+
+    - name: Install Tools
+      run: |
+        brew install sonar-scanner
+
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Download Build
+      uses: actions/download-artifact@v3
+      with:
+        name: build-${{ github.event.number }}
+        path: '.'
+
+    - name: Sonar Scanner
+      run: sonar-scanner
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  report-test-results:
+  
+    runs-on: macos-12
+
+    continue-on-error: true
+
+    steps:
+
+    - name: Download macOS Test Results
+      uses: actions/download-artifact@v3
+      with:
+        name: test-results-macos-${{ github.event.number }}
+        path: "."
+
+    - name: Report macOS Test Results
+      uses: kishikawakatsumi/xcresulttool@v1
+      with:
+          title: Test Results macOS
+          path: ./TestResults/macos.xcresult
+
+    - name: Download iOS Test Results
+      uses: actions/download-artifact@v3
+      with:
+        name: test-results-ios-${{ github.event.number }}
+        path: "."
+
+    - name: Report iOS Test Results
+      uses: kishikawakatsumi/xcresulttool@v1
+      with:
+          title: Test Results iOS
+          path: ./TestResults/ios.xcresult
+
+    - name: Download tvOS Test Results
+      uses: actions/download-artifact@v3
+      with:
+        name: test-results-tvos-${{ github.event.number }}
+        path: "."
+
+    - name: Report tvOS Test Results
+      uses: kishikawakatsumi/xcresulttool@v1
+      with:
+          title: Test Results tvOS
+          path: ./TestResults/tvos.xcresult
+
+    - name: Download watchOS Test Results
+      uses: actions/download-artifact@v3
+      with:
+        name: test-results-watchos-${{ github.event.number }}
+        path: "."
+
+
+    - name: Report watchOS Test Results
+      uses: kishikawakatsumi/xcresulttool@v1
+      with:
+          title: Test Results watchOS
+          path: ./TestResults/watchos.xcresult

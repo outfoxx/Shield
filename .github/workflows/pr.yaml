@@ -1,7 +1,8 @@
-name: CI
+name: PR
 
 on:
-  push:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
     branches: [ main ]
 
 jobs:
@@ -15,13 +16,11 @@ jobs:
     - name: Install Tools
       run: |
         brew tap a7ex/homebrew-formulae
-        brew install xcbeautify sonar-scanner
+        brew install xcbeautify
       env:
         HOMEBREW_NO_INSTALL_CLEANUP: 1
 
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     
     - name: Select Xcode
       run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
@@ -37,11 +36,14 @@ jobs:
     - name: Convert Coverage
       run: xcrun llvm-cov show -instr-profile=.build/debug/codecov/default.profdata .build/debug/ShieldPackageTests.xctest/Contents/MacOS/ShieldPackageTests > .build/coverage.report
 
-    - name: Sonar Scanner
-      run: sonar-scanner
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Archive Build
+      run: tar -czf build.tar.gz .build
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-${{ github.event.number }}
+        path: build.tar.gz
 
   build-test:
 
@@ -73,6 +75,7 @@ jobs:
     - name: Report Test Results
       uses: kishikawakatsumi/xcresulttool@v1
       if: always()
+      continue-on-error: true
       with:
           title: Test Results ${{ matrix.platform }}
           path: ./TestResults/${{ matrix.platform }}.xcresult
