@@ -22,6 +22,7 @@ public struct SecKeyPair {
 
   public enum Error: Int, Swift.Error {
     case generateFailed
+    case failedToCopyPublicKeyFromPrivateKey
     case noMatchingKey
     case itemAddFailed
     case itemDeleteFailed
@@ -71,6 +72,7 @@ public struct SecKeyPair {
       var attrs: [CFString: Any] = [
         kSecAttrKeyType: type.systemValue,
         kSecAttrKeySizeInBits: keySize,
+        kSecAttrIsPermanent : true
       ]
 
       if let label = label {
@@ -80,32 +82,19 @@ public struct SecKeyPair {
       if flags.contains(.secureEnclave) {
         attrs[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave
       }
-
-      var publicKey: SecKey?, privateKey: SecKey?
-      let status = SecKeyGeneratePair(attrs as CFDictionary, &publicKey, &privateKey)
-      if status != errSecSuccess {
-        throw SecKeyPair.Error.generateFailed
+        
+      var error: Unmanaged<CFError>?
+        
+      guard let privateKey = SecKeyCreateRandomKey(attrs as CFDictionary, &error) else {
+          throw SecKeyPair.Error.generateFailed
       }
-
-      #if os(iOS) || os(watchOS) || os(tvOS)
-
-        if !flags.contains(.secureEnclave) {
-          try privateKey!.save()
-        }
-
-        try publicKey!.save()
-
-      #elseif os(macOS)
-
-        if flags.contains(.secureEnclave) {
-          try publicKey!.save()
-        }
-
-      #endif
-
-      return SecKeyPair(privateKey: privateKey!, publicKey: publicKey!)
+      
+      guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+          throw SecKeyPair.Error.failedToCopyPublicKeyFromPrivateKey
+      }
+      
+      return SecKeyPair(privateKey: privateKey, publicKey: publicKey)
     }
-
   }
 
 
