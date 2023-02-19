@@ -35,9 +35,6 @@ jobs:
     - name: Convert Coverage
       run: xcrun llvm-cov show -instr-profile=.build/debug/codecov/default.profdata .build/debug/ShieldPackageTests.xctest/Contents/MacOS/ShieldPackageTests > .build/coverage.report
 
-    - name: Save PR Number
-      run: echo ${{ github.event.number }} > .build/pr_number
-
     - name: Upload Build Results
       uses: actions/upload-artifact@v3
       with:
@@ -45,7 +42,6 @@ jobs:
         # "./dummy" is included to ensure ".build" path is archived
         path: |
           ./dummy
-          .build/pr_number
           .build/swiftlint.json
           .build/coverage.report
 

@@ -45,40 +45,22 @@ jobs:
     - name: Extract Build Results
       run: tar -xzf build-results.tar.gz
 
-    - name: Read PR Number
-      id: pr_number
-      uses: juliangruber/read-file-action@v1
+    - name: Get PR Info
+      uses: potiuk/get-workflow-origin@v1_5
+      id: pr_info
       with:
-        path: .build/pr_number
-
-    - name: Get PR Data
-      uses: octokit/request-action@v2.x
-      id: pr_data
-      with:
-        route: GET /repos/:name/pulls/:number
-      env:
-        INPUT_NAME: ${{ github.event.repository.full_name }}
-        INPUT_NUMBER: ${{ steps.pr_number.outputs.content }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        sourceRunId: ${{ github.event.workflow_run.id }}
 
     - name: Checkout PR
       uses: actions/checkout@v3
       with:
-        repository: ${{ github.event.workflow_run.head_repository.full_name }}
-        ref: ${{ github.event.workflow_run.head_sha }}
+        ref: ${{ steps.pr_info.outputs.mergeCommitSha }}
         fetch-depth: 0
-
-    - name: Checkout Base Branch
-      run: |
-        git remote add upstream ${{ github.event.repository.clone_url }}
-        git fetch upstream
-        git checkout -B ${{ fromJson(steps.pr_data.outputs.data).base.ref }} upstream/${{ fromJson(steps.pr_data.outputs.data).base.ref }}
-        git checkout ${{ github.event.workflow_run.head_sha }}
-        git clean -ffdx && git reset --hard HEAD
 
     - name: Sonar Scanner
       run: |
-        sonar-scanner -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }} -Dsonar.pullrequest.key=${{ fromJson(steps.pr_data.outputs.data).number }} -Dsonar.pullrequest.branch=${{ fromJson(steps.pr_data.outputs.data).head.ref }} -Dsonar.pullrequest.base=${{ fromJson(steps.pr_data.outputs.data).base.ref }}
+        sonar-scanner -Dsonar.scm.revision=${{ steps.pr_info.outputs.sourceHeadSha }} -Dsonar.pullrequest.key=${{ steps.pr_info.outputs.pullRequestNumber }} -Dsonar.pullrequest.branch=${{ steps.pr_info.outputs.sourceHeadBranch }} -Dsonar.pullrequest.base=${{ steps.pr_info.outputs.targetBranch }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -92,6 +74,13 @@ jobs:
       checks: write
 
     steps:
+
+    - name: Get PR Info
+      uses: potiuk/get-workflow-origin@v1_5
+      id: pr_info
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        sourceRunId: ${{ github.event.workflow_run.id }}
 
     - name: Download Test Result Archives
       uses: actions/github-script@v6
@@ -129,7 +118,8 @@ jobs:
       uses: kdubb/xcresulttool@v1
       continue-on-error: true
       with:
-          sha: ${{ github.event.workflow_run.head_sha }}
+          repo: ${{ steps.pr_info.outputs.sourceHeadRepo }} 
+          sha: ${{ steps.pr_info.outputs.sourceHeadSha }}
           title: Test Results macOS
           path: ./TestResults/macOS.xcresult
           upload-bundles: never
@@ -139,7 +129,8 @@ jobs:
       uses: kdubb/xcresulttool@v1
       continue-on-error: true
       with:
-          sha: ${{ github.event.workflow_run.head_sha }}
+          repo: ${{ steps.pr_info.outputs.sourceHeadRepo }} 
+          sha: ${{ steps.pr_info.outputs.sourceHeadSha }}
           title: Test Results iOS
           path: ./TestResults/iOS.xcresult
           upload-bundles: never
@@ -149,7 +140,8 @@ jobs:
       uses: kdubb/xcresulttool@v1
       continue-on-error: true
       with:
-          sha: ${{ github.event.workflow_run.head_sha }}
+          repo: ${{ steps.pr_info.outputs.sourceHeadRepo }} 
+          sha: ${{ steps.pr_info.outputs.sourceHeadSha }}
           title: Test Results tvOS
           path: ./TestResults/tvOS.xcresult
           upload-bundles: never
@@ -159,7 +151,8 @@ jobs:
       uses: kdubb/xcresulttool@v1
       continue-on-error: true
       with:
-          sha: ${{ github.event.workflow_run.head_sha }}
+          repo: ${{ steps.pr_info.outputs.sourceHeadRepo }} 
+          sha: ${{ steps.pr_info.outputs.sourceHeadSha }}
           title: Test Results watchOS
           path: ./TestResults/watchOS.xcresult
           upload-bundles: never
