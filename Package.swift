@@ -22,7 +22,10 @@ let package = Package(
   targets: [
     .target(
       name: "Shield",
-      dependencies: ["ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"]
+      dependencies: ["ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"],
+      resources: [
+        .process("Shield.docc")
+      ]
     ),
     .target(
       name: "ShieldOID",
