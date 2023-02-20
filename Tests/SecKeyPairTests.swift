@@ -110,7 +110,11 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testGenerateSecureEnclave() throws {
-    try XCTSkipIf(!isHostedTesting() || !SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV or a Mac with T2")
+    #if os(macOS)
+      try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
+    #else
+      try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
+    #endif
 
     let keyPairBuilder = SecKeyPair.Builder(type: .ec, keySize: 256)
 
@@ -120,29 +124,3 @@ class SecKeyPairTests: XCTestCase {
   }
 
 }
-
-
-#if canImport(AppKit)
-import AppKit
-
-func isHostedTesting() -> Bool {
-  return NSApplication.shared.delegate != nil
-}
-#elseif canImport(WatchKit)
-import WatchKit
-
-func isHostedTesting() -> Bool {
-  return WKApplication.shared().delegate != nil
-}
-#elseif canImport(UIKit)
-import UIKit
-
-func isHostedTesting() -> Bool {
-  return UIApplication.shared.delegate != nil
-}
-#else
-func isHostedTesting() -> Bool {
-  print("#### Never Hosted")
-  return false
-}
-#endif

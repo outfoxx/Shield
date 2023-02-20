@@ -42,6 +42,8 @@
 		AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523D2975DF5F0072F6CA /* DigestTests.swift */; };
 		AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */; };
 		AA5768EE2975E87C00142200 /* DistinguishedNameParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */; };
+		AADD77C929A3E278005D0955 /* CertificateDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */; };
+		AADD77CA29A3E278005D0955 /* CertificateDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,7 +94,6 @@
 		AA2151FD2975D9D00072F6CA /* ShieldHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShieldHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA21521F2975DCA40072F6CA /* Shield */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Shield; path = ..; sourceTree = "<group>"; };
 		AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificationRequestBuilderTests.swift; sourceTree = "<group>"; };
-		AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParameterizedTest.swift; sourceTree = "<group>"; };
 		AA2152362975DF5F0072F6CA /* HmacTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HmacTests.swift; sourceTree = "<group>"; };
 		AA2152372975DF5F0072F6CA /* OIDTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OIDTests.swift; sourceTree = "<group>"; };
 		AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DistinguishedNameComposerTests.swift; sourceTree = "<group>"; };
@@ -112,6 +113,7 @@
 		AA5768A92975E7C400142200 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA5768AC2975E7C400142200 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShieldHost Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateDecoderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,8 +205,8 @@
 		AA2152332975DF5F0072F6CA /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */,
 				AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */,
-				AA2152352975DF5F0072F6CA /* ParameterizedTest.swift */,
 				AA2152362975DF5F0072F6CA /* HmacTests.swift */,
 				AA2152372975DF5F0072F6CA /* OIDTests.swift */,
 				AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */,
@@ -462,6 +464,7 @@
 				AA2152472975DF5F0072F6CA /* CryptorTests.swift in Sources */,
 				AA21524B2975DF5F0072F6CA /* DigestTests.swift in Sources */,
 				AA21524F2975DF5F0072F6CA /* SecKeyPairTests.swift in Sources */,
+				AADD77C929A3E278005D0955 /* CertificateDecoderTests.swift in Sources */,
 				AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -490,6 +493,7 @@
 				AA5768E32975E87C00142200 /* SecKeyTests.swift in Sources */,
 				AA5768EB2975E87C00142200 /* OIDTests.swift in Sources */,
 				AA5768E92975E87C00142200 /* CertificateBuilderRSATests.swift in Sources */,
+				AADD77CA29A3E278005D0955 /* CertificateDecoderTests.swift in Sources */,
 				AA5768E62975E87C00142200 /* SecKeyPairTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
