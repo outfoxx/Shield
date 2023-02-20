@@ -21,6 +21,19 @@ jobs:
       env:
         HOMEBREW_NO_INSTALL_CLEANUP: 1
 
+    - name: Get PR Info
+      uses: potiuk/get-workflow-origin@v1_5
+      id: pr_info
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        sourceRunId: ${{ github.event.workflow_run.id }}
+
+    - name: Checkout PR
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ steps.pr_info.outputs.mergeCommitSha }}
+        fetch-depth: 0
+
     - name: Download Build
       uses: actions/github-script@v6
       with:
@@ -44,19 +57,6 @@ jobs:
 
     - name: Extract Build Results
       run: tar -xzf build-results.tar.gz
-
-    - name: Get PR Info
-      uses: potiuk/get-workflow-origin@v1_5
-      id: pr_info
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        sourceRunId: ${{ github.event.workflow_run.id }}
-
-    - name: Checkout PR
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ steps.pr_info.outputs.mergeCommitSha }}
-        fetch-depth: 0
 
     - name: Sonar Scanner
       run: |
