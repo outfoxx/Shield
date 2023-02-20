@@ -69,6 +69,7 @@ doc-symbol-graphs:
 	cp $(ALLSYMDIR)/Shield*.json $(SYMDIR)
 
 generate-docs-html:
+	mkidr -p $(DOCSDIR)
 	swift package --allow-writing-to-directory $(DOCSDIR) generate-documentation --enable-inherited-docs --additional-symbol-graph-dir $(SYMDIR) --target Shield --output-path $(DOCSDIR) --transform-for-static-hosting $(BASEPATH) --level detailed --diagnostic-level hint
 
 generate-docs: clean doc-symbol-graphs generate-docs-html
