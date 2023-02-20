@@ -29,15 +29,19 @@ define buildtest
 endef
 
 build-test-macos: check-tools
+	rm -rf TestResults/macOS*
 	$(call buildtest,,macOS,platform=macos)
 
 build-test-ios: check-tools
+	rm -rf TestResults/iOS*
 	$(call buildtest,,iOS,$(shell findsimulator --os-type ios "iPhone"))
 
 build-test-tvos: check-tools
+	rm -rf TestResults/tvOS*
 	$(call buildtest,,tvOS,$(shell findsimulator --os-type tvos "Apple TV"))
 
 build-test-watchos: check-tools
+	rm -rf TestResults/watchOS*
 	$(call buildtest,Watch,watchOS,$(shell findsimulator --os-type watchos "Apple Watch"))
 
 format:	
