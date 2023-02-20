@@ -49,16 +49,29 @@ lint: make-test-results-dir
 view_lint: lint
 	open TestResults/lint.html
 
-doc-symbol-graphs:
-	rm -rf .build/all-symbol-graphs || 0
-	rm -rf .build/symbol-graphs || 0
-	mkdir -p .build/all-symbol-graphs
-	mkdir -p .build/symbol-graphs
-	swift build -Xswiftc -emit-symbol-graph -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/all-symbol-graphs
-	cp .build/all-symbol-graphs/Shield*.json .build/symbol-graphs
+ifdef SUBDIR
+DOCSDIR:=.build/docs/$(SUBDIR)
+BASEPATH:=--hosting-base-path Shield/$(SUBDIR)
+else
+DOCSDIR:=.build/docs
+BASEPATH:=
+endif
 
-generate-docs: doc-symbol-graphs
-	swift package --allow-writing-to-directory .build/docs generate-documentation --enable-inherited-docs --additional-symbol-graph-dir .build/symbol-graphs --target Shield --output-path .build/docs --transform-for-static-hosting --hosting-base-path Shield
+ALLSYMDIR:=.build/all-symbol-graphs
+SYMDIR:=.build/symbol-graphs
+
+doc-symbol-graphs:
+	rm -rf $(ALLSYMDIR) || 0
+	rm -rf $(SYMDIR) || 0
+	mkdir -p $(ALLSYMDIR)
+	mkdir -p $(SYMDIR)
+	swift build -Xswiftc -D -Xswiftc DOCS -Xswiftc -emit-symbol-graph -Xswiftc -emit-symbol-graph-dir -Xswiftc $(ALLSYMDIR)
+	cp $(ALLSYMDIR)/Shield*.json $(SYMDIR)
+
+generate-docs-html:
+	swift package --allow-writing-to-directory $(DOCSDIR) generate-documentation --enable-inherited-docs --additional-symbol-graph-dir $(SYMDIR) --target Shield --output-path $(DOCSDIR) --transform-for-static-hosting $(BASEPATH) --level detailed --diagnostic-level hint
+
+generate-docs: clean doc-symbol-graphs generate-docs-html
 
 preview-docs: doc-symbol-graphs
-	swift package --disable-sandbox preview-documentation --enable-inherited-docs --additional-symbol-graph-dir .build/symbol-graphs --target Shield
+	swift package --disable-sandbox preview-documentation --enable-inherited-docs --additional-symbol-graph-dir  $(SYMDIR) --target Shield

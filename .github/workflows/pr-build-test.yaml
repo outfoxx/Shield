@@ -45,6 +45,9 @@ jobs:
           .build/swiftlint.json
           .build/coverage.report
 
+    - name: Check Docs Build
+      run: make generate-docs
+
   build-test:
 
     permissions:
