@@ -72,7 +72,7 @@ public struct SecKeyPair {
       var attrs: [CFString: Any] = [
         kSecAttrKeyType: type.systemValue,
         kSecAttrKeySizeInBits: keySize,
-        kSecAttrIsPermanent : true
+        kSecAttrIsPermanent: true,
       ]
 
       if let label = label {
@@ -82,17 +82,17 @@ public struct SecKeyPair {
       if flags.contains(.secureEnclave) {
         attrs[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave
       }
-        
+
       var error: Unmanaged<CFError>?
-        
+
       guard let privateKey = SecKeyCreateRandomKey(attrs as CFDictionary, &error) else {
           throw SecKeyPair.Error.generateFailed
       }
-      
+
       guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
           throw SecKeyPair.Error.failedToCopyPublicKeyFromPrivateKey
       }
-      
+
       return SecKeyPair(privateKey: privateKey, publicKey: publicKey)
     }
   }
