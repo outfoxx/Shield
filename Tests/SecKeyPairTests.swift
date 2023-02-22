@@ -122,7 +122,23 @@ class SecKeyPairTests: XCTestCase {
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    XCTAssertTrue(try rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert]))
+    let finishedX = expectation(description: "finished")
+
+    DispatchQueue.global(qos: .userInitiated).async {
+      defer { finishedX.fulfill() }
+      do {
+
+        let result = try self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+
+        XCTAssertTrue(result)
+
+      }
+      catch {
+        XCTFail("\(error)")
+      }
+    }
+
+    waitForExpectations(timeout: 10.0)
   }
 
   func testImportExport() throws {
