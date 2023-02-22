@@ -268,6 +268,29 @@ public struct SecKeyPair {
     return try encodedPublicKey() == keyData
   }
 
+#if swift(>=5.5)
+  /// Check if the public key of the key pair matches the public key in a certificate.
+  ///
+  /// The certificate is first validated as a trusted certificate and then the key pair
+  /// is checked against the public key of the key pair.
+  ///
+  /// - Parameters:
+  ///   - certificate: Certificate to check for equality with the key pair's public key.
+  ///   - trustedCertificates: Any certificates needed to complete the "chain-of-trust" for `certificate`.
+  /// - Returns: True if the public key of `certificate` and the key pair match.
+  ///
+  public func matchesCertificate(
+    certificate: SecCertificate,
+    trustedCertificates: [SecCertificate]
+  ) async throws -> Bool {
+
+    let keyData =
+      try await certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
+
+    return try encodedPublicKey() == keyData
+  }
+#endif
+
 
   /// Structure representing keys exported using ``export(password:derivedKeyLength:keyDerivationTiming:)``.
   ///

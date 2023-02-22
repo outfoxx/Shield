@@ -141,6 +141,27 @@ class SecKeyPairTests: XCTestCase {
     waitForExpectations(timeout: 10.0)
   }
 
+#if swift(>=5.5)
+  func testCertificateMatchingAsync() async throws {
+
+    let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: name)
+        .issuer(name: name)
+        .publicKey(keyPair: rsaKeyPair, usage: [.keyEncipherment])
+        .valid(for: 86400 * 5)
+        .build(signingKey: rsaKeyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    let cert = SecCertificateCreateWithData(nil, certData as CFData)!
+
+    let result = try await self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+    XCTAssertTrue(result)
+  }
+#endif
+
   func testImportExport() throws {
 
     let exportedKeyData = try rsaKeyPair.export(password: "123")
