@@ -33,6 +33,52 @@ class SecKeyPairTests: XCTestCase {
     try super.tearDownWithError()
   }
 
+  func testGeneratedRSA() throws {
+
+    let privateKeyAttrs = [
+      kSecAttrLabel: "Test RSA Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var privateKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
+    XCTAssertNotNil(privateKeyRef)
+
+    let publicKeyAttrs = [
+      kSecAttrLabel: "Test RSA Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPublic,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var publicKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertNotNil(publicKeyRef)
+  }
+
+  func testGeneratedEC() throws {
+
+    let privateKeyAttrs = [
+      kSecAttrLabel: "Test EC Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var privateKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
+    XCTAssertNotNil(privateKeyRef)
+
+    let publicKeyAttrs = [
+      kSecAttrLabel: "Test EC Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPublic,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var publicKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertNotNil(publicKeyRef)
+  }
+
   func testPersistentLoadRSA() throws {
 
     let (privateKeyRef, publicKeyRef) = try rsaKeyPair.persistentReferences()
@@ -110,17 +156,49 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testGenerateSecureEnclave() throws {
-    #if os(macOS)
-      try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
-    #else
-      try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
-    #endif
+#if os(macOS)
+    try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
+#else
+    try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
+#endif
 
     let keyPairBuilder = SecKeyPair.Builder(type: .ec, keySize: 256)
 
     var keyPair: SecKeyPair?
     XCTAssertNoThrow(keyPair = try keyPairBuilder.generate(label: "Test Secure Key", flags: [.secureEnclave]))
     XCTAssertNoThrow(try keyPair?.delete())
+  }
+
+  func testGeneratedSecureEnclave() throws {
+#if os(macOS)
+    try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
+#else
+    try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
+#endif
+
+    let ecKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test Secure Enclave EC Key",
+                                                                             flags: [.secureEnclave])
+    defer { try? ecKeyPair.delete() }
+
+    let privateKeyAttrs = [
+      kSecAttrLabel: "Test Secure Enclave EC Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var privateKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
+    XCTAssertNotNil(privateKeyRef)
+
+    let publicKeyAttrs = [
+      kSecAttrLabel: "Test Secure Enclave EC Key",
+      kSecClass: kSecClassKey,
+      kSecAttrKeyClass: kSecAttrKeyClassPublic,
+      kSecReturnRef: kCFBooleanTrue!,
+    ] as CFDictionary
+    var publicKeyRef: CFTypeRef?
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertNotNil(publicKeyRef)
   }
 
 }
