@@ -40,15 +40,15 @@ public extension CertificationRequest {
 
     public func addAlternativeNames(names: GeneralNames) throws -> Builder {
 
-      var attributes = self.attributes ?? CRAttributes()
-      var extensions = try attributes.first(Extensions.self) ?? Extensions()
+      var updatedAttributes = self.attributes ?? CRAttributes()
+      var updatedExtensions = try updatedAttributes.first(Extensions.self) ?? Extensions()
 
-      let currentNames = try extensions.first(SubjectAltName.self)?.names ?? []
-      try extensions.replace(value: SubjectAltName(names: currentNames + names))
+      let currentNames = try updatedExtensions.first(SubjectAltName.self)?.names ?? []
+      try updatedExtensions.replace(value: SubjectAltName(names: currentNames + names))
 
-      attributes.replace(singleValued: extensions)
+      updatedAttributes.replace(singleValued: updatedExtensions)
 
-      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: attributes)
+      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: updatedAttributes)
     }
 
     public func alternativeNames(names: GeneralName...) throws -> Builder {
@@ -57,14 +57,14 @@ public extension CertificationRequest {
 
     public func alternativeNames(names: GeneralNames) throws -> Builder {
 
-      var attributes = self.attributes ?? CRAttributes()
-      var extensions = try attributes.first(Extensions.self) ?? Extensions()
+      var updatedAttributes = self.attributes ?? CRAttributes()
+      var updatedExtensions = try updatedAttributes.first(Extensions.self) ?? Extensions()
 
-      try extensions.replace(value: SubjectAltName(names: names))
+      try updatedExtensions.replace(value: SubjectAltName(names: names))
 
-      attributes.replace(singleValued: extensions)
+      updatedAttributes.replace(singleValued: updatedExtensions)
 
-      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: attributes)
+      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: updatedAttributes)
     }
 
     public func publicKey(
@@ -79,9 +79,9 @@ public extension CertificationRequest {
         builder = try builder.extension(Extension(value: keyUsage))
       }
 
-      let subjectPKInfo = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
+      let updatedSubjectPKI = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
 
-      return Builder(subject: builder.subject, subjectPKInfo: subjectPKInfo, attributes: builder.attributes)
+      return Builder(subject: builder.subject, subjectPKInfo: updatedSubjectPKI, attributes: builder.attributes)
     }
 
     public func extendedKeyUsage(keyPurposes: Set<OID>, isCritical: Bool) throws -> Builder {
@@ -93,14 +93,14 @@ public extension CertificationRequest {
 
     public func `extension`(_ extension: Extension) throws -> Builder {
 
-      var attributes = self.attributes ?? CRAttributes()
-      var extensions = try attributes.first(Extensions.self) ?? Extensions()
+      var updatedAttributes = self.attributes ?? CRAttributes()
+      var updatedExtensions = try updatedAttributes.first(Extensions.self) ?? Extensions()
 
-      extensions.replace(`extension`)
+      updatedExtensions.replace(`extension`)
 
-      attributes.replace(singleValued: extensions)
+      updatedAttributes.replace(singleValued: updatedExtensions)
 
-      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: attributes)
+      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: updatedAttributes)
     }
 
     public func buildInfo() throws -> CertificationRequestInfo {

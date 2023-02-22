@@ -223,12 +223,3 @@ extension GeneralName: Codable {
   }
 
 }
-
-private func encodeToSequence<T: Encodable>(_ value: T, using schema: Schema) throws -> [ASN1]? {
-  return try ASN1Encoder(schema: schema).encodeTree(value).sequenceValue
-}
-
-private func decodeFromSequence<T: Decodable>(_ type: T.Type, from value: Any?, using schema: Schema) -> T? {
-  guard let values = value as? [ASN1] else { return nil }
-  return try? ASN1Decoder(schema: schema).decodeTree(type, from: .sequence(values))
-}

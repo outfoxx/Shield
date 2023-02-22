@@ -45,7 +45,8 @@ public extension NamingStyleProtocol {
 
   static func decode(attributeName name: String, mapping: [String: OID]) -> OID? {
 
-    let start = name.startIndex, end = name.endIndex
+    let start = name.startIndex
+    let end = name.endIndex
 
     if let firstFour = name.index(start, offsetBy: 4, limitedBy: end), name[...firstFour].uppercased() == "OID." {
       return OID(String(name[firstFour...]))
@@ -137,6 +138,8 @@ public struct RFC4519Style: NamingStyleProtocol {
     return Self.decode(attributeName: name, mapping: Self.byName)
   }
 
-  private init() {}
+  private init() {
+    // disallow
+  }
 
 }

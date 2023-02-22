@@ -43,7 +43,9 @@ public extension OID {
     for node in nodes {
       guard fields.first == node.id else { continue }
 
-      if fields.count == 1 { return [node] }
+      if fields.count == 1 {
+        return [node]
+      }
 
       if let branch = node as? OIDBranch.Type {
         return [node] + branches(fields: fields.dropFirst(), nodes: branch.children)

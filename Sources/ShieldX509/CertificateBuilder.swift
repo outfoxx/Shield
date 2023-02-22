@@ -61,11 +61,11 @@ public extension Certificate {
 
     public func request(_ reqInfo: CertificationRequestInfo) throws -> Builder {
 
-      var extensions: Extensions?
+      var updatedExtensions: Extensions?
       if let requestExtensions = try reqInfo.attributes?.first(Extensions.self) {
         var currentExtensions = self.extensions ?? Extensions()
         currentExtensions.replaceAll(requestExtensions)
-        extensions = currentExtensions
+        updatedExtensions = currentExtensions
       }
 
       return Builder(
@@ -77,7 +77,7 @@ public extension Certificate {
         subjectPublicKeyInfo: reqInfo.subjectPKInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -115,9 +115,9 @@ public extension Certificate {
 
     public func addIssuerAlternativeNames(names: GeneralNames) throws -> Builder {
 
-      var extensions = self.extensions ?? Extensions()
-      let currentNames = try extensions.first(IssuerAltName.self)?.names ?? []
-      try extensions.replace(value: IssuerAltName(names: currentNames + names))
+      var updatedExtensions = self.extensions ?? Extensions()
+      let currentNames = try updatedExtensions.first(IssuerAltName.self)?.names ?? []
+      try updatedExtensions.replace(value: IssuerAltName(names: currentNames + names))
 
       return Builder(
         serialNumber: serialNumber,
@@ -128,7 +128,7 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -138,8 +138,8 @@ public extension Certificate {
 
     public func issuerAlternativeNames(names: GeneralNames) throws -> Builder {
 
-      var extensions = self.extensions ?? Extensions()
-      try extensions.replace(value: IssuerAltName(names: names))
+      var updatedExtensions = self.extensions ?? Extensions()
+      try updatedExtensions.replace(value: IssuerAltName(names: names))
 
       return Builder(
         serialNumber: serialNumber,
@@ -150,7 +150,7 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -191,9 +191,9 @@ public extension Certificate {
 
     public func addSubjectAlternativeNames(names: GeneralNames) throws -> Builder {
 
-      var extensions = self.extensions ?? Extensions()
-      let currentNames = try extensions.first(SubjectAltName.self)?.names ?? []
-      try extensions.replace(value: SubjectAltName(names: currentNames + names))
+      var updatedExtensions = self.extensions ?? Extensions()
+      let currentNames = try updatedExtensions.first(SubjectAltName.self)?.names ?? []
+      try updatedExtensions.replace(value: SubjectAltName(names: currentNames + names))
 
       return Builder(
         serialNumber: serialNumber,
@@ -204,7 +204,7 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -213,8 +213,8 @@ public extension Certificate {
     }
 
     public func subjectAlternativeNames(names: GeneralNames) throws -> Builder {
-      var extensions = self.extensions ?? Extensions()
-      try extensions.replace(value: SubjectAltName(names: names))
+      var updatedExtensions = self.extensions ?? Extensions()
+      try updatedExtensions.replace(value: SubjectAltName(names: names))
 
       return Builder(
         serialNumber: serialNumber,
@@ -225,7 +225,7 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -235,13 +235,13 @@ public extension Certificate {
       usage keyUsage: KeyUsage? = nil
     ) throws -> Builder {
 
-      var extensions = self.extensions
+      var updatedExtensions = self.extensions
       if let keyUsage = keyUsage {
-        extensions = extensions ?? Extensions()
-        try extensions!.replace(value: keyUsage)
+        updatedExtensions = updatedExtensions ?? Extensions()
+        try updatedExtensions!.replace(value: keyUsage)
       }
 
-      let subjectPublicKeyInfo = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
+      let updatedSubjectPKI = SubjectPublicKeyInfo(algorithm: algorithm, subjectPublicKey: publicKey)
 
       return Builder(
         serialNumber: serialNumber,
@@ -249,10 +249,10 @@ public extension Certificate {
         issuerUniqueID: issuerUniqueID,
         subject: subject,
         subjectUniqueID: subjectUniqueID,
-        subjectPublicKeyInfo: subjectPublicKeyInfo,
+        subjectPublicKeyInfo: updatedSubjectPKI,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
@@ -297,8 +297,8 @@ public extension Certificate {
 
     public func addExtension<Value>(value: Value, isCritical: Bool) throws -> Builder where Value: ExtensionValue {
 
-      var extensions = self.extensions ?? Extensions()
-      try extensions.append(value: value, isCritical: isCritical)
+      var updatedExtensions = self.extensions ?? Extensions()
+      try updatedExtensions.append(value: value, isCritical: isCritical)
 
       return Builder(
         serialNumber: serialNumber,
@@ -309,14 +309,14 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
     public func addExtension<Value>(value: Value) throws -> Builder where Value: CriticalExtensionValue {
 
-      var extensions = self.extensions ?? Extensions()
-      try extensions.append(value: value)
+      var updatedExtensions = self.extensions ?? Extensions()
+      try updatedExtensions.append(value: value)
 
       return Builder(
         serialNumber: serialNumber,
@@ -327,14 +327,14 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
     public func addExtension<Value>(value: Value) throws -> Builder where Value: NonCriticalExtensionValue {
 
-      var extensions = self.extensions ?? Extensions()
-      try extensions.append(value: value)
+      var updatedExtensions = self.extensions ?? Extensions()
+      try updatedExtensions.append(value: value)
 
       return Builder(
         serialNumber: serialNumber,
@@ -345,14 +345,14 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 
     public func addExtension(_ ext: Extension) throws -> Builder {
 
-      var extensions = self.extensions ?? Extensions()
-      extensions.append(ext)
+      var updatedExtensions = self.extensions ?? Extensions()
+      updatedExtensions.append(ext)
 
       return Builder(
         serialNumber: serialNumber,
@@ -363,7 +363,7 @@ public extension Certificate {
         subjectPublicKeyInfo: subjectPublicKeyInfo,
         notBefore: notBefore,
         notAfter: notAfter,
-        extensions: extensions
+        extensions: updatedExtensions
       )
     }
 

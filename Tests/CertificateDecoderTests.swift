@@ -172,7 +172,7 @@ class CertificateDecoderTests: XCTestCase {
     evnAhf0cwULaebn+lMs8Pdl7y37+sfluVok=
     -----END CERTIFICATE-----
 
-    """
+    """,
   ]
 
 }

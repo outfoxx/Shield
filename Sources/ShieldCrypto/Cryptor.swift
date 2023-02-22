@@ -100,7 +100,7 @@ public class Cryptor {
     ref =
       try key.withUnsafeBytes { keyPtr in
         try iv.withUnsafeBytes { ivPtr in
-          var ref = CCCryptorRef(bitPattern: 0)
+          var cryptorRef = CCCryptorRef(bitPattern: 0)
           let status = CCCryptorCreate(
             operation.rawValue,
             algorithm.rawValue,
@@ -108,12 +108,12 @@ public class Cryptor {
             keyPtr.baseAddress!,
             keyPtr.count,
             ivPtr.baseAddress,
-            &ref
+            &cryptorRef
           )
-          guard let value = ref, status == kCCSuccess else {
+          guard let cryptorRef = cryptorRef, status == kCCSuccess else {
             throw CCError(rawValue: status)
           }
-          return value
+          return cryptorRef
         }
       }
     blockSize = algorithm.blockSize
@@ -143,27 +143,34 @@ public class Cryptor {
     return CCCryptorGetOutputLength(ref, length, true)
   }
 
-  public func update(data in: Data) throws -> Data {
-    var out = Data(repeating: 0, count: updateLength(forInput: `in`.count))
-    let moved = try update(data: `in`, into: &out)
+  public func update(data: Data) throws -> Data {
+    var out = Data(repeating: 0, count: updateLength(forInput: data.count))
+    let moved = try update(data: data, into: &out)
     return out.prefix(upTo: moved)
   }
 
-  public func update(data in: Data, into out: inout Data) throws -> Int {
-    try `in`.withUnsafeBytes { inPtr in
+  public func update(data: Data, into out: inout Data) throws -> Int {
+    try data.withUnsafeBytes { inPtr in
       try out.withUnsafeMutableBytes { outPtr in
         try update(in: inPtr, out: outPtr)
       }
     }
   }
 
-  public func update(in: UnsafeRawBufferPointer, out: UnsafeMutableRawBufferPointer) throws -> Int {
-    return try update(in: `in`.baseAddress!, inLength: `in`.count, out: out.baseAddress!, outLength: out.count)
+  public func update(
+    in inBuffer: UnsafeRawBufferPointer,
+    out outBuffer: UnsafeMutableRawBufferPointer
+  ) throws -> Int {
+    return try update(in: inBuffer.baseAddress!, inLength: inBuffer.count,
+                      out: outBuffer.baseAddress!, outLength: outBuffer.count)
   }
 
-  public func update(in: UnsafeRawPointer, inLength: Int, out: UnsafeMutableRawPointer, outLength: Int) throws -> Int {
+  public func update(
+    in inPtr: UnsafeRawPointer, inLength: Int,
+    out outPtr: UnsafeMutableRawPointer, outLength: Int
+  ) throws -> Int {
     var moved = 0
-    let status = CCCryptorUpdate(ref, `in`, inLength, out, outLength, &moved)
+    let status = CCCryptorUpdate(ref, inPtr, inLength, outPtr, outLength, &moved)
     guard status == kCCSuccess else {
       throw CCError(rawValue: status)
     }

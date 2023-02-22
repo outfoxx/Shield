@@ -29,11 +29,11 @@ public struct OtherName: Equatable, Hashable, Codable {
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     self.typeId = try container.decode(ObjectIdentifier.self, forKey: .typeId)
-    let value = try container.decode(ASN1.self, forKey: .value)
-    guard case let ASN1.tagged(_, data) = value else {
+    let taggedValue = try container.decode(ASN1.self, forKey: .value)
+    guard case let ASN1.tagged(_, taggedData) = taggedValue else {
       throw DecodingError.dataCorruptedError(forKey: .value, in: container, debugDescription: "Expected tagged value")
     }
-    self.value = try ASN1Serialization.asn1(fromDER: data).first ?? .null
+    self.value = try ASN1Serialization.asn1(fromDER: taggedData).first ?? .null
   }
 
   public func encode(to encoder: Encoder) throws {
