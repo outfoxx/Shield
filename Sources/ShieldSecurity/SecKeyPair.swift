@@ -122,16 +122,11 @@ public struct SecKeyPair {
       class: kSecAttrKeyClassPrivate
     )
 
-    // Assemble public key from private key
-    let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: privateKeyData)
-    let publicKeyData =
-      try ASN1Encoder.encode(RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent))
+    guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+      throw Error.failedToCopyPublicKeyFromPrivateKey
+    }
 
-    publicKey = try SecKey.decode(
-      fromData: publicKeyData,
-      type: type.systemValue,
-      class: kSecAttrKeyClassPublic
-    )
+    self.publicKey = publicKey
   }
 
   public func save() throws {

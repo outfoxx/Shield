@@ -79,6 +79,20 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertNotNil(publicKeyRef)
   }
 
+  func testInitECFromExternalPrivateKey() throws {
+
+    let external = try ecKeyPair.privateKey.encode()
+
+    XCTAssertNoThrow(try SecKeyPair(type: ecKeyPair.privateKey.keyType(), privateKeyData: external))
+  }
+
+  func testInitRSAFromExternalPrivateKey() throws {
+
+    let external = try rsaKeyPair.privateKey.encode()
+
+    XCTAssertNoThrow(try SecKeyPair(type: rsaKeyPair.privateKey.keyType(), privateKeyData: external))
+  }
+
   func testPersistentLoadRSA() throws {
 
     let (privateKeyRef, publicKeyRef) = try rsaKeyPair.persistentReferences()
