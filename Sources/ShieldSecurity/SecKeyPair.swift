@@ -72,7 +72,7 @@ public struct SecKeyPair {
       var attrs: [CFString: Any] = [
         kSecAttrKeyType: type.systemValue,
         kSecAttrKeySizeInBits: keySize,
-        kSecAttrIsPermanent : true
+        kSecAttrIsPermanent: true,
       ]
 
       if let label = label {
@@ -82,17 +82,17 @@ public struct SecKeyPair {
       if flags.contains(.secureEnclave) {
         attrs[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave
       }
-        
+
       var error: Unmanaged<CFError>?
-        
+
       guard let privateKey = SecKeyCreateRandomKey(attrs as CFDictionary, &error) else {
           throw SecKeyPair.Error.generateFailed
       }
-      
+
       guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
           throw SecKeyPair.Error.failedToCopyPublicKeyFromPrivateKey
       }
-      
+
       return SecKeyPair(privateKey: privateKey, publicKey: publicKey)
     }
   }
@@ -122,16 +122,11 @@ public struct SecKeyPair {
       class: kSecAttrKeyClassPrivate
     )
 
-    // Assemble public key from private key
-    let privateKey = try ASN1Decoder.decode(RSAPrivateKey.self, from: privateKeyData)
-    let publicKeyData =
-      try ASN1Encoder.encode(RSAPublicKey(modulus: privateKey.modulus, publicExponent: privateKey.publicExponent))
+    guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+      throw Error.failedToCopyPublicKeyFromPrivateKey
+    }
 
-    publicKey = try SecKey.decode(
-      fromData: publicKeyData,
-      type: type.systemValue,
-      class: kSecAttrKeyClassPublic
-    )
+    self.publicKey = publicKey
   }
 
   public func save() throws {
