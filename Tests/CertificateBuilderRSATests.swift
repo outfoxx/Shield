@@ -128,7 +128,7 @@ class CertificateBuilderRSATests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
-        .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
+        .addSubjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
         .publicKey(keyPair: Self.keyPair)
         .extendedKeyUsage(
           keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],
@@ -155,7 +155,7 @@ class CertificateBuilderRSATests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject)
-        .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
+        .addSubjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
         .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer)
         .valid(for: 86400 * 365)
@@ -178,10 +178,10 @@ class CertificateBuilderRSATests: XCTestCase {
     let cert =
       try Certificate.Builder()
         .subject(name: subject, uniqueID: subjectID)
-        .subjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
+        .addSubjectAlternativeNames(names: .dnsName("github.com/outfoxx/Shield"))
         .publicKey(keyPair: Self.keyPair)
         .issuer(name: issuer, uniqueID: issuerID)
-        .issuerAlternativeNames(names: .dnsName("github.com/outfoxx/Shield/CA"))
+        .addIssuerAlternativeNames(names: .dnsName("github.com/outfoxx/Shield/CA"))
         .basicConstraints(ca: true)
         .authorityKeyIdentifier(
           Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1),
@@ -236,7 +236,7 @@ class CertificateBuilderRSATests: XCTestCase {
     let csrData =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Shield Subject", forTypeName: "CN").name)
-        .alternativeNames(names: altNames)
+        .addAlternativeNames(names: altNames)
         .publicKey(keyPair: Self.keyPair, usage: [.dataEncipherment])
         .extendedKeyUsage(
           keyPurposes: [iso.org.dod.internet.security.mechanisms.pkix.kp.serverAuth.oid],

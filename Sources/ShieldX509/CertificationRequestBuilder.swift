@@ -40,15 +40,12 @@ public extension CertificationRequest {
 
     public func addAlternativeNames(names: GeneralNames) throws -> Builder {
 
-      var updatedAttributes = self.attributes ?? CRAttributes()
-      var updatedExtensions = try updatedAttributes.first(Extensions.self) ?? Extensions()
+      let currentAttributes = self.attributes ?? CRAttributes()
+      let currentExtensions = try currentAttributes.first(Extensions.self) ?? Extensions()
 
-      let currentNames = try updatedExtensions.first(SubjectAltName.self)?.names ?? []
-      try updatedExtensions.replace(value: SubjectAltName(names: currentNames + names))
+      let currentNames = try currentExtensions.first(SubjectAltName.self)?.names ?? []
 
-      updatedAttributes.replace(singleValued: updatedExtensions)
-
-      return Builder(subject: subject, subjectPKInfo: subjectPKInfo, attributes: updatedAttributes)
+      return try alternativeNames(names: currentNames + names)
     }
 
     public func alternativeNames(names: GeneralName...) throws -> Builder {

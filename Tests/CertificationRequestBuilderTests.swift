@@ -72,7 +72,7 @@ class CertificationRequestBuilderTests: XCTestCase {
     let csr =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
-        .alternativeNames(names: sans)
+        .addAlternativeNames(names: sans)
         .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
         .extendedKeyUsage(keyPurposes: [keyPurpose.clientAuth.oid, keyPurpose.serverAuth.oid], isCritical: true)
         .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
