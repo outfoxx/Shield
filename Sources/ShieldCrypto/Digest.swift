@@ -34,7 +34,7 @@ public protocol DigestEngine {
   typealias Digest = (UnsafeRawPointer, CC_LONG, UnsafeMutablePointer<UInt8>) -> UnsafeMutablePointer<UInt8>?
 
   static var hashLength: Int32 { get }
-  static var `init`: Init { get }
+  static var create: Init { get }
   static var update: Update { get }
   static var final: Final { get }
   static var digest: Digest { get }
@@ -44,7 +44,7 @@ public protocol DigestEngine {
 public struct SHA1Engine: DigestEngine {
   public typealias Context = CC_SHA1_CTX
   public static let hashLength = CC_SHA1_DIGEST_LENGTH
-  public static let `init`: Init = CC_SHA1_Init
+  public static let create: Init = CC_SHA1_Init
   public static let update: Update = CC_SHA1_Update
   public static let final: Final = CC_SHA1_Final
   public static let digest: Digest = CC_SHA1
@@ -53,7 +53,7 @@ public struct SHA1Engine: DigestEngine {
 public struct SHA224Engine: DigestEngine {
   public typealias Context = CC_SHA256_CTX
   public static let hashLength = CC_SHA224_DIGEST_LENGTH
-  public static let `init`: Init = CC_SHA224_Init
+  public static let create: Init = CC_SHA224_Init
   public static let update: Update = CC_SHA224_Update
   public static let final: Final = CC_SHA224_Final
   public static let digest: Digest = CC_SHA224
@@ -62,7 +62,7 @@ public struct SHA224Engine: DigestEngine {
 public struct SHA256Engine: DigestEngine {
   public typealias Context = CC_SHA256_CTX
   public static let hashLength = CC_SHA256_DIGEST_LENGTH
-  public static let `init`: Init = CC_SHA256_Init
+  public static let create: Init = CC_SHA256_Init
   public static let update: Update = CC_SHA256_Update
   public static let final: Final = CC_SHA256_Final
   public static let digest: Digest = CC_SHA256
@@ -71,7 +71,7 @@ public struct SHA256Engine: DigestEngine {
 public struct SHA384Engine: DigestEngine {
   public typealias Context = CC_SHA512_CTX
   public static let hashLength = CC_SHA384_DIGEST_LENGTH
-  public static let `init`: Init = CC_SHA384_Init
+  public static let create: Init = CC_SHA384_Init
   public static let update: Update = CC_SHA384_Update
   public static let final: Final = CC_SHA384_Final
   public static let digest: Digest = CC_SHA384
@@ -80,7 +80,7 @@ public struct SHA384Engine: DigestEngine {
 public struct SHA512Engine: DigestEngine {
   public typealias Context = CC_SHA512_CTX
   public static let hashLength = CC_SHA512_DIGEST_LENGTH
-  public static let `init`: Init = CC_SHA512_Init
+  public static let create: Init = CC_SHA512_Init
   public static let update: Update = CC_SHA512_Update
   public static let final: Final = CC_SHA512_Final
   public static let digest: Digest = CC_SHA512
@@ -179,7 +179,7 @@ public struct DigesterEngine<Engine: DigestEngine>: AnyDigester {
 
   public init() {
     // swiftformat:disable:next redundantInit,redundantBackticks
-    _ = Engine.`init`(&context)
+    _ = Engine.create(&context)
   }
 
   public mutating func update(data: UnsafeRawPointer, dataLength: Int) {

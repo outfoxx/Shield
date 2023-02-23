@@ -74,7 +74,7 @@ jobs:
 
     - name: Report Test Results
       uses: kishikawakatsumi/xcresulttool@v1
-      if: always()
+      if: success() || failure()
       with:
           title: Test Results ${{ matrix.platform }}
           path: ./TestResults/${{ matrix.platform }}.xcresult

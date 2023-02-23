@@ -130,9 +130,22 @@ class SecCertificateTests: XCTestCase {
 
     let cert = try SecCertificate.from(data: certData)
 
-    let publicKey = try cert.publicKeyValidated(trustedCertificates: [rootCert])
+    let finishedX = expectation(description: "finished")
 
-    XCTAssertEqual(try publicKey.encode(), try certKeyPair.publicKey.encode())
+    DispatchQueue.global(qos: .userInitiated).async {
+      defer { finishedX.fulfill() }
+      do {
+
+        let publicKey = try cert.publicKeyValidated(trustedCertificates: [rootCert])
+        XCTAssertEqual(try publicKey.encode(), try certKeyPair.publicKey.encode())
+
+      }
+      catch {
+        XCTFail("\(error)")
+      }
+    }
+
+    waitForExpectations(timeout: 10.0)
   }
 
 #if swift(>=5.5)
@@ -218,7 +231,22 @@ class SecCertificateTests: XCTestCase {
         .encoded()
     )
 
-    XCTAssertThrowsError(try cert.publicKeyValidated(trustedCertificates: [rootCert]))
+    let finishedX = expectation(description: "finished")
+
+    DispatchQueue.global(qos: .userInitiated).async {
+      defer { finishedX.fulfill() }
+      do {
+        _ = try cert.publicKeyValidated(trustedCertificates: [rootCert])
+        XCTFail("Should have thrown error")
+      }
+      catch {
+        guard let secError = error as? SecCertificateError, secError == .trustValidationFailed else {
+          return XCTFail("Incorrect error received: \(error)")
+        }
+      }
+    }
+
+    waitForExpectations(timeout: 10.0)
   }
 
 #if swift(>=5.5)
