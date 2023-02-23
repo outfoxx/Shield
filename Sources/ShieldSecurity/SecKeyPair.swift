@@ -36,9 +36,6 @@ public struct SecKeyPair {
   public enum Error: Int, Swift.Error {
     case generateFailed
     case failedToCopyPublicKeyFromPrivateKey
-    case noMatchingKey
-    case itemAddFailed
-    case itemDeleteFailed
 
     public static func build(error: Error, message: String, status: OSStatus) -> NSError {
       let error = error as NSError
