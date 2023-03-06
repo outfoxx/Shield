@@ -78,12 +78,11 @@ jobs:
     - name: Build/Test
       run: make build-test-${{ matrix.platform }}
 
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v3
+    - name: Report Test Results
+      uses: kdubb/xcresulttool@v1
       if: success() || failure()
       with:
-        name: test-results-${{ matrix.platform }}
-        # "./dummy" is included to ensure "TestResults" path is archived
-        path: |
-          ./dummy
-          TestResults/*.xcresult/
+        title: Test Results ${{ matrix.platform }}
+        path: ./TestResults/${{ matrix.platform }}.xcresult
+        upload-bundles: never
+        show-code-coverage: false
