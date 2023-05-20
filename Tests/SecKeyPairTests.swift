@@ -40,7 +40,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var privateKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
     XCTAssertNotNil(privateKeyRef)
@@ -50,7 +50,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)
@@ -63,7 +63,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var privateKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
     XCTAssertNotNil(privateKeyRef)
@@ -73,7 +73,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)
@@ -236,7 +236,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var privateKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(privateKeyAttrs, &privateKeyRef), errSecSuccess)
     XCTAssertNotNil(privateKeyRef)
@@ -246,7 +246,7 @@ class SecKeyPairTests: XCTestCase {
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
     XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)

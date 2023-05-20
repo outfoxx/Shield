@@ -163,18 +163,10 @@ public extension SecCertificate {
       return
     }
 
-    let errorDesc: String
-    if let error = error {
-      errorDesc = (CFErrorCopyFailureReason(error) ?? CFErrorCopyDescription(error)) as String? ?? ""
-    }
-    else {
-      errorDesc = ""
-    }
-
     logTrustEvaluation(level: .error,
                        trust: trust,
                        result: trustResult,
-                       description: errorDesc)
+                       error: error)
 
     throw SecCertificateError.trustValidationFailed
   }
@@ -182,7 +174,7 @@ public extension SecCertificate {
   private func logTrustEvaluation(level: OSLogType,
                                   trust: SecTrust,
                                   result: SecTrustResultType,
-                                  description: String) {
+                                  error: CFError?) {
 
     var anchorCertificatesArray: CFArray?
     let anchorCertificates: [SecCertificate]
@@ -194,17 +186,25 @@ public extension SecCertificate {
       anchorCertificates = []
     }
 
+    let errorDesc: String
+    if let error = error {
+      errorDesc = "\n" + error.humanReadableDescriptionLines.map { "    \($0)" }.joined(separator: "\n")
+    }
+    else {
+      errorDesc = "None"
+    }
+
     Logger.default.log(
       level: level,
       """
       Trust evaulation failed:
-        Result: \(trustResultDescription(result: result), privacy: .public),
-        Description: \(description, privacy: .public)
+        Result: \(trustResultDescription(result: result), privacy: .public)
+        Error: \(errorDesc)
         Certificate:
           \(self, privacy: .public)
         Anchor Certificates:
           \(anchorCertificates.enumerated().map { (idx, cert) in
-            "\(idx): \(cert)" }.joined(separator: "\n      "), privacy: .public)
+            "\(idx): \(cert)" }.joined(separator: "\n    "), privacy: .public)
       """
     )
   }
@@ -224,7 +224,7 @@ public extension SecCertificate {
       let query = [
         kSecReturnAttributes as String: kCFBooleanTrue!,
         kSecValueRef as String: self,
-      ] as CFDictionary
+      ] as [String: Any] as CFDictionary
 
       var data: CFTypeRef?
 
@@ -257,7 +257,7 @@ public extension SecCertificate {
     let query = [
       kSecClass as String: kSecClassCertificate,
       kSecValueRef as String: self,
-    ] as CFDictionary
+    ] as [String: Any] as CFDictionary
 
     var data: CFTypeRef?
 
