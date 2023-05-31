@@ -8,6 +8,7 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
+import CryptoKit
 import Foundation
 import PotentASN1
 import Security
@@ -356,13 +357,12 @@ public struct SecKeyPair {
     )
 
     let keyMaterial = try encodedPrivateKey()
-    let encryptedKeyMaterial = try Cryptor.encrypt(
-      data: keyMaterial,
-      using: .aes,
-      options: [.pkcs7Padding],
-      key: exportKey,
-      iv: exportKeySalt
-    )
+
+    let encryptedKeyBox = try AES.GCM.seal(keyMaterial, using: SymmetricKey(data: exportKey))
+
+    guard let encryptedKeyMaterial = encryptedKeyBox.combined else {
+      fatalError("Combined sealed box should be available")
+    }
 
     let keyType = try privateKey.keyType()
 
@@ -398,13 +398,8 @@ public struct SecKeyPair {
       rounds: Int(info.exportKeyRounds)
     )
 
-    let keyMaterial = try Cryptor.decrypt(
-      data: info.keyMaterial,
-      using: .aes,
-      options: .pkcs7Padding,
-      key: exportKey,
-      iv: info.exportKeySalt
-    )
+    let keyMaterial = try AES.GCM.open(AES.GCM.SealedBox(combined: info.keyMaterial),
+                                       using: SymmetricKey(data: exportKey))
 
     return try Self(type: info.keyType, privateKeyData: keyMaterial)
   }
