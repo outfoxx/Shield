@@ -168,6 +168,8 @@ class SecKeyPairTests: XCTestCase {
 
     let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 
+    XCTAssertThrowsError(try SecKeyPair.import(fromData: exportedKeyData, withPassword: "456"))
+
     let plainText = try Random.generate(count: 171)
 
     let cipherText1 = try rsaKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
