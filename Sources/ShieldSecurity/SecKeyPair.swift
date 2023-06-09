@@ -8,24 +8,32 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
-import CryptoKit
+import Algorithms
 import Foundation
 import PotentASN1
 import Security
 import ShieldCrypto
-import ShieldPKCS
+import ShieldOID
+import ShieldX509
 
 
 /// Public and private key of an asymmetric key pair.
 ///
 public struct SecKeyPair {
 
-  /// Default final key length for PBKDF generated export keys.
+  /// Default final key size for PBKDF generated export keys.
   ///
   /// ## See Also
   /// - ``export(password:derivedKeyLength:keyDerivationTiming:)``
   ///
-  public static let exportDerivedKeyLengthDefault = 32
+  public static let exportDerivedKeySizeDefault: ExportKeySize = .bits256
+
+  /// Default final psuedorandom algorthm for PBKDF generated export keys.
+  ///
+  /// ## See Also
+  /// - ``export(password:derivedKeyLength:keyDerivationTiming:)``
+  ///
+  public static let exportPsuedoRandomAlgorithmDefault: PBKDF.PsuedoRandomAlgorithm = .hmacSha512
 
   /// Default PBKDF generation time for generated export keys.
   ///
@@ -40,6 +48,7 @@ public struct SecKeyPair {
     case noMatchingKey
     case itemAddFailed
     case itemDeleteFailed
+    case invalidEncodedPrivateKey
 
     public static func build(error: Error, message: String, status: OSStatus) -> NSError {
       let error = error as NSError
@@ -292,25 +301,10 @@ public struct SecKeyPair {
   }
 #endif
 
-
-  /// Structure representing keys exported using ``export(password:derivedKeyLength:keyDerivationTiming:)``.
-  ///
-  public struct ExportedKey: Codable, SchemaSpecified {
-
-    public static let asn1Schema: Schema =
-      .sequence([
-        "keyType": .integer(),
-        "exportKeyLength": .integer(),
-        "exportKeyRounds": .integer(),
-        "exportKeySalt": .octetString(),
-        "keyMaterial": .octetString(),
-      ])
-
-    public var keyType: SecKeyType
-    public var exportKeyLength: UInt64
-    public var exportKeyRounds: UInt64
-    public var exportKeySalt: Data
-    public var keyMaterial: Data
+  public enum ExportKeySize: Int {
+    case bits128 = 16
+    case bits192 = 24
+    case bits256 = 32
   }
 
   /// Encrypt and encode the key pair's private key using PBKDF.
@@ -323,56 +317,71 @@ public struct SecKeyPair {
   ///
   /// - Parameters:
   ///   - password: Password use for key encryption.
-  ///   - derivedKeyLength: PBKDF target key length.
+  ///   - derivedKeySize: PBKDF target key size.
   ///   - keyDerivationTiming: Time PBKDF function should take to generate encryption key.
   /// - Returns: Encoded encrypted key and PBKDF paraemters.
   ///
   public func export(
     password: String,
-    derivedKeyLength: Int = exportDerivedKeyLengthDefault,
+    derivedKeySize: ExportKeySize = exportDerivedKeySizeDefault,
+    psuedoRandomAlgorithm: PBKDF.PsuedoRandomAlgorithm = exportPsuedoRandomAlgorithmDefault,
     keyDerivationTiming: TimeInterval = exportKeyDerivationTimingDefault
   ) throws -> Data {
 
+    // Derive key from password
+
     let passwordData = password.data(using: String.Encoding.utf8)!
 
-    let exportKeySalt = try Random.generate(count: derivedKeyLength)
+    let exportKeySalt = try Random.generate(count: derivedKeySize.rawValue)
 
     let exportKeyRounds =
       try PBKDF.calibrate(
         passwordLength: passwordData.count,
         saltLength: exportKeySalt.count,
-        keyLength: derivedKeyLength,
+        keyLength: derivedKeySize.rawValue,
         using: .pbkdf2,
-        psuedoRandomAlgorithm: .sha512,
+        psuedoRandomAlgorithm: psuedoRandomAlgorithm,
         taking: keyDerivationTiming
       )
 
     let exportKey = try PBKDF.derive(
-      length: derivedKeyLength,
+      length: derivedKeySize.rawValue,
       from: passwordData,
       salt: exportKeySalt,
       using: .pbkdf2,
-      psuedoRandomAlgorithm: .sha512,
+      psuedoRandomAlgorithm: psuedoRandomAlgorithm,
       rounds: exportKeyRounds
     )
 
-    let keyMaterial = try encodedPrivateKey()
+    // Encode and encrypt PKCS#8 PrivateKeyInfo
 
-    let encryptedKeyBox = try AES.GCM.seal(keyMaterial, using: SymmetricKey(data: exportKey))
+    let encodedPrivateKey = try privateKey.encodePKCS8()
 
-    guard let encryptedKeyMaterial = encryptedKeyBox.combined else {
-      fatalError("Combined sealed box should be available")
-    }
+    let encryptedPrivateKeyIV = try Random.generate(count: 16)
 
-    let keyType = try privateKey.keyType()
+    let encryptedPrivateKey = try Cryptor.crypt(encodedPrivateKey,
+                                                operation: .encrypt,
+                                                using: .aes,
+                                                options: .pkcs7Padding,
+                                                key: exportKey,
+                                                iv: encryptedPrivateKeyIV)
 
-    return try ASN1Encoder.encode(ExportedKey(
-      keyType: keyType,
-      exportKeyLength: UInt64(derivedKeyLength),
-      exportKeyRounds: UInt64(exportKeyRounds),
-      exportKeySalt: exportKeySalt,
-      keyMaterial: encryptedKeyMaterial
-    ))
+    // Build PKCS#8 EncryptedPrivateKeyInfo
+
+    let encryptedPrivateKeyInfo =
+      try EncryptedPrivateKeyInfo.build(encryptedData: encryptedPrivateKey,
+                                        pbkdf2Salt: exportKeySalt,
+                                        pbkdf2IterationCount: UInt64(exportKeyRounds),
+                                        pbkdf2KeyLength: UInt64(derivedKeySize.rawValue),
+                                        pbkdf2Prf: psuedoRandomAlgorithm.prfAlgorithm.oid,
+                                        aesEncryptionScheme: derivedKeySize.aesCBCAlgorithm.oid,
+                                        aesIV: encryptedPrivateKeyIV)
+
+    let encryptedPrivateKeyInfoData = try ASN1Encoder.encode(encryptedPrivateKeyInfo)
+
+    printPEM(data: encryptedPrivateKeyInfoData, type: "ENCRYPTED PRIVATE KEY")
+
+    return encryptedPrivateKeyInfoData
   }
 
   /// Decode and decrypt a previously exported private key.
@@ -387,21 +396,59 @@ public struct SecKeyPair {
   ///
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
-    let info = try ASN1Decoder.decode(ExportedKey.self, from: data)
+    typealias nist = iso_itu.country.us.organization.gov.csor.nistAlgorithms
+    typealias rsadsi = iso.memberBody.us.rsadsi
+    typealias pkcs = rsadsi.pkcs
+    let supportedEncOids = [nist.aes.aes128_CBC_PAD.oid, nist.aes.aes192_CBC_PAD.oid, nist.aes.aes256_CBC_PAD.oid]
 
-    let exportKey = try PBKDF.derive(
-      length: Int(info.exportKeyLength),
+    let info = try ASN1.Decoder.decode(EncryptedPrivateKeyInfo.self, from: data)
+
+    // Convert and validate requirements (PBKDF2 and AES-CBC-PAD encryption)
+
+    guard
+      info.encryptionAlgorithm.algorithm == rsadsi.pkcs.pkcs5.pbes2.oid,
+      let encAlgParams = try? info.encryptionAlgorithm.parameters.map({ try ASN1.Decoder.decodeTree(PBES2Params.self, from: $0) }),
+      encAlgParams.keyDerivationFunc.algorithm == pkcs.pkcs5.pbkdf2.oid,
+      let pbkdf2Params = try? encAlgParams.keyDerivationFunc.parameters.map({ try ASN1.Decoder.decodeTree(PBKDF2Params.self, from: $0) }),
+      supportedEncOids.contains(encAlgParams.encryptionScheme.algorithm),
+      let aesIV = encAlgParams.encryptionScheme.parameters?.octetStringValue
+    else {
+      throw Error.invalidEncodedPrivateKey
+    }
+
+    // Derive import key from password and PBKDF2 params in encrypted PKCS#8 data
+
+    let importKey = try PBKDF.derive(
+      length: Int(pbkdf2Params.keyLength),
       from: password.data(using: .utf8)!,
-      salt: info.exportKeySalt,
+      salt: pbkdf2Params.salt,
       using: .pbkdf2,
-      psuedoRandomAlgorithm: .sha512,
-      rounds: Int(info.exportKeyRounds)
+      psuedoRandomAlgorithm: try PBKDF.PsuedoRandomAlgorithm.from(oid: pbkdf2Params.prf.algorithm),
+      rounds: Int(pbkdf2Params.iterationCount)
     )
 
-    let keyMaterial = try AES.GCM.open(AES.GCM.SealedBox(combined: info.keyMaterial),
-                                       using: SymmetricKey(data: exportKey))
+    // Decrypt & decode PKCS#8 PrivateKeyInfo
 
-    return try Self(type: info.keyType, privateKeyData: keyMaterial)
+    let privateKeyInfoData = try Cryptor.crypt(info.encryptedData,
+                                               operation: .decrypt,
+                                               using: .aes,
+                                               options: .pkcs7Padding,
+                                               key: importKey,
+                                               iv: aesIV)
+
+    let privateKeyInfo: PrivateKeyInfo
+    do {
+      privateKeyInfo = try ASN1.Decoder.decode(PrivateKeyInfo.self, from: privateKeyInfoData)
+    }
+    catch {
+      throw SecKeyPair.Error.invalidEncodedPrivateKey
+    }
+
+    // Convert to SecKey decode params
+
+    let (keyType, keyDecodeData) = try SecKey.extractDecodeParams(privateKeyInfo: privateKeyInfo)
+
+    return try Self(type: keyType, privateKeyData: keyDecodeData)
   }
 
 }
@@ -427,3 +474,205 @@ extension SecKeyPair: Codable {
   }
 
 }
+
+private extension SecKey {
+
+  static func extractDecodeParams(privateKeyInfo: PrivateKeyInfo) throws -> (SecKeyType, Data) {
+
+    let keyType: SecKeyType
+    let importKeyData: Data
+    switch privateKeyInfo.privateKeyAlgorithm.algorithm {
+    case iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid:
+      keyType = .rsa
+      importKeyData = privateKeyInfo.privateKey
+
+    case iso.memberBody.us.ansix962.keyType.ecPublicKey.oid:
+      let ecPrivateKey = try ASN1.Decoder.decode(ECPrivateKey.self, from: privateKeyInfo.privateKey)
+      guard let publicKey = ecPrivateKey.publicKey else {
+        throw SecKeyPair.Error.invalidEncodedPrivateKey
+      }
+
+      keyType = .ec
+      importKeyData = publicKey.bytes + ecPrivateKey.privateKey
+
+    default:
+      throw AlgorithmIdentifier.Error.unsupportedAlgorithm
+    }
+
+    return (keyType, importKeyData)
+  }
+
+  func encodePKCS8() throws -> Data {
+    let privateKeyInfo: PrivateKeyInfo
+    switch try keyType() {
+    case .rsa:
+      privateKeyInfo = try generateRSAPrivateKeyInfo()
+
+    case .ec:
+      privateKeyInfo = try generateECPrivateKeyInfo()
+    }
+
+    let encoded = try ASN1.Encoder.encode(privateKeyInfo)
+
+    printPEM(data: encoded, type: "PRIVATE KEY")
+
+    return encoded
+  }
+
+  private func generateRSAPrivateKeyInfo() throws -> PrivateKeyInfo {
+    let encodedPrivateKey = try encode()
+
+    printPEM(data: encodedPrivateKey, type: "RSA PRIVATE KEY")
+
+    return PrivateKeyInfo(privateKeyAlgorithm: .init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid),
+                          privateKey: encodedPrivateKey)
+  }
+
+  private func generateECPrivateKeyInfo() throws -> PrivateKeyInfo {
+    let encodedPrivateKey = try encode()
+
+    let (curveOID, keyNumberSize) = try getECCurveAndNumberSize()
+
+    let parts = encodedPrivateKey.dropFirst().chunks(ofCount: keyNumberSize)
+    if parts.count != 3 {
+      throw SecKeyPair.Error.invalidEncodedPrivateKey
+    }
+
+    let encodedPublicKey = Data(encodedPrivateKey.prefix(1) + parts.dropLast().joined())
+
+    let privateKey = ECPrivateKey(version: .one,
+                                  privateKey: parts.last!,
+                                  parameters: curveOID,
+                                  publicKey: BitString(bytes: encodedPublicKey))
+
+    let privateKeyData = try ASN1.Encoder.encode(privateKey)
+
+    printPEM(data: privateKeyData, type: "EC PRIVATE KEY")
+
+
+    return PrivateKeyInfo(version: .zero,
+                          privateKeyAlgorithm: .init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
+                                                     parameters: ASN1.objectIdentifier(curveOID.fields)),
+                                    privateKey: privateKeyData)
+  }
+
+  func getECCurveAndNumberSize() throws -> (OID, Int) {
+
+    switch try attributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
+    case 192:
+      // P-192, secp192r1
+      return (iso.memberBody.us.ansix962.curves.prime.prime192v1.oid, 24)
+    case 256:
+      // P-256, secp256r1
+      return (iso.memberBody.us.ansix962.curves.prime.prime256v1.oid, 32)
+    case 384:
+      // P-384, secp384r1
+      return (iso.org.certicom.curve.ansip384r1.oid, 48)
+    case 521:
+      // P-521, secp521r1
+      return (iso.org.certicom.curve.ansip521r1.oid, 66)
+    default:
+      throw AlgorithmIdentifier.Error.unsupportedECKeySize
+    }
+  }
+
+}
+
+private extension PBKDF.PsuedoRandomAlgorithm {
+
+  var prfAlgorithm: iso.memberBody.us.rsadsi.digestAlgorithm {
+    typealias algs = iso.memberBody.us.rsadsi.digestAlgorithm
+
+    switch self {
+    case .hmacSha1:
+      return algs.hmacWithSHA1
+    case .hmacSha224:
+      return algs.hmacWithSHA224
+    case .hmacSha256:
+      return algs.hmacWithSHA256
+    case .hmacSha384:
+      return algs.hmacWithSHA384
+    case .hmacSha512:
+      return algs.hmacWithSHA512
+    default:
+      fatalError("Unsupported PBKDF Psuedo Random Algorithm")
+    }
+  }
+
+  static func from(oid: OID) throws -> Self {
+    typealias algs = iso.memberBody.us.rsadsi.digestAlgorithm
+
+    switch oid {
+    case algs.hmacWithSHA1.oid:
+      return .hmacSha1
+    case algs.hmacWithSHA224.oid:
+      return .hmacSha224
+    case algs.hmacWithSHA256.oid:
+      return .hmacSha256
+    case algs.hmacWithSHA384.oid:
+      return .hmacSha384
+    case algs.hmacWithSHA512.oid:
+      return .hmacSha512
+    default:
+      throw SecKeyPair.Error.invalidEncodedPrivateKey
+    }
+  }
+
+}
+
+private extension SecKeyPair.ExportKeySize {
+
+  var aesCBCAlgorithm: iso_itu.country.us.organization.gov.csor.nistAlgorithms.aes {
+    typealias aes = iso_itu.country.us.organization.gov.csor.nistAlgorithms.aes
+
+    switch self {
+    case .bits128:
+      return aes.aes128_CBC_PAD
+    case .bits192:
+      return aes.aes192_CBC_PAD
+    case .bits256:
+      return aes.aes256_CBC_PAD
+    }
+  }
+
+}
+
+private extension EncryptedPrivateKeyInfo {
+
+  static func build(
+    encryptedData: Data,
+    pbkdf2Salt: Data,
+    pbkdf2IterationCount: UInt64,
+    pbkdf2KeyLength: UInt64,
+    pbkdf2Prf: OID,
+    aesEncryptionScheme: OID,
+    aesIV: Data
+  ) throws -> EncryptedPrivateKeyInfo {
+    typealias pkcs5 = iso.memberBody.us.rsadsi.pkcs.pkcs5
+
+    let pbkdf2Params = PBKDF2Params(salt: pbkdf2Salt,
+                                    iterationCount: pbkdf2IterationCount,
+                                    keyLength: pbkdf2KeyLength,
+                                    prf: .init(algorithm: pbkdf2Prf))
+
+    let encAlgParams = PBES2Params(keyDerivationFunc: .init(algorithm: pkcs5.pbkdf2.oid,
+                                                            parameters: try ASN1.Encoder.encodeTree(pbkdf2Params)),
+                                   encryptionScheme: .init(algorithm: aesEncryptionScheme,
+                                                           parameters: .octetString(aesIV)))
+
+    let encAlgId = AlgorithmIdentifier(algorithm: pkcs5.pbes2.oid,
+                                       parameters: try ASN1.Encoder.encodeTree(encAlgParams))
+
+    return EncryptedPrivateKeyInfo(encryptionAlgorithm: encAlgId,
+                                   encryptedData: encryptedData)
+  }
+}
+
+private func printPEM(data: Data, type: String) {
+
+  let base64 = data.base64EncodedString()
+  let pemBase64 = base64.chunks(ofCount: 64).joined(separator: "\n")
+
+  print("-----BEGIN \(type)-----\n\(pemBase64)\n-----END \(type)-----")
+}
+

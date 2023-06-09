@@ -18,6 +18,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "3.0.0"),
     .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0"),
+    .package(name: "Algorithms", url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
   ],
   targets: [
     .target(
