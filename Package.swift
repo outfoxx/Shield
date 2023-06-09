@@ -37,11 +37,11 @@ let package = Package(
     ),
     .target(
       name: "ShieldPKCS",
-      dependencies: ["ShieldX500", "PotentCodables"]
+      dependencies: ["ShieldX509", "PotentCodables"]
     ),
     .target(
       name: "ShieldX509",
-      dependencies: ["ShieldCrypto", "ShieldX500", "ShieldOID", "ShieldPKCS", "PotentCodables"]
+      dependencies: ["ShieldCrypto", "ShieldX500", "ShieldOID", "PotentCodables", "Algorithms"]
     ),
     .target(
       name: "ShieldCrypto"

@@ -35,6 +35,30 @@ public struct RSAPrivateKey: Equatable, Hashable, Codable {
   public var exponent2: ASN1.Integer
   public var coefficient: ASN1.Integer
   public var otherPrimeInfos: [OtherPrimeInfo]?
+
+  public init(
+    version: Version,
+    modulus: ASN1.Integer,
+    publicExponent: ASN1.Integer,
+    privateExponent: ASN1.Integer,
+    prime1: ASN1.Integer,
+    prime2: ASN1.Integer,
+    exponent1: ASN1.Integer,
+    exponent2: ASN1.Integer,
+    coefficient: ASN1.Integer,
+    otherPrimeInfos: [OtherPrimeInfo]? = nil
+  ) {
+    self.version = version
+    self.modulus = modulus
+    self.publicExponent = publicExponent
+    self.privateExponent = privateExponent
+    self.prime1 = prime1
+    self.prime2 = prime2
+    self.exponent1 = exponent1
+    self.exponent2 = exponent2
+    self.coefficient = coefficient
+    self.otherPrimeInfos = otherPrimeInfos
+  }
 }
 
 

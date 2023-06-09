@@ -11,7 +11,6 @@
 import Foundation
 import PotentASN1
 import ShieldOID
-import ShieldPKCS
 import ShieldX500
 
 
@@ -91,7 +90,7 @@ public extension Schemas {
 
   static let PKInfoAlgorithms: Schema.DynamicMap = [
     iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.asn1: .null,
-    iso.memberBody.us.ansix962.keyType.ecPublicKey.asn1: ShieldPKCS.Schemas.ECParameters,
+    iso.memberBody.us.ansix962.keyType.ecPublicKey.asn1: ECParameters,
   ]
 
   static let SignatureAlgorithms: Schema.DynamicMap = [
