@@ -26,7 +26,7 @@ public struct iso_itu: OIDBranch {
   public struct ds: OIDBranch {
     public static let id: UInt64 = 5
     public static let names = ["ds"]
-    internal static let children: [OIDNode.Type] = [attributeType.self, certificateExtension.self]
+    internal static let children: [OIDNode.Type] = [attributeType.self, certificateExtension.self, algorithm.self]
 
     public enum attributeType: OID, CaseIterable, OIDLeaf {
       public static let id: UInt64 = 4
@@ -192,6 +192,154 @@ public struct iso_itu: OIDBranch {
       case targetInformation =                      "2.5.29.55"
       case noRevAvail =                             "2.5.29.56"
       case acceptablePrivilegePolicies =            "2.5.29.57"
+    }
+
+    public struct algorithm: OIDBranch {
+      public static let id: UInt64 = 44
+      public static let names = ["algorithm"]
+      internal static let children: [OIDNode.Type] = [aes.self]
+
+      public enum aes: OID, CaseIterable, OIDLeaf {
+        public static let id: UInt64 = 2
+        public static let names = ["aes"]
+        internal static let children: [OIDNode.Type] = []
+
+        case aes_cbc_128 =      "2.5.44.2.1"
+        case aes_cbc_192 =      "2.5.44.2.2"
+        case aes_cbc_256 =      "2.5.44.2.3"
+
+        case aes_ofb_128 =      "2.5.44.2.5"
+        case aes_ofb_192 =      "2.5.44.2.6"
+        case aes_ofb_256 =      "2.5.44.2.7"
+
+        case aes_cfb_128 =      "2.5.44.2.9"
+        case aes_cfb_192 =      "2.5.44.2.10"
+        case aes_cfb_256 =      "2.5.44.2.11"
+
+        case aes_gcm_128 =      "2.5.44.2.17"
+        case aes_gcm_192 =      "2.5.44.2.18"
+        case aes_gcm_256 =      "2.5.44.2.19"
+
+        case aes_gcm_siv_128 =  "2.5.44.2.21"
+        case aes_gcm_siv_192 =  "2.5.44.2.22"
+        case aes_gcm_siv_256 =  "2.5.44.2.23"
+
+        case aes_ccm_128 =      "2.5.44.2.25"
+        case aes_ccm_192 =      "2.5.44.2.26"
+        case aes_ccm_256 =      "2.5.44.2.27"
+
+        case aes_gmac_128 =     "2.5.44.2.29"
+        case aes_gmac_192 =     "2.5.44.2.30"
+        case aes_gmac_256 =     "2.5.44.2.31"
+      }
+    }
+  }
+
+  public struct country: OIDBranch {
+    public static let id: UInt64 = 16
+    public static let names = ["country"]
+    internal static let children: [OIDNode.Type] = [us.self]
+
+    public struct us: OIDBranch {
+      public static let id: UInt64 = 840
+      public static let names = ["us"]
+      internal static let children: [OIDNode.Type] = [organization.self]
+
+      public struct organization: OIDBranch {
+        public static let id: UInt64 = 1
+        public static let names = ["organization"]
+        internal static let children: [OIDNode.Type] = [gov.self]
+
+        public struct gov: OIDBranch {
+          public static let id: UInt64 = 101
+          public static let names = ["gov"]
+          internal static let children: [OIDNode.Type] = [csor.self]
+
+          public struct csor: OIDBranch {
+            public static let id: UInt64 = 3
+            public static let names = ["country"]
+            internal static let children: [OIDNode.Type] = [nistAlgorithms.self]
+
+            public struct nistAlgorithms: OIDBranch {
+              public static let id: UInt64 = 4
+              public static let names = ["nistAlgorithms"]
+              internal static let children: [OIDNode.Type] = [aes.self, hashAlgs.self]
+
+              public enum aes: OID, CaseIterable, OIDLeaf {
+                public static let id: UInt64 = 1
+                public static let names = ["aes"]
+                internal static let children: [OIDNode.Type] = []
+
+                case aes128_ECB =         "2.16.840.1.101.3.4.1.1"
+                case aes128_CBC_PAD =     "2.16.840.1.101.3.4.1.2"
+                case aes128_OFB =         "2.16.840.1.101.3.4.1.3"
+                case aes128_CFB =         "2.16.840.1.101.3.4.1.4"
+                case aes128_wrap =        "2.16.840.1.101.3.4.1.5"
+                case aes128_GCM =         "2.16.840.1.101.3.4.1.6"
+                case aes128_CCM =         "2.16.840.1.101.3.4.1.7"
+                case aes128_wrap_pad =    "2.16.840.1.101.3.4.1.8"
+                case aes128_GMAC =        "2.16.840.1.101.3.4.1.9"
+
+                case aes192_ECB =         "2.16.840.1.101.3.4.1.21"
+                case aes192_CBC_PAD =     "2.16.840.1.101.3.4.1.22"
+                case aes192_OFB =         "2.16.840.1.101.3.4.1.23"
+                case aes192_CFB =         "2.16.840.1.101.3.4.1.24"
+                case aes192_wrap =        "2.16.840.1.101.3.4.1.25"
+                case aes192_GCM =         "2.16.840.1.101.3.4.1.26"
+                case aes192_CCM =         "2.16.840.1.101.3.4.1.27"
+                case aes192_wrap_pad =    "2.16.840.1.101.3.4.1.28"
+                case aes192_GMAC =        "2.16.840.1.101.3.4.1.29"
+
+                case aes256_ECB =         "2.16.840.1.101.3.4.1.41"
+                case aes256_CBC_PAD =     "2.16.840.1.101.3.4.1.42"
+                case aes256_OFB =         "2.16.840.1.101.3.4.1.43"
+                case aes256_CFB =         "2.16.840.1.101.3.4.1.44"
+                case aes256_wrap =        "2.16.840.1.101.3.4.1.45"
+                case aes256_GCM =         "2.16.840.1.101.3.4.1.46"
+                case aes256_CCM =         "2.16.840.1.101.3.4.1.47"
+                case aes256_wrap_pad =    "2.16.840.1.101.3.4.1.48"
+                case aes256_GMAC =        "2.16.840.1.101.3.4.1.49"
+              }
+
+              public enum hashAlgs: OID, CaseIterable, OIDLeaf {
+                public static let id: UInt64 = 2
+                public static let names = ["hashAlgs", "hashalgs"]
+                internal static let children: [OIDNode.Type] = []
+
+                case sha256 =             "2.16.840.1.101.3.4.2.1"
+                case sha384 =             "2.16.840.1.101.3.4.2.2"
+                case sha512 =             "2.16.840.1.101.3.4.2.3"
+                case sha224 =             "2.16.840.1.101.3.4.2.4"
+                case sha512_224 =         "2.16.840.1.101.3.4.2.5"
+                case sha512_256 =         "2.16.840.1.101.3.4.2.6"
+
+                case sha3_224 =           "2.16.840.1.101.3.4.2.7"
+                case sha3_256 =           "2.16.840.1.101.3.4.2.8"
+                case sha3_384 =           "2.16.840.1.101.3.4.2.9"
+                case sha3_512 =           "2.16.840.1.101.3.4.2.10"
+
+                case shake128 =           "2.16.840.1.101.3.4.2.11"
+                case shake256 =           "2.16.840.1.101.3.4.2.12"
+
+                case hmacWithSHA3_224 =   "2.16.840.1.101.3.4.2.13"
+                case hmacWithSHA3_256 =   "2.16.840.1.101.3.4.2.14"
+                case hmacWithSHA3_384 =   "2.16.840.1.101.3.4.2.15"
+                case hmacWithSHA3_512 =   "2.16.840.1.101.3.4.2.16"
+
+                case shake128_len =       "2.16.840.1.101.3.4.2.17"
+                case shake256_len =       "2.16.840.1.101.3.4.2.18"
+
+
+                case kmac128 =            "2.16.840.1.101.3.4.2.19"
+                case kmac256 =            "2.16.840.1.101.3.4.2.20"
+
+                case KMACXOF128 =         "2.16.840.1.101.3.4.2.21"
+                case KACXOF256 =          "2.16.840.1.101.3.4.2.22"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

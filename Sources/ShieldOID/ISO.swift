@@ -58,6 +58,14 @@ public struct iso: OIDBranch {
             case sha224WithRSAEncryption =          "1.2.840.113549.1.1.14"
           }
 
+          public enum pkcs5: OID, CaseIterable, OIDLeaf {
+            public static let id: UInt64 = 5
+            public static let names = ["pkcs-5"]
+
+            case pbkdf2 =                           "1.2.840.113549.1.5.12"
+            case pbes2 =                            "1.2.840.113549.1.5.13"
+          }
+
           public enum pkcs9: OID, CaseIterable, OIDLeaf {
             public static let id: UInt64 = 9
             public static let names = ["pkcs-9"]
@@ -74,6 +82,36 @@ public struct iso: OIDBranch {
             case extensionRequest =                 "1.2.840.113549.1.9.14"
           }
         }
+
+        public enum digestAlgorithm: OID, CaseIterable, OIDLeaf {
+          public static let id: UInt64 = 2
+          public static let names = ["digestAlgorithm"]
+
+          case hmacWithSHA1 =                     "1.2.840.113549.2.7"
+          case hmacWithSHA224 =                   "1.2.840.113549.2.8"
+          case hmacWithSHA256 =                   "1.2.840.113549.2.9"
+          case hmacWithSHA384 =                   "1.2.840.113549.2.10"
+          case hmacWithSHA512 =                   "1.2.840.113549.2.11"
+          case hhmacWithSHA512_224 =              "1.2.840.113549.2.12"
+          case hhmacWithSHA512_256 =              "1.2.840.113549.2.13"
+        }
+
+        public enum encryptionAlgorithm: OID, CaseIterable, OIDLeaf {
+          public static let id: UInt64 = 3
+          public static let names = ["encryptionAlgorithm", "encryptionalgorithm"]
+
+          case rc2CBC =                           "1.2.840.113549.3.2"
+          case rc2ECB =                           "1.2.840.113549.3.3"
+          case rc4 =                              "1.2.840.113549.3.4"
+          case rc4WithMAC =                       "1.2.840.113549.3.5"
+          case desxCBC =                          "1.2.840.113549.3.6"
+          case desEDE3CBC =                       "1.2.840.113549.3.7"
+          case rc5CBC =                           "1.2.840.113549.3.8"
+          case rc5CBCPad =                        "1.2.840.113549.3.9"
+          case desCDMF =                          "1.2.840.113549.3.10"
+          case desEDE3 =                          "1.2.840.113549.3.17"
+        }
+
       }
 
       public struct ansix962: OIDBranch {
