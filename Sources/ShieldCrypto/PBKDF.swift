@@ -45,13 +45,23 @@ public enum PBKDF {
       self.name = name
     }
 
+    @available(*, deprecated, message: "Use hmacSha1")
     public static let sha1 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA1), name: "SHA1")
+    public static let hmacSha1 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA1), name: "SHA1")
+    @available(*, deprecated, message: "Use hmacSha224")
     public static let sha224 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA224), name: "SHA224")
+    public static let hmacSha224 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA224), name: "SHA224")
+    @available(*, deprecated, message: "Use hmacSha256")
     public static let sha256 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA256), name: "SHA256")
+    public static let hmacSha256 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA256), name: "SHA256")
+    @available(*, deprecated, message: "Use hmacSha384")
     public static let sha384 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA384), name: "SHA384")
+    public static let hmacSha384 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA384), name: "SHA384")
+    @available(*, deprecated, message: "Use hmacSha512")
     public static let sha512 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA512), name: "SHA512")
+    public static let hmacSha512 = PsuedoRandomAlgorithm(rawValue: UInt32(kCCPRFHmacAlgSHA512), name: "SHA512")
 
-    public static let allCases: [PsuedoRandomAlgorithm] = [.sha1, .sha224, .sha256, .sha384, .sha512]
+    public static let allCases: [PsuedoRandomAlgorithm] = [.hmacSha1, .hmacSha224, .hmacSha256, .hmacSha384, .hmacSha512]
 
     public var description: String {
       return name
@@ -97,7 +107,7 @@ public enum PBKDF {
     saltLength: Int,
     keyLength: Int,
     using algorithm: Algorithm = .pbkdf2,
-    psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .sha512,
+    psuedoRandomAlgorithm: PsuedoRandomAlgorithm = .hmacSha512,
     taking: TimeInterval
   ) throws -> Int {
     let rounds = CCCalibratePBKDF(
