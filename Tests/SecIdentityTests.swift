@@ -39,7 +39,7 @@ class SecIdentityTests: XCTestCase {
         kSecClass as String: kSecClassCertificate,
         kSecMatchItemList as String: [cert] as CFArray,
         kSecMatchLimit as String: kSecMatchLimitOne,
-      ] as CFDictionary)
+      ] as [String: Any] as CFDictionary)
     }
 
     // Ensure all went well
