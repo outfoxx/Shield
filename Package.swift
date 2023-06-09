@@ -16,8 +16,9 @@ let package = Package(
       targets: ["Shield", "ShieldSecurity", "ShieldCrypto", "ShieldOID", "ShieldPKCS", "ShieldX509", "ShieldX500"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "3.0.0"),
+    .package(url: "https://github.com/outfoxx/PotentCodables.git", from: "3.0.3"),
     .package(url: "https://github.com/sharplet/Regex.git", from: "2.1.0"),
+    .package(name: "Algorithms", url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
   ],
   targets: [
     .target(
@@ -37,11 +38,11 @@ let package = Package(
     ),
     .target(
       name: "ShieldPKCS",
-      dependencies: ["ShieldX500", "PotentCodables"]
+      dependencies: ["ShieldX509", "PotentCodables"]
     ),
     .target(
       name: "ShieldX509",
-      dependencies: ["ShieldCrypto", "ShieldX500", "ShieldOID", "ShieldPKCS", "PotentCodables"]
+      dependencies: ["ShieldCrypto", "ShieldX500", "ShieldOID", "PotentCodables", "Algorithms"]
     ),
     .target(
       name: "ShieldCrypto"
