@@ -1,8 +1,11 @@
 //
 //  PrivateKeyInfo.swift
+//  Shield
+//
+//  Copyright © 2019 Outfox, inc.
 //
 //
-//  Created by Kevin Wooten on 6/7/23.
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation

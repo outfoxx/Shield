@@ -1,8 +1,11 @@
 //
 //  PBKDF2Params.swift
-//  
+//  Shield
 //
-//  Created by Kevin Wooten on 6/8/23.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -33,14 +36,14 @@ extension PBKDF2Params: SchemaSpecified {
 
 public extension Schemas {
 
-  private typealias digAlgs = iso.memberBody.us.rsadsi.digestAlgorithm
+  private typealias DigAlgs = iso.memberBody.us.rsadsi.digestAlgorithm
 
   private static let PRFAglorithms: Schema.DynamicMap = [
-    digAlgs.hmacWithSHA1.asn1: .null,
-    digAlgs.hmacWithSHA224.asn1: .null,
-    digAlgs.hmacWithSHA256.asn1: .null,
-    digAlgs.hmacWithSHA384.asn1: .null,
-    digAlgs.hmacWithSHA512.asn1: .null,
+    DigAlgs.hmacWithSHA1.asn1: .null,
+    DigAlgs.hmacWithSHA224.asn1: .null,
+    DigAlgs.hmacWithSHA256.asn1: .null,
+    DigAlgs.hmacWithSHA384.asn1: .null,
+    DigAlgs.hmacWithSHA512.asn1: .null,
   ]
 
   static let PBKDF2Params: Schema =
@@ -48,7 +51,7 @@ public extension Schemas {
       "salt": .choiceOf([.octetString(), .objectIdentifier()]),
       "iterationCount": .integer(),
       "keyLength": .optional(.integer()),
-      "prf": algorithmIdentifier(PRFAglorithms)
+      "prf": algorithmIdentifier(PRFAglorithms),
     ])
 
 }

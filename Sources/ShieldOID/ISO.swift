@@ -12,7 +12,7 @@ import Foundation
 import PotentASN1
 
 // swiftformat:disable consecutiveSpaces
-// swiftlint:disable type_name nesting
+// swiftlint:disable type_name identifier_name nesting
 
 /// International Organization for Standardization (ISO)
 ///

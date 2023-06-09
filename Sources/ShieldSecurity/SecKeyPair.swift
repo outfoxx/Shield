@@ -396,19 +396,19 @@ public struct SecKeyPair {
   ///
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
-    typealias nist = iso_itu.country.us.organization.gov.csor.nistAlgorithms
-    typealias rsadsi = iso.memberBody.us.rsadsi
-    typealias pkcs = rsadsi.pkcs
-    let supportedEncOids = [nist.aes.aes128_CBC_PAD.oid, nist.aes.aes192_CBC_PAD.oid, nist.aes.aes256_CBC_PAD.oid]
+    typealias Nist = iso_itu.country.us.organization.gov.csor.nistAlgorithms
+    typealias RSADSI = iso.memberBody.us.rsadsi
+    typealias PKCS = RSADSI.pkcs
+    let supportedEncOids = [Nist.aes.aes128_CBC_PAD.oid, Nist.aes.aes192_CBC_PAD.oid, Nist.aes.aes256_CBC_PAD.oid]
 
     let info = try ASN1.Decoder.decode(EncryptedPrivateKeyInfo.self, from: data)
 
     // Convert and validate requirements (PBKDF2 and AES-CBC-PAD encryption)
 
     guard
-      info.encryptionAlgorithm.algorithm == rsadsi.pkcs.pkcs5.pbes2.oid,
+      info.encryptionAlgorithm.algorithm == RSADSI.pkcs.pkcs5.pbes2.oid,
       let encAlgParams = try? info.encryptionAlgorithm.parameters.map({ try ASN1.Decoder.decodeTree(PBES2Params.self, from: $0) }),
-      encAlgParams.keyDerivationFunc.algorithm == pkcs.pkcs5.pbkdf2.oid,
+      encAlgParams.keyDerivationFunc.algorithm == PKCS.pkcs5.pbkdf2.oid,
       let pbkdf2Params = try? encAlgParams.keyDerivationFunc.parameters.map({ try ASN1.Decoder.decodeTree(PBKDF2Params.self, from: $0) }),
       supportedEncOids.contains(encAlgParams.encryptionScheme.algorithm),
       let aesIV = encAlgParams.encryptionScheme.parameters?.octetStringValue
@@ -581,37 +581,37 @@ private extension SecKey {
 private extension PBKDF.PsuedoRandomAlgorithm {
 
   var prfAlgorithm: iso.memberBody.us.rsadsi.digestAlgorithm {
-    typealias algs = iso.memberBody.us.rsadsi.digestAlgorithm
+    typealias Algs = iso.memberBody.us.rsadsi.digestAlgorithm
 
     switch self {
     case .hmacSha1:
-      return algs.hmacWithSHA1
+      return Algs.hmacWithSHA1
     case .hmacSha224:
-      return algs.hmacWithSHA224
+      return Algs.hmacWithSHA224
     case .hmacSha256:
-      return algs.hmacWithSHA256
+      return Algs.hmacWithSHA256
     case .hmacSha384:
-      return algs.hmacWithSHA384
+      return Algs.hmacWithSHA384
     case .hmacSha512:
-      return algs.hmacWithSHA512
+      return Algs.hmacWithSHA512
     default:
       fatalError("Unsupported PBKDF Psuedo Random Algorithm")
     }
   }
 
   static func from(oid: OID) throws -> Self {
-    typealias algs = iso.memberBody.us.rsadsi.digestAlgorithm
+    typealias Algs = iso.memberBody.us.rsadsi.digestAlgorithm
 
     switch oid {
-    case algs.hmacWithSHA1.oid:
+    case Algs.hmacWithSHA1.oid:
       return .hmacSha1
-    case algs.hmacWithSHA224.oid:
+    case Algs.hmacWithSHA224.oid:
       return .hmacSha224
-    case algs.hmacWithSHA256.oid:
+    case Algs.hmacWithSHA256.oid:
       return .hmacSha256
-    case algs.hmacWithSHA384.oid:
+    case Algs.hmacWithSHA384.oid:
       return .hmacSha384
-    case algs.hmacWithSHA512.oid:
+    case Algs.hmacWithSHA512.oid:
       return .hmacSha512
     default:
       throw SecKeyPair.Error.invalidEncodedPrivateKey
@@ -623,15 +623,15 @@ private extension PBKDF.PsuedoRandomAlgorithm {
 private extension SecKeyPair.ExportKeySize {
 
   var aesCBCAlgorithm: iso_itu.country.us.organization.gov.csor.nistAlgorithms.aes {
-    typealias aes = iso_itu.country.us.organization.gov.csor.nistAlgorithms.aes
+    typealias AES = iso_itu.country.us.organization.gov.csor.nistAlgorithms.aes
 
     switch self {
     case .bits128:
-      return aes.aes128_CBC_PAD
+      return AES.aes128_CBC_PAD
     case .bits192:
-      return aes.aes192_CBC_PAD
+      return AES.aes192_CBC_PAD
     case .bits256:
-      return aes.aes256_CBC_PAD
+      return AES.aes256_CBC_PAD
     }
   }
 
@@ -648,19 +648,19 @@ private extension EncryptedPrivateKeyInfo {
     aesEncryptionScheme: OID,
     aesIV: Data
   ) throws -> EncryptedPrivateKeyInfo {
-    typealias pkcs5 = iso.memberBody.us.rsadsi.pkcs.pkcs5
+    typealias PKCS = iso.memberBody.us.rsadsi.pkcs.pkcs5
 
     let pbkdf2Params = PBKDF2Params(salt: pbkdf2Salt,
                                     iterationCount: pbkdf2IterationCount,
                                     keyLength: pbkdf2KeyLength,
                                     prf: .init(algorithm: pbkdf2Prf))
 
-    let encAlgParams = PBES2Params(keyDerivationFunc: .init(algorithm: pkcs5.pbkdf2.oid,
+    let encAlgParams = PBES2Params(keyDerivationFunc: .init(algorithm: PKCS.pbkdf2.oid,
                                                             parameters: try ASN1.Encoder.encodeTree(pbkdf2Params)),
                                    encryptionScheme: .init(algorithm: aesEncryptionScheme,
                                                            parameters: .octetString(aesIV)))
 
-    let encAlgId = AlgorithmIdentifier(algorithm: pkcs5.pbes2.oid,
+    let encAlgId = AlgorithmIdentifier(algorithm: PKCS.pbes2.oid,
                                        parameters: try ASN1.Encoder.encodeTree(encAlgParams))
 
     return EncryptedPrivateKeyInfo(encryptionAlgorithm: encAlgId,
@@ -675,4 +675,3 @@ private func printPEM(data: Data, type: String) {
 
   print("-----BEGIN \(type)-----\n\(pemBase64)\n-----END \(type)-----")
 }
-

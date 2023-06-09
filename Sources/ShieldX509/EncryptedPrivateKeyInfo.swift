@@ -1,8 +1,11 @@
 //
 //  EncryptedPrivateKeyInfo.swift
-//  
+//  Shield
 //
-//  Created by Kevin Wooten on 6/8/23.
+//  Copyright © 2019 Outfox, inc.
+//
+//
+//  Distributed under the MIT License, See LICENSE for details.
 //
 
 import Foundation
@@ -37,7 +40,7 @@ public extension Schemas {
   static let EncryptedPrivateKeyInfo: Schema =
     .sequence([
       "encryptionAlgorithm": algorithmIdentifier(EncryptedPrivateKeyInfoAlgorithms),
-      "encryptedData": .octetString()
+      "encryptedData": .octetString(),
     ])
 
 }
