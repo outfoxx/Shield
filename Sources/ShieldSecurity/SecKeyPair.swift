@@ -389,8 +389,6 @@ public struct SecKeyPair {
 
     let encryptedPrivateKeyInfoData = try ASN1Encoder.encode(encryptedPrivateKeyInfo)
 
-    printPEM(data: encryptedPrivateKeyInfoData, type: "ENCRYPTED PRIVATE KEY")
-
     return encryptedPrivateKeyInfoData
   }
 
@@ -522,17 +520,11 @@ private extension SecKey {
       privateKeyInfo = try generateECPrivateKeyInfo()
     }
 
-    let encoded = try ASN1.Encoder.encode(privateKeyInfo)
-
-    printPEM(data: encoded, type: "PRIVATE KEY")
-
-    return encoded
+    return try ASN1.Encoder.encode(privateKeyInfo)
   }
 
   private func generateRSAPrivateKeyInfo() throws -> PrivateKeyInfo {
     let encodedPrivateKey = try encode()
-
-    printPEM(data: encodedPrivateKey, type: "RSA PRIVATE KEY")
 
     return PrivateKeyInfo(privateKeyAlgorithm: .init(algorithm: iso.memberBody.us.rsadsi.pkcs.pkcs1.rsaEncryption.oid),
                           privateKey: encodedPrivateKey)
@@ -556,9 +548,6 @@ private extension SecKey {
                                   publicKey: BitString(bytes: encodedPublicKey))
 
     let privateKeyData = try ASN1.Encoder.encode(privateKey)
-
-    printPEM(data: privateKeyData, type: "EC PRIVATE KEY")
-
 
     return PrivateKeyInfo(version: .zero,
                           privateKeyAlgorithm: .init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
@@ -676,12 +665,4 @@ private extension EncryptedPrivateKeyInfo {
     return EncryptedPrivateKeyInfo(encryptionAlgorithm: encAlgId,
                                    encryptedData: encryptedData)
   }
-}
-
-private func printPEM(data: Data, type: String) {
-
-  let base64 = data.base64EncodedString()
-  let pemBase64 = base64.chunks(ofCount: 64).joined(separator: "\n")
-
-  print("-----BEGIN \(type)-----\n\(pemBase64)\n-----END \(type)-----")
 }
