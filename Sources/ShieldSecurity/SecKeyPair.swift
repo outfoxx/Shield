@@ -270,12 +270,17 @@ public struct SecKeyPair {
   ///   - trustedCertificates: Any certificates needed to complete the "chain-of-trust" for `certificate`.
   /// - Returns: True if the public key of `certificate` and the key pair match.
   ///
-  public func matchesCertificate(certificate: SecCertificate, trustedCertificates: [SecCertificate]) throws -> Bool {
+  public func matchesCertificate(certificate: SecCertificate, trustedCertificates: [SecCertificate]) -> Bool {
 
-    let keyData =
-      try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
+    do {
 
-    return try encodedPublicKey() == keyData
+      let keyData = try certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
+
+      return try encodedPublicKey() == keyData
+    }
+    catch {
+      return false
+    }
   }
 
 #if swift(>=5.5)
@@ -292,12 +297,17 @@ public struct SecKeyPair {
   public func matchesCertificate(
     certificate: SecCertificate,
     trustedCertificates: [SecCertificate]
-  ) async throws -> Bool {
+  ) async -> Bool {
 
-    let keyData =
-      try await certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
+    do {
 
-    return try encodedPublicKey() == keyData
+      let keyData = try await certificate.publicKeyValidated(trustedCertificates: trustedCertificates).encode()
+
+      return try encodedPublicKey() == keyData
+    }
+    catch {
+      return false
+    }
   }
 #endif
 

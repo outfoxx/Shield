@@ -126,16 +126,10 @@ class SecKeyPairTests: XCTestCase {
 
     DispatchQueue.global(qos: .userInitiated).async {
       defer { finishedX.fulfill() }
-      do {
 
-        let result = try self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+      let result = self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
 
-        XCTAssertTrue(result)
-
-      }
-      catch {
-        XCTFail("\(error)")
-      }
+      XCTAssertTrue(result)
     }
 
     waitForExpectations(timeout: 10.0)
@@ -157,7 +151,7 @@ class SecKeyPairTests: XCTestCase {
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    let result = try await self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+    let result = await self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
     XCTAssertTrue(result)
   }
 #endif
