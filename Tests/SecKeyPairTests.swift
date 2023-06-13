@@ -156,7 +156,7 @@ class SecKeyPairTests: XCTestCase {
   }
 #endif
 
-  func testImportExportRSA() throws {
+  func testImportExportEncryptedRSA() throws {
 
     let exportedKeyData = try rsaKeyPair.export(password: "123")
 
@@ -189,13 +189,35 @@ class SecKeyPairTests: XCTestCase {
 
   }
 
-  func testImportExportEC() throws {
+  func testImportExportRSA() throws {
+
+    let exportedKeyData = try rsaKeyPair.export()
+
+    let importedKeyPair = try SecKeyPair.import(fromData: exportedKeyData)
+
+    let plainText = try Random.generate(count: 171)
+
+    let cipherText1 = try rsaKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
+
+    let plainText2 = try importedKeyPair.privateKey.decrypt(cipherText: cipherText1, padding: .oaep)
+
+    XCTAssertEqual(plainText, plainText2)
+  }
+
+  func testImportExportEncryptedEC() throws {
 
     let exportedKeyData = try ecKeyPair.export(password: "123")
 
     _ = try SecKeyPair.import(fromData: exportedKeyData, withPassword: "123")
 
     XCTAssertThrowsError(try SecKeyPair.import(fromData: exportedKeyData, withPassword: "456"))
+  }
+
+  func testImportExportEC() throws {
+
+    let exportedKeyData = try ecKeyPair.export()
+
+    _ = try SecKeyPair.import(fromData: exportedKeyData)
   }
 
   func testCodable() throws {
