@@ -317,10 +317,8 @@ public struct SecKeyPair {
     case bits256 = 32
   }
 
-  /// Encrypt and encode the key pair's private key using PBKDF.
-  ///
-  /// Encrypt the key pair's private key with a password using PBKDF and then encode
-  /// the encrypted key, along with the PBKDF parameters, into an ASN.1 structure.
+  /// Encodes the key pair's private key in PKCS#8 format and then encrypts it using PBKDF and packages
+  /// into PKCS#8 encrypted format.
   ///
   /// With the exported key and original password, ``import(fromData:withPassword:)``
   /// can be used to recover the original `SecKey`.
@@ -328,8 +326,9 @@ public struct SecKeyPair {
   /// - Parameters:
   ///   - password: Password use for key encryption.
   ///   - derivedKeySize: PBKDF target key size.
+  ///   - psuedoRandomAlgorithm: Which psuedo random algorithm should be used with PBKDF.
   ///   - keyDerivationTiming: Time PBKDF function should take to generate encryption key.
-  /// - Returns: Encoded encrypted key and PBKDF paraemters.
+  /// - Returns: Encrypted PKCS#8 encoded private key.
   ///
   public func export(
     password: String,
@@ -392,15 +391,28 @@ public struct SecKeyPair {
     return encryptedPrivateKeyInfoData
   }
 
-  /// Decode and decrypt a previously exported private key.
+  /// Encodes the key pair's private key in PKCS#8 format.
   ///
-  /// Decodes the encrypted key and PBKDF paraameters from the provided ASN.1 data and then decrypts
-  /// the private key. This is the reverse operation of ``export(password:derivedKeyLength:keyDerivationTiming:)``.
+  /// With the exported key and original password, ``import(fromData:withPassword:)``
+  /// can be used to recover the original `SecKey`.
+  ///
+  /// - Returns: Encoded encrypted key and PBKDF paraemters.
+  ///
+  public func export() throws -> Data {
+
+    return try privateKey.encodePKCS8()
+  }
+
+  /// Decrypts an encrypted PKCS#8 encrypted private key and builds a complete key pair.
+  ///
+  /// This is the reverse operation of ``export(password:derivedKeyLength:keyDerivationTiming:)``.
+  ///
+  /// - Note: Only supports PKCS#8's PBES2 sceheme using PBKDF2 for key derivation.
   ///
   /// - Parameters:
   ///   - data: Data for exported private key.
   ///   - password: Password used during key export.
-  /// - Returns: ``SecKeyPair`` for the decoded/decrypted private.
+  /// - Returns: ``SecKeyPair`` for the decrypted & decoded private key.
   ///
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
 
@@ -444,9 +456,20 @@ public struct SecKeyPair {
                                                key: importKey,
                                                iv: aesIV)
 
+    return try Self.import(fromData: privateKeyInfoData)
+  }
+
+  /// Decodes a PKCS#8 encoded private key and builds a complete key pair.
+  ///
+  /// - Parameters:
+  ///   - data: Data for exported private key.
+  /// - Returns: ``SecKeyPair`` for the decrypted private key.
+  ///
+  public static func `import`(fromData data: Data) throws -> SecKeyPair {
+
     let privateKeyInfo: PrivateKeyInfo
     do {
-      privateKeyInfo = try ASN1.Decoder.decode(PrivateKeyInfo.self, from: privateKeyInfoData)
+      privateKeyInfo = try ASN1.Decoder.decode(PrivateKeyInfo.self, from: data)
     }
     catch {
       throw SecKeyPair.Error.invalidEncodedPrivateKey
