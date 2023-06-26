@@ -209,6 +209,11 @@ public extension SecCertificate {
     )
   }
 
+  var pemEncoded: String {
+    let pem = derEncoded.base64EncodedString().chunks(ofCount: 64).joined(separator: "\n")
+    return "-----BEGIN CERTIFICATE-----\n\(pem)\n-----END CERTIFICATE-----"
+  }
+
   var derEncoded: Data {
     return SecCertificateCopyData(self) as Data
   }

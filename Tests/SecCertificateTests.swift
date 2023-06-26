@@ -83,6 +83,58 @@ class SecCertificateTests: XCTestCase {
     XCTAssertEqual(try cert.publicKey?.encode(), try Self.keyPair.publicKey.encode())
   }
 
+  func testPEM() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    let certSec = try SecCertificate.from(data: certData)
+    let certPem = certSec.pemEncoded
+
+    XCTAssertEqual(certSec.derEncoded, try SecCertificate.load(pem: certPem).first?.derEncoded)
+  }
+
+  func testDER() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    let certSec = try SecCertificate.from(data: certData)
+    let certDer = certSec.derEncoded
+
+    XCTAssertEqual(certSec.derEncoded, try SecCertificate.load(der: certDer).derEncoded)
+  }
+
   func testValidatedPublicKey() throws {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
