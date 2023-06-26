@@ -9,6 +9,7 @@
 //
 
 import Algorithms
+import CryptoKit
 import Foundation
 import PotentASN1
 import Security
@@ -518,13 +519,25 @@ private extension SecKey {
       importKeyData = privateKeyInfo.privateKey
 
     case iso.memberBody.us.ansix962.keyType.ecPublicKey.oid:
+      keyType = .ec
+
       let ecPrivateKey = try ASN1.Decoder.decode(ECPrivateKey.self, from: privateKeyInfo.privateKey)
-      guard let publicKey = ecPrivateKey.publicKey else {
-        throw SecKeyPair.Error.invalidEncodedPrivateKey
+      guard
+        let curveOID = privateKeyInfo.privateKeyAlgorithm.parameters?.objectIdentifierValue
+      else {
+        throw SecKey.Error.importFailed
       }
 
-      keyType = .ec
-      importKeyData = publicKey.bytes + ecPrivateKey.privateKey
+      switch curveOID {
+      case iso.memberBody.us.ansix962.curves.prime.prime256v1.oid:
+        importKeyData = try P256.Signing.PrivateKey(rawRepresentation: ecPrivateKey.privateKey).x963Representation
+      case iso.org.certicom.curve.ansip384r1.oid:
+        importKeyData = try P384.Signing.PrivateKey(rawRepresentation: ecPrivateKey.privateKey).x963Representation
+      case iso.org.certicom.curve.ansip521r1.oid:
+        importKeyData = try P521.Signing.PrivateKey(rawRepresentation: ecPrivateKey.privateKey).x963Representation
+      default:
+        throw AlgorithmIdentifier.Error.unsupportedAlgorithm
+      }
 
     default:
       throw AlgorithmIdentifier.Error.unsupportedAlgorithm
@@ -594,7 +607,7 @@ private extension SecKey {
       // P-521, secp521r1
       return (iso.org.certicom.curve.ansip521r1.oid, 66)
     default:
-      throw AlgorithmIdentifier.Error.unsupportedECKeySize
+      throw AlgorithmIdentifier.Error.unsupportedAlgorithm
     }
   }
 

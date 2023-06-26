@@ -213,11 +213,46 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertThrowsError(try SecKeyPair.import(fromData: exportedKeyData, withPassword: "456"))
   }
 
-  func testImportExportEC() throws {
+  func testImportExportEC192() throws {
 
-    let exportedKeyData = try ecKeyPair.export()
+    let ecKeyPair =
+      try SecKeyPair.Builder(type: .ec, keySize: 192)
+        .generate(label: "Test 192 EC Key")
+    defer { try? ecKeyPair.delete() }
 
-    _ = try SecKeyPair.import(fromData: exportedKeyData)
+    XCTAssertThrowsError(try SecKeyPair.import(fromData: ecKeyPair.export())) { error in
+      XCTAssertTrue(error is AlgorithmIdentifier.Error)
+    }
+  }
+
+  func testImportExportEC256() throws {
+
+    let ecKeyPair =
+      try SecKeyPair.Builder(type: .ec, keySize: 256)
+        .generate(label: "Test 256 EC Key")
+    defer { try? ecKeyPair.delete() }
+
+    _ = try SecKeyPair.import(fromData: ecKeyPair.export())
+  }
+
+  func testImportExportEC384() throws {
+
+    let ecKeyPair =
+      try SecKeyPair.Builder(type: .ec, keySize: 384)
+        .generate(label: "Test 384 EC Key")
+    defer { try? ecKeyPair.delete() }
+
+    _ = try SecKeyPair.import(fromData: ecKeyPair.export())
+  }
+
+  func testImportExportEC521() throws {
+
+    let ecKeyPair =
+      try SecKeyPair.Builder(type: .ec, keySize: 521)
+        .generate(label: "Test 521 EC Key")
+    defer { try? ecKeyPair.delete() }
+
+    _ = try SecKeyPair.import(fromData: ecKeyPair.export())
   }
 
   func testCodable() throws {
