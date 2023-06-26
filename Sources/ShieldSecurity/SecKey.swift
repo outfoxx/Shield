@@ -93,7 +93,12 @@ public extension SecKey {
     return ref as! SecKey // swiftlint:disable:this force_cast
   }
 
+  @available(*, deprecated, message: "Use decode(data:type:class:) insead")
   static func decode(fromData data: Data, type: CFString, class keyClass: CFString) throws -> SecKey {
+    return try decode(data: data, type: type, class: keyClass)
+  }
+
+  static func decode(data: Data, type: CFString, class keyClass: CFString) throws -> SecKey {
 
     let attrs = [
       kSecClass as String: kSecClassKey,
