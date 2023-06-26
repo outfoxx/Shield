@@ -203,7 +203,7 @@ public struct SecKeyPair {
   public init(type: SecKeyType, privateKeyData: Data) throws {
 
     privateKey = try SecKey.decode(
-      fromData: privateKeyData,
+      data: privateKeyData,
       type: type.systemValue,
       class: kSecAttrKeyClassPrivate
     )
@@ -321,7 +321,7 @@ public struct SecKeyPair {
   /// Encodes the key pair's private key in PKCS#8 format and then encrypts it using PBKDF and packages
   /// into PKCS#8 encrypted format.
   ///
-  /// With the exported key and original password, ``import(fromData:withPassword:)``
+  /// With the exported key and original password, ``import(data:password:)``
   /// can be used to recover the original `SecKey`.
   ///
   /// - Parameters:
@@ -394,7 +394,7 @@ public struct SecKeyPair {
 
   /// Encodes the key pair's private key in PKCS#8 format.
   ///
-  /// With the exported key and original password, ``import(fromData:withPassword:)``
+  /// With the exported key and original password, ``import(data:password:)``
   /// can be used to recover the original `SecKey`.
   ///
   /// - Returns: Encoded encrypted key and PBKDF paraemters.
@@ -415,7 +415,23 @@ public struct SecKeyPair {
   ///   - password: Password used during key export.
   /// - Returns: ``SecKeyPair`` for the decrypted & decoded private key.
   ///
+  @available(*, deprecated, message: "Use import(data:password:) instead")
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
+    return try self.import(data: data, password: password)
+  }
+
+  /// Decrypts an encrypted PKCS#8 encrypted private key and builds a complete key pair.
+  ///
+  /// This is the reverse operation of ``export(password:derivedKeyLength:keyDerivationTiming:)``.
+  ///
+  /// - Note: Only supports PKCS#8's PBES2 sceheme using PBKDF2 for key derivation.
+  ///
+  /// - Parameters:
+  ///   - data: Data for exported private key.
+  ///   - password: Password used during key export.
+  /// - Returns: ``SecKeyPair`` for the decrypted & decoded private key.
+  ///
+  public static func `import`(data: Data, password: String) throws -> SecKeyPair {
 
     typealias Nist = iso_itu.country.us.organization.gov.csor.nistAlgorithms
     typealias RSADSI = iso.memberBody.us.rsadsi
@@ -457,7 +473,7 @@ public struct SecKeyPair {
                                                key: importKey,
                                                iv: aesIV)
 
-    return try Self.import(fromData: privateKeyInfoData)
+    return try Self.import(data: privateKeyInfoData)
   }
 
   /// Decodes a PKCS#8 encoded private key and builds a complete key pair.
@@ -466,7 +482,18 @@ public struct SecKeyPair {
   ///   - data: Data for exported private key.
   /// - Returns: ``SecKeyPair`` for the decrypted private key.
   ///
+  @available(*, deprecated, message: "Use import(data:) instead")
   public static func `import`(fromData data: Data) throws -> SecKeyPair {
+    return try self.import(data: data)
+  }
+
+  /// Decodes a PKCS#8 encoded private key and builds a complete key pair.
+  ///
+  /// - Parameters:
+  ///   - data: Data for exported private key.
+  /// - Returns: ``SecKeyPair`` for the decrypted private key.
+  ///
+  public static func `import`(data: Data) throws -> SecKeyPair {
 
     let privateKeyInfo: PrivateKeyInfo
     do {

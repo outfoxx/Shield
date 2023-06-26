@@ -145,14 +145,14 @@ class SecKeyTests: XCTestCase {
 
     let encodedPublicKey = try keyPair.publicKey.encode()
     let decodedPublicKey = try SecKey.decode(
-      fromData: encodedPublicKey,
+      data: encodedPublicKey,
       type: keyPair.publicKey.type() as CFString,
       class: kSecAttrKeyClassPublic
     )
 
     let encodedPrivateKey = try keyPair.privateKey.encode()
     let decodedPrivateKey = try SecKey.decode(
-      fromData: encodedPrivateKey,
+      data: encodedPrivateKey,
       type: keyPair.publicKey.type() as CFString,
       class: kSecAttrKeyClassPrivate
     )
