@@ -19,6 +19,7 @@ public extension AlgorithmIdentifier {
 
   enum Error: Swift.Error {
     case unsupportedAlgorithm
+    @available(*, deprecated, message: "No longer used")
     case unsupportedECKeySize
   }
 
@@ -81,7 +82,7 @@ public extension AlgorithmIdentifier {
         // P-521, secp521r1
         curve = iso.org.certicom.curve.ansip521r1.oid
       default:
-        throw Error.unsupportedECKeySize
+        throw Error.unsupportedAlgorithm
       }
 
       self.init(
