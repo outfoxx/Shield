@@ -46,10 +46,14 @@ public struct SecKeyPair {
   public enum Error: Int, Swift.Error {
     case generateFailed
     case failedToCopyPublicKeyFromPrivateKey
-    case noMatchingKey
-    case itemAddFailed
-    case itemDeleteFailed
     case invalidEncodedPrivateKey
+
+    @available(*, deprecated, message: "Unused")
+    case noMatchingKey
+    @available(*, deprecated, message: "Unused")
+    case itemAddFailed
+    @available(*, deprecated, message: "Unused")
+    case itemDeleteFailed
 
     public static func build(error: Error, message: String, status: OSStatus) -> NSError {
       let error = error as NSError
