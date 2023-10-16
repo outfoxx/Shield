@@ -14,18 +14,14 @@ import XCTest
 class SecCertificateTests: XCTestCase {
 
   static let outputEnabled = false
-  static var keyPair: SecKeyPair!
+  var keyPair: SecKeyPair!
 
-  override class func setUp() {
-    // Keys are comparatively slow to generate... so we do it once
-    guard let keyPair = try? SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test") else {
-      return XCTFail("Key pair generation failed")
-    }
-    Self.keyPair = keyPair
+  override func setUpWithError() throws {
+    keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
   }
 
-  override class func tearDown() {
-    try? keyPair.delete()
+  override func tearDownWithError() throws {
+    try? keyPair?.delete()
   }
 
   func testSaveAcccessibilityUnlockedNotShared() throws {
@@ -43,9 +39,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     output(certData)
@@ -75,9 +71,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     output(certData)
@@ -103,16 +99,16 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     output(certData)
 
     let cert = try SecCertificate.from(data: certData)
 
-    XCTAssertEqual(try cert.publicKey?.encode(), try Self.keyPair.publicKey.encode())
+    XCTAssertEqual(try cert.publicKey?.encode(), try keyPair.publicKey.encode())
   }
 
   func testPEM() throws {
@@ -130,9 +126,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let certSec = try SecCertificate.from(data: certData)
@@ -156,9 +152,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let certSec = try SecCertificate.from(data: certData)
@@ -172,19 +168,19 @@ class SecCertificateTests: XCTestCase {
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
     let rootID = try Random.generate(count: 10)
     let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
-    let rootKeyHash = try Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1)
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
     let rootCertData =
     try Certificate.Builder()
       .serialNumber(rootSerialNumber)
       .subject(name: rootName, uniqueID: rootID)
       .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
-      .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
       .subjectKeyIdentifier(rootKeyHash)
       .issuer(name: rootName)
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .basicConstraints(ca: true)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(rootCertData)
 
@@ -207,7 +203,7 @@ class SecCertificateTests: XCTestCase {
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(certData)
 
@@ -238,19 +234,19 @@ class SecCertificateTests: XCTestCase {
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
     let rootID = try Random.generate(count: 10)
     let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
-    let rootKeyHash = try Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1)
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
     let rootCertData =
     try Certificate.Builder()
       .serialNumber(rootSerialNumber)
       .subject(name: rootName, uniqueID: rootID)
       .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
-      .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
       .subjectKeyIdentifier(rootKeyHash)
       .issuer(name: rootName)
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .basicConstraints(ca: true)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(rootCertData)
 
@@ -273,7 +269,7 @@ class SecCertificateTests: XCTestCase {
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(certData)
 
@@ -294,9 +290,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 
@@ -342,9 +338,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 
@@ -359,7 +355,7 @@ class SecCertificateTests: XCTestCase {
         .issuer(name: rootName)
         .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 

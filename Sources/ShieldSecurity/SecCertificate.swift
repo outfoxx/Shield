@@ -228,7 +228,7 @@ public extension SecCertificate {
     let query: [String: Any] = [
       kSecReturnAttributes as String: true,
       kSecValueRef as String: self,
-      kSecUseDataProtectionKeychain as String: true
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     var data: CFTypeRef?
@@ -248,7 +248,7 @@ public extension SecCertificate {
       kSecAttrLabel as String: UUID().uuidString,
       kSecValueRef as String: self,
       kSecAttrAccessible as String: accessibility.attr,
-      kSecUseDataProtectionKeychain as String: true
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     var data: CFTypeRef?
@@ -267,7 +267,7 @@ public extension SecCertificate {
     let query: [String: Any] = [
       kSecClass as String: kSecClassCertificate,
       kSecValueRef as String: self,
-      kSecUseDataProtectionKeychain as String: true
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     let status = SecItemDelete(query as CFDictionary)

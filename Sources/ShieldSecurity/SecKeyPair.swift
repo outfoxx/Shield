@@ -141,8 +141,8 @@ public struct SecKeyPair {
         kSecAttrKeyType as String: type.systemValue,
         kSecAttrKeySizeInBits as String: keySize,
         kSecAttrIsPermanent as String: isPermanent,
+        kSecAttrAccessible as String: accessibility.attr,
         kSecUseDataProtectionKeychain as String: true,
-        kSecAttrAccessible as String: accessibility.attr
       ]
 
       if let label = label {
