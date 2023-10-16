@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		AA2151F02975D9CF0072F6CA /* ShieldHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */; };
-		AA2151F42975D9D00072F6CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F32975D9D00072F6CA /* Assets.xcassets */; };
-		AA2151F82975D9D00072F6CA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */; };
 		AA2152422975DF5F0072F6CA /* CertificationRequestBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */; };
 		AA2152442975DF5F0072F6CA /* HmacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152362975DF5F0072F6CA /* HmacTests.swift */; };
 		AA2152452975DF5F0072F6CA /* OIDTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152372975DF5F0072F6CA /* OIDTests.swift */; };
@@ -26,8 +24,6 @@
 		AA2152632975E3600072F6CA /* Shield in Frameworks */ = {isa = PBXBuildFile; productRef = AA2152622975E3600072F6CA /* Shield */; };
 		AA5768A12975E7C300142200 /* ShieldHost Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA5768A02975E7C300142200 /* ShieldHost Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA5768A62975E7C300142200 /* ShieldHostApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5768A52975E7C300142200 /* ShieldHostApp.swift */; };
-		AA5768AA2975E7C400142200 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5768A92975E7C400142200 /* Assets.xcassets */; };
-		AA5768AD2975E7C400142200 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA5768AC2975E7C400142200 /* Preview Assets.xcassets */; };
 		AA5768E02975E85E00142200 /* Shield in Frameworks */ = {isa = PBXBuildFile; productRef = AA5768DF2975E85E00142200 /* Shield */; };
 		AA5768E12975E87C00142200 /* HmacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152362975DF5F0072F6CA /* HmacTests.swift */; };
 		AA5768E22975E87C00142200 /* DistinguishedNameComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152382975DF5F0072F6CA /* DistinguishedNameComposerTests.swift */; };
@@ -87,10 +83,7 @@
 /* Begin PBXFileReference section */
 		AA2151EC2975D9CF0072F6CA /* ShieldHost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShieldHost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
-		AA2151F12975D9CF0072F6CA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA2151F32975D9D00072F6CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA2151F52975D9D00072F6CA /* ShieldHost.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShieldHost.entitlements; sourceTree = "<group>"; };
-		AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA2151FD2975D9D00072F6CA /* ShieldHostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShieldHostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA21521F2975DCA40072F6CA /* Shield */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Shield; path = ..; sourceTree = "<group>"; };
 		AA2152342975DF5F0072F6CA /* CertificationRequestBuilderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificationRequestBuilderTests.swift; sourceTree = "<group>"; };
@@ -109,9 +102,6 @@
 		AA57689B2975E7C300142200 /* ShieldHost Watch Container.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShieldHost Watch Container.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5768A02975E7C300142200 /* ShieldHost Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShieldHost Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5768A52975E7C300142200 /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
-		AA5768A72975E7C300142200 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		AA5768A92975E7C400142200 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA5768AC2975E7C400142200 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShieldHost Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateDecoderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -178,20 +168,9 @@
 			isa = PBXGroup;
 			children = (
 				AA2151EF2975D9CF0072F6CA /* ShieldHostApp.swift */,
-				AA2151F12975D9CF0072F6CA /* ContentView.swift */,
-				AA2151F32975D9D00072F6CA /* Assets.xcassets */,
 				AA2151F52975D9D00072F6CA /* ShieldHost.entitlements */,
-				AA2151F62975D9D00072F6CA /* Preview Content */,
 			);
 			path = ShieldHost;
-			sourceTree = "<group>";
-		};
-		AA2151F62975D9D00072F6CA /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				AA2151F72975D9D00072F6CA /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		AA21521E2975DCA40072F6CA /* Packages */ = {
@@ -235,19 +214,8 @@
 			isa = PBXGroup;
 			children = (
 				AA5768A52975E7C300142200 /* ShieldHostApp.swift */,
-				AA5768A72975E7C300142200 /* ContentView.swift */,
-				AA5768A92975E7C400142200 /* Assets.xcassets */,
-				AA5768AB2975E7C400142200 /* Preview Content */,
 			);
 			path = "ShieldHost Watch App";
-			sourceTree = "<group>";
-		};
-		AA5768AB2975E7C400142200 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				AA5768AC2975E7C400142200 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -402,8 +370,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA2151F82975D9D00072F6CA /* Preview Assets.xcassets in Resources */,
-				AA2151F42975D9D00072F6CA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,8 +391,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AA5768AD2975E7C400142200 /* Preview Assets.xcassets in Resources */,
-				AA5768AA2975E7C400142200 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -644,7 +608,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -681,7 +645,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
