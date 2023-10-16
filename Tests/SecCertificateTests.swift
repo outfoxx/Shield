@@ -28,6 +28,38 @@ class SecCertificateTests: XCTestCase {
     try? keyPair.delete()
   }
 
+  func testSaveAcccessibilityUnlockedNotShared() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    output(certData)
+
+    let cert = try SecCertificate.from(data: certData)
+    defer { try? cert.delete() }
+
+    try cert.save(accessibility: .unlocked(afterFirst: true, shared: false))
+
+    let attrs = try cert.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
+  }
+
+
   func testCertificateProperties() throws {
 
     let subjectName = try NameBuilder()

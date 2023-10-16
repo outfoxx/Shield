@@ -68,7 +68,7 @@ public extension AlgorithmIdentifier {
 
     case .ec:
       let curve: OID
-      switch try publicKey.attributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
+      switch try publicKey.keyAttributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
       case 192:
         // P-192, secp192r1
         curve = iso.memberBody.us.ansix962.curves.prime.prime192v1.oid

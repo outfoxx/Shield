@@ -8,10 +8,39 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
+import Security
 @testable import Shield
 import XCTest
 
 class SecKeyTests: XCTestCase {
+
+  func testSaveAcccessibilityUnlocked() throws {
+    let keyPair = try SecKeyPair.Builder(type: .ec, keySize: 256)
+      .generate(label: "Test", flags: [])
+
+    try keyPair.save(accessibility: .unlocked(afterFirst: false, shared: true))
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleWhenUnlocked as String)
+  }
+
+  func testGenerateAccessibilityUnlocked() throws {
+    let keyPair = try SecKeyPair.Builder(type: .ec, keySize: 256)
+      .generate(label: "Test", accessibility: .unlocked(afterFirst: false, shared: true))
+    defer { try? keyPair.delete() }
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleWhenUnlocked as String)
+  }
+
+  func testGenerateAccessibilityAfterFirstUnlockNotShared() throws {
+    let keyPair = try SecKeyPair.Builder(type: .ec, keySize: 256)
+      .generate(label: "Test", accessibility: .unlocked(afterFirst: true, shared: false))
+    defer { try? keyPair.delete() }
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
+  }
 
   func testRSA() throws {
     let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")

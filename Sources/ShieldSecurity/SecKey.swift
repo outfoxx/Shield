@@ -62,6 +62,7 @@ public extension SecKey {
     let query: [String: Any] = [
       kSecValueRef as String: self,
       kSecReturnPersistentRef as String: kCFBooleanTrue!,
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     var ref: CFTypeRef?
@@ -80,6 +81,7 @@ public extension SecKey {
     let query: [String: Any] = [
       kSecValuePersistentRef as String: pref,
       kSecReturnRef as String: kCFBooleanTrue!,
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     var ref: CFTypeRef?
@@ -108,8 +110,8 @@ public extension SecKey {
 
     var error: Unmanaged<CFError>?
 
-    guard let key = SecKeyCreateWithData(data as CFData, attrs, &error), error == nil else {
-      throw error!.takeRetainedValue()
+    guard let key = SecKeyCreateWithData(data as CFData, attrs, &error) else {
+      throw error?.takeRetainedValue() ?? Error.importFailed
     }
 
     return key
@@ -120,16 +122,34 @@ public extension SecKey {
     var error: Unmanaged<CFError>?
 
     guard let data = SecKeyCopyExternalRepresentation(self, &error) else {
-      throw error!.takeRetainedValue()
+      throw error?.takeRetainedValue() ?? Error.exportFailed
     }
 
     return data as Data
   }
 
-  func attributes() throws -> [String: Any] {
+  func keyAttributes() throws -> [String: Any] {
 
     guard let attrs = SecKeyCopyAttributes(self) as? [String: Any] else {
       throw Error.noAttributes
+    }
+
+    return attrs
+  }
+
+  func attributes() throws -> [String: Any] {
+
+    let query: [String: Any] = [
+      kSecReturnAttributes as String: kCFBooleanTrue!,
+      kSecValueRef as String: self,
+      kSecUseDataProtectionKeychain as String: true,
+    ]
+
+    var data: CFTypeRef?
+
+    let status = SecItemCopyMatching(query as CFDictionary, &data)
+    guard status == errSecSuccess, let attrs = data as? [String: Any] else {
+      throw Error.build(error: .queryFailed, message: "Unable to load attributes", status: status)
     }
 
     return attrs
@@ -148,7 +168,7 @@ public extension SecKey {
 
   func type() throws -> String {
 
-    let attrs = try attributes()
+    let attrs = try keyAttributes()
 
     // iOS 10 SecKeyCopyAttributes returns string values, SecItemCopyMatching returns number values
     guard let type = (attrs[kSecAttrKeyType as String] as? NSNumber)?
@@ -159,14 +179,16 @@ public extension SecKey {
     return type
   }
 
-  func save() throws {
+  func save(accessibility: SecAccessibility = .default) throws {
 
-    let attrs = try attributes()
+    let attrs = try keyAttributes()
 
     let query: [String: Any] = [
       kSecClass as String: kSecClassKey,
       kSecAttrKeyClass as String: attrs[kSecAttrKeyClass as String]!,
       kSecValueRef as String: self,
+      kSecUseDataProtectionKeychain as String: true,
+      kSecAttrAccessible as String: accessibility.attr,
     ]
 
     let status = SecItemAdd(query as CFDictionary, nil)
@@ -190,6 +212,7 @@ public extension SecKey {
     let query: [String: Any] = [
       kSecClass as String: kSecClassKey,
       kSecValuePersistentRef as String: ref,
+      kSecUseDataProtectionKeychain as String: true,
     ]
 
     let status = SecItemDelete(query as CFDictionary)
@@ -235,12 +258,7 @@ public extension SecKey {
     var error: Unmanaged<CFError>?
 
     guard let cipherText = SecKeyCreateEncryptedData(self, algorithm, plainText as CFData, &error) else {
-      if let error = error {
-        throw error.takeRetainedValue()
-      }
-      else {
-        throw Error.decryptionFailed
-      }
+      throw error?.takeRetainedValue() ?? Error.encryptionFailed
     }
 
     return cipherText as Data
@@ -283,12 +301,7 @@ public extension SecKey {
     var error: Unmanaged<CFError>?
 
     guard let plainText = SecKeyCreateDecryptedData(self, algorithm, cipherText as CFData, &error) else {
-      if let error = error {
-        throw error.takeRetainedValue()
-      }
-      else {
-        throw Error.decryptionFailed
-      }
+      throw error?.takeRetainedValue() ?? Error.decryptionFailed
     }
 
     return plainText as Data
@@ -376,7 +389,7 @@ public extension SecKey {
     var error: Unmanaged<CFError>?
 
     guard let signature = SecKeyCreateSignature(self, algorithm, data as CFData, &error) else {
-      throw error!.takeRetainedValue()
+      throw error?.takeRetainedValue() ?? Error.signFailed
     }
 
     return signature as Data
