@@ -103,6 +103,7 @@
 		AA5768A02975E7C300142200 /* ShieldHost Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShieldHost Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA5768A52975E7C300142200 /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
 		AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShieldHost Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAC4C7812ADDCBE600487E0A /* ShieldHost Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShieldHost Watch App.entitlements"; sourceTree = "<group>"; };
 		AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateDecoderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -213,6 +214,7 @@
 		AA5768A42975E7C300142200 /* ShieldHost Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				AAC4C7812ADDCBE600487E0A /* ShieldHost Watch App.entitlements */,
 				AA5768A52975E7C300142200 /* ShieldHostApp.swift */,
 			);
 			path = "ShieldHost Watch App";
@@ -683,7 +685,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
@@ -709,7 +711,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
@@ -729,8 +731,10 @@
 		AA5768C52975E7C500142200 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ShieldHost Watch App/ShieldHost Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
@@ -754,8 +758,10 @@
 		AA5768C62975E7C500142200 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "ShieldHost Watch App/ShieldHost Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
@@ -783,6 +789,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
@@ -798,6 +805,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
@@ -815,6 +823,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
@@ -834,6 +843,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7J5T2VZQJW;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
