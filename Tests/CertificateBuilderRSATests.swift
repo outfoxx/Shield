@@ -19,7 +19,7 @@ class CertificateBuilderRSATests: XCTestCase {
   var keyPair: SecKeyPair!
 
   override func setUpWithError() throws {
-    keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
   }
 
   override func tearDownWithError() throws {

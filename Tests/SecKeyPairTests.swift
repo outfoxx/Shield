@@ -15,28 +15,17 @@ import XCTest
 
 class SecKeyPairTests: XCTestCase {
 
-  var rsaKeyPair: SecKeyPair!
-  var ecKeyPair: SecKeyPair!
-
-  override func setUpWithError() throws {
-    try super.setUpWithError()
-
-    rsaKeyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test RSA Key")
-    ecKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test EC Key")
-  }
+  var keyPair: SecKeyPair!
 
   override func tearDownWithError() throws {
-
-    try? rsaKeyPair?.delete()
-    try? ecKeyPair?.delete()
-
-    try super.tearDownWithError()
+    try? keyPair?.delete()
   }
 
   func testGeneratedRSA() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048)
 
     let privateKeyAttrs = [
-      kSecAttrLabel: "Test RSA Key",
+      kSecAttrLabel: "Test RSA Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
@@ -46,20 +35,21 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertNotNil(privateKeyRef)
 
     let publicKeyAttrs = [
-      kSecAttrLabel: "Test RSA Key",
+      kSecAttrLabel: "Test RSA Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
     ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
-    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)
   }
 
   func testGeneratedEC() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256)
 
     let privateKeyAttrs = [
-      kSecAttrLabel: "Test EC Key",
+      kSecAttrLabel: "Test EC Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
@@ -69,45 +59,50 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertNotNil(privateKeyRef)
 
     let publicKeyAttrs = [
-      kSecAttrLabel: "Test EC Key",
+      kSecAttrLabel: "Test EC Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
     ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
-    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)
   }
 
   func testInitECFromExternalPrivateKey() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
 
-    let external = try ecKeyPair.privateKey.encode()
+    let external = try keyPair.privateKey.encode()
 
-    XCTAssertNoThrow(try SecKeyPair(type: ecKeyPair.privateKey.keyType(), privateKeyData: external))
+    XCTAssertNoThrow(try SecKeyPair(type: keyPair.privateKey.keyType(), privateKeyData: external))
   }
 
   func testInitRSAFromExternalPrivateKey() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
 
-    let external = try rsaKeyPair.privateKey.encode()
+    let external = try keyPair.privateKey.encode()
 
-    XCTAssertNoThrow(try SecKeyPair(type: rsaKeyPair.privateKey.keyType(), privateKeyData: external))
+    XCTAssertNoThrow(try SecKeyPair(type: keyPair.privateKey.keyType(), privateKeyData: external))
   }
 
   func testPersistentLoadRSA() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [.permanent])
 
-    let (privateKeyRef, publicKeyRef) = try rsaKeyPair.persistentReferences()
+    let (privateKeyRef, publicKeyRef) = try keyPair.persistentReferences()
 
     XCTAssertNotNil(try SecKeyPair(privateKeyRef: privateKeyRef, publicKeyRef: publicKeyRef))
   }
 
   func testPersistentLoadEC() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [.permanent])
 
-    let (privateKeyRef, publicKeyRef) = try ecKeyPair.persistentReferences()
+    let (privateKeyRef, publicKeyRef) = try keyPair.persistentReferences()
 
     XCTAssertNotNil(try SecKeyPair(privateKeyRef: privateKeyRef, publicKeyRef: publicKeyRef))
   }
 
   func testCertificateMatching() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
 
     let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
 
@@ -115,9 +110,9 @@ class SecKeyPairTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: name)
         .issuer(name: name)
-        .publicKey(keyPair: rsaKeyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: rsaKeyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
@@ -127,7 +122,7 @@ class SecKeyPairTests: XCTestCase {
     DispatchQueue.global(qos: .userInitiated).async {
       defer { finishedX.fulfill() }
 
-      let result = self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+      let result = self.keyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
 
       XCTAssertTrue(result)
     }
@@ -137,6 +132,7 @@ class SecKeyPairTests: XCTestCase {
 
 #if swift(>=5.5)
   func testCertificateMatchingAsync() async throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
 
     let name = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
 
@@ -144,21 +140,22 @@ class SecKeyPairTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: name)
         .issuer(name: name)
-        .publicKey(keyPair: rsaKeyPair, usage: [.keyEncipherment])
+        .publicKey(keyPair: keyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: rsaKeyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let cert = SecCertificateCreateWithData(nil, certData as CFData)!
 
-    let result = await self.rsaKeyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
+    let result = await self.keyPair.matchesCertificate(certificate: cert, trustedCertificates: [cert])
     XCTAssertTrue(result)
   }
 #endif
 
   func testImportExportEncryptedRSA() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
 
-    let exportedKeyData = try rsaKeyPair.export(password: "123")
+    let exportedKeyData = try keyPair.export(password: "123")
 
     let importedKeyPair = try SecKeyPair.import(data: exportedKeyData, password: "123")
 
@@ -166,7 +163,7 @@ class SecKeyPairTests: XCTestCase {
 
     let plainText = try Random.generate(count: 171)
 
-    let cipherText1 = try rsaKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
+    let cipherText1 = try keyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
     let plainText2 = try importedKeyPair.privateKey.decrypt(cipherText: cipherText1, padding: .oaep)
 
@@ -174,12 +171,12 @@ class SecKeyPairTests: XCTestCase {
 
     let cipherText2 = try importedKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
-    let plainText3 = try rsaKeyPair.privateKey.decrypt(cipherText: cipherText2, padding: .oaep)
+    let plainText3 = try keyPair.privateKey.decrypt(cipherText: cipherText2, padding: .oaep)
 
     XCTAssertEqual(plainText, plainText3)
 
-    try rsaKeyPair.delete()
-    defer { rsaKeyPair = nil }
+    try? keyPair.delete()
+    defer { keyPair = nil }
 
     let cipherText3 = try importedKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
@@ -190,14 +187,15 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testImportExportRSA() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
 
-    let exportedKeyData = try rsaKeyPair.export()
+    let exportedKeyData = try keyPair.export()
 
     let importedKeyPair = try SecKeyPair.import(data: exportedKeyData)
 
     let plainText = try Random.generate(count: 171)
 
-    let cipherText1 = try rsaKeyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
+    let cipherText1 = try keyPair.publicKey.encrypt(plainText: plainText, padding: .oaep)
 
     let plainText2 = try importedKeyPair.privateKey.decrypt(cipherText: cipherText1, padding: .oaep)
 
@@ -205,8 +203,9 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testImportExportEncryptedEC() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
 
-    let exportedKeyData = try ecKeyPair.export(password: "123")
+    let exportedKeyData = try keyPair.export(password: "123")
 
     _ = try SecKeyPair.import(data: exportedKeyData, password: "123")
 
@@ -214,87 +213,65 @@ class SecKeyPairTests: XCTestCase {
   }
 
   func testImportExportEC192() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 192, flags: [])
 
-    let ecKeyPair =
-      try SecKeyPair.Builder(type: .ec, keySize: 192)
-        .generate(label: "Test 192 EC Key")
-    defer { try? ecKeyPair.delete() }
-
-    XCTAssertThrowsError(try SecKeyPair.import(data: ecKeyPair.export())) { error in
+    XCTAssertThrowsError(try SecKeyPair.import(data: keyPair.export())) { error in
       XCTAssertTrue(error is AlgorithmIdentifier.Error)
     }
   }
 
   func testImportExportEC256() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
 
-    let ecKeyPair =
-      try SecKeyPair.Builder(type: .ec, keySize: 256)
-        .generate(label: "Test 256 EC Key")
-    defer { try? ecKeyPair.delete() }
-
-    _ = try SecKeyPair.import(data: ecKeyPair.export())
+    _ = try SecKeyPair.import(data: keyPair.export())
   }
 
   func testImportExportEC384() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 384, flags: [])
 
-    let ecKeyPair =
-      try SecKeyPair.Builder(type: .ec, keySize: 384)
-        .generate(label: "Test 384 EC Key")
-    defer { try? ecKeyPair.delete() }
-
-    _ = try SecKeyPair.import(data: ecKeyPair.export())
+    _ = try SecKeyPair.import(data: keyPair.export())
   }
 
   func testImportExportEC521() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 521, flags: [])
 
-    let ecKeyPair =
-      try SecKeyPair.Builder(type: .ec, keySize: 521)
-        .generate(label: "Test 521 EC Key")
-    defer { try? ecKeyPair.delete() }
-
-    _ = try SecKeyPair.import(data: ecKeyPair.export())
+    _ = try SecKeyPair.import(data: keyPair.export())
   }
 
-  func testCodable() throws {
+  func testCodableRSA() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048)
 
-    let rsaData = try JSONEncoder().encode(rsaKeyPair)
-    let testRSAKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: rsaData)
-    XCTAssertEqual(testRSAKeyPair.privateKey, rsaKeyPair.privateKey)
-    XCTAssertEqual(testRSAKeyPair.publicKey, rsaKeyPair.publicKey)
+    let rsaData = try JSONEncoder().encode(keyPair)
+    let testKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: rsaData)
+    XCTAssertEqual(testKeyPair.privateKey, keyPair.privateKey)
+    XCTAssertEqual(testKeyPair.publicKey, keyPair.publicKey)
+  }
 
-    let ecData = try JSONEncoder().encode(ecKeyPair)
-    let testECKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: ecData)
-    XCTAssertEqual(testECKeyPair.privateKey, ecKeyPair.privateKey)
-    XCTAssertEqual(testECKeyPair.publicKey, ecKeyPair.publicKey)
+  func testCodableEC() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 521)
+
+    let ecData = try JSONEncoder().encode(keyPair)
+    let testKeyPair = try JSONDecoder().decode(SecKeyPair.self, from: ecData)
+    XCTAssertEqual(testKeyPair.privateKey, keyPair.privateKey)
+    XCTAssertEqual(testKeyPair.publicKey, keyPair.publicKey)
   }
 
   func testGenerateSecureEnclave() throws {
-#if os(macOS)
-    try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
-#else
-    try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
-#endif
+    try XCTSkipUnless(SecureEnclave.isAvailable, "Requires secure enclave")
 
-    let keyPairBuilder = SecKeyPair.Builder(type: .ec, keySize: 256)
-
-    var keyPair: SecKeyPair?
-    XCTAssertNoThrow(keyPair = try keyPairBuilder.generate(label: "Test Secure Key", flags: [.secureEnclave]))
-    XCTAssertNoThrow(try keyPair?.delete())
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [.secureEnclave])
   }
 
   func testGeneratedSecureEnclave() throws {
+    try XCTSkipUnless(SecureEnclave.isAvailable, "Requires secure enclave")
 #if os(macOS)
     try XCTSkipIf(true, "Code signing complexities require this to be disabled for macOS")
-#else
-    try XCTSkipUnless(SecureEnclave.isAvailable, "Only runs on iPhone/iPad/AppleTV")
 #endif
 
-    let ecKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test Secure Enclave EC Key",
-                                                                             flags: [.secureEnclave])
-    defer { try? ecKeyPair.delete() }
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [.secureEnclave])
 
     let privateKeyAttrs = [
-      kSecAttrLabel: "Test Secure Enclave EC Key",
+      kSecAttrLabel: "Test Secure Enclave EC Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate,
       kSecReturnRef: kCFBooleanTrue!,
@@ -304,13 +281,13 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertNotNil(privateKeyRef)
 
     let publicKeyAttrs = [
-      kSecAttrLabel: "Test Secure Enclave EC Key",
+      kSecAttrLabel: "Test Secure Enclave EC Key Pair",
       kSecClass: kSecClassKey,
       kSecAttrKeyClass: kSecAttrKeyClassPublic,
       kSecReturnRef: kCFBooleanTrue!,
     ] as [String: Any] as CFDictionary
     var publicKeyRef: CFTypeRef?
-    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs as CFDictionary, &publicKeyRef), errSecSuccess)
+    XCTAssertEqual(SecItemCopyMatching(publicKeyAttrs, &publicKeyRef), errSecSuccess)
     XCTAssertNotNil(publicKeyRef)
   }
 

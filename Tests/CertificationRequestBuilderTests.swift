@@ -19,12 +19,11 @@ class CertificationRequestBuilderTests: XCTestCase {
   var keyPair: SecKeyPair!
 
   override func setUpWithError() throws {
-    // Keys are comparatively slow to generate... so we do it once
-    keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
   }
 
   override func tearDownWithError() throws {
-    try keyPair?.delete()
+    try? keyPair?.delete()
   }
 
   func testBuildParse() throws {

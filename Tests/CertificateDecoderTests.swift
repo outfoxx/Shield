@@ -17,10 +17,12 @@ import XCTest
 
 class CertificateDecoderTests: XCTestCase {
 
+  static let outputEnabled = false
+
   func testDecodingTestCerts() throws {
 
     for (title, pem) in Self.certificates {
-      print("Checking: \(title)")
+      output("Checking: \(title)")
       guard let testCert = try SecCertificate.load(pem: pem).first else {
         XCTFail("Failed to load '\(title)'")
         continue
@@ -28,44 +30,44 @@ class CertificateDecoderTests: XCTestCase {
       do {
         let decoded = try ASN1.Decoder.decode(Certificate.self, from: testCert.derEncoded)
         let subjectName = try NameStringComposer().append(rdnSequence: decoded.tbsCertificate.subject).string
-        print("Version: \(decoded.tbsCertificate.version)")
-        print("Serial Number: \(decoded.tbsCertificate.serialNumber.magnitude.serialize())")
-        print("Subject: \(subjectName)")
+        output("Version: \(decoded.tbsCertificate.version)")
+        output("Serial Number: \(decoded.tbsCertificate.serialNumber.magnitude.serialize())")
+        output("Subject: \(subjectName)")
         let issuerName = try NameStringComposer().append(rdnSequence: decoded.tbsCertificate.issuer).string
-        print("Issuer: \(issuerName)")
-        print("Validity:")
-        print("  Not Before:  \(decoded.tbsCertificate.validity.notBefore.zonedDate.iso8601EncodedString())")
-        print("  Not After:  \(decoded.tbsCertificate.validity.notAfter.zonedDate.iso8601EncodedString())")
+        output("Issuer: \(issuerName)")
+        output("Validity:")
+        output("  Not Before:  \(decoded.tbsCertificate.validity.notBefore.zonedDate.iso8601EncodedString())")
+        output("  Not After:  \(decoded.tbsCertificate.validity.notAfter.zonedDate.iso8601EncodedString())")
 
         for ext in decoded.tbsCertificate.extensions ?? [] {
-          print("Extension:")
+          output("Extension:")
           switch ext.extnID {
           case iso_itu.ds.certificateExtension.basicConstraints.oid:
             let basicContstraints = try ASN1Decoder.decode(BasicConstraints.self, from: ext.extnValue)
-            print("  \(basicContstraints)")
+            output("  \(basicContstraints)")
 
           case iso_itu.ds.certificateExtension.extKeyUsage.oid:
             let extKeyUsage = try ASN1Decoder.decode(ExtKeyUsage.self, from: ext.extnValue)
-            print("  \(extKeyUsage)")
+            output("  \(extKeyUsage)")
 
           case iso_itu.ds.certificateExtension.subjectKeyIdentifier.oid:
             let subjKeyId = try ASN1Decoder.decode(SubjectKeyIdentifier.self, from: ext.extnValue)
-            print("  \(subjKeyId)")
+            output("  \(subjKeyId)")
 
           case iso_itu.ds.certificateExtension.authorityKeyIdentifier.oid:
             let authKeyId = try ASN1Decoder.decode(AuthorityKeyIdentifier.self, from: ext.extnValue)
-            print("  \(authKeyId)")
+            output("  \(authKeyId)")
 
           case iso_itu.ds.certificateExtension.subjectAltName.oid:
             let subjectAltName = try ASN1Decoder.decode(SubjectAltName.self, from: ext.extnValue)
-            print("  \(subjectAltName)")
+            output("  \(subjectAltName)")
 
           case iso_itu.ds.certificateExtension.issuerAltName.oid:
             let issuerAltName = try ASN1Decoder.decode(IssuerAltName.self, from: ext.extnValue)
-            print("  \(issuerAltName)")
+            output("  \(issuerAltName)")
 
           case let oid:
-            print("  Unknown: \(oid)")
+            output("  Unknown: \(oid)")
           }
         }
       }
@@ -174,5 +176,16 @@ class CertificateDecoderTests: XCTestCase {
 
     """,
   ]
+
+  func output(_ value: String) {
+    guard Self.outputEnabled else { return }
+    print(value)
+  }
+
+  func output(_ value: Encodable & SchemaSpecified) {
+    guard Self.outputEnabled else { return }
+    guard let data = try? value.encoded().base64EncodedString() else { return }
+    output(data)
+  }
 
 }

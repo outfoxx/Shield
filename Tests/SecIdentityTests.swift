@@ -16,14 +16,14 @@ class SecIdentityTests: XCTestCase {
 
   func testBuildAndFetch() throws {
 
+    let keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
+    defer { try? keyPair.delete() }
+
     let subject: Name = try NameBuilder()
       .add("Test Guy", forTypeName: "CN")
       .add("Test Corp", forTypeName: "O")
       .add("TC", forTypeName: "C")
       .name
-
-    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
-    defer { try? keyPair.delete() }
 
     // Build a self-signed certificate for importing
     let cert =
@@ -43,8 +43,21 @@ class SecIdentityTests: XCTestCase {
     }
 
     // Ensure all went well
-    let ident = try SecIdentity.create(certificate: cert, keyPair: keyPair)
-    defer {}
+    let ident: SecIdentity
+    do {
+      ident = try SecIdentity.create(certificate: cert, keyPair: keyPair)
+    }
+    catch SecIdentity.Error.saveFailed {
+      #if os(macOS)
+      throw XCTSkip("Missing keychain entitlement")
+      #else
+      return XCTFail("Save failed")
+      #endif
+    }
+    defer {
+      try? cert.delete()
+      try? keyPair.delete()
+    }
 
     XCTAssertNotNil(ident)
     XCTAssertNotNil(try ident.certificate())

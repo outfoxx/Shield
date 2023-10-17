@@ -17,11 +17,35 @@ class SecCertificateTests: XCTestCase {
   var keyPair: SecKeyPair!
 
   override func setUpWithError() throws {
-    keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
   }
 
   override func tearDownWithError() throws {
     try? keyPair?.delete()
+  }
+
+  func testAttributesFailForNonPermanentCerts() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    let cert = try SecCertificate.from(data: certData)
+    XCTAssertThrowsError(try cert.attributes())
   }
 
   func testSaveAcccessibilityUnlockedNotShared() throws {
@@ -49,7 +73,14 @@ class SecCertificateTests: XCTestCase {
     let cert = try SecCertificate.from(data: certData)
     defer { try? cert.delete() }
 
-    try cert.save(accessibility: .unlocked(afterFirst: true, shared: false))
+    do {
+      try cert.save(accessibility: .unlocked(afterFirst: true, shared: false))
+    }
+    catch SecCertificateError.saveFailed {
+      #if os(macOS)
+      throw XCTSkip("Missing keychain entitlement")
+      #endif
+    }
 
     let attrs = try cert.attributes()
     XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
@@ -186,7 +217,7 @@ class SecCertificateTests: XCTestCase {
 
     let rootCert = try SecCertificate.from(data: rootCertData)
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -252,7 +283,7 @@ class SecCertificateTests: XCTestCase {
 
     let rootCert = try SecCertificate.from(data: rootCertData)
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -296,7 +327,7 @@ class SecCertificateTests: XCTestCase {
         .encoded()
     )
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -344,7 +375,7 @@ class SecCertificateTests: XCTestCase {
         .encoded()
     )
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name

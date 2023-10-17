@@ -38,6 +38,8 @@
 		AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523D2975DF5F0072F6CA /* DigestTests.swift */; };
 		AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21523A2975DF5F0072F6CA /* CertificateBuilderECTests.swift */; };
 		AA5768EE2975E87C00142200 /* DistinguishedNameParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */; };
+		AAC4C7862ADDFFAD00487E0A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC4C7852ADDFFAD00487E0A /* Utils.swift */; };
+		AAC4C7872ADDFFAD00487E0A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC4C7852ADDFFAD00487E0A /* Utils.swift */; };
 		AADD77C929A3E278005D0955 /* CertificateDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */; };
 		AADD77CA29A3E278005D0955 /* CertificateDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */; };
 /* End PBXBuildFile section */
@@ -104,6 +106,7 @@
 		AA5768A52975E7C300142200 /* ShieldHostApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShieldHostApp.swift; sourceTree = "<group>"; };
 		AA5768B22975E7C400142200 /* ShieldHost Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShieldHost Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAC4C7812ADDCBE600487E0A /* ShieldHost Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ShieldHost Watch App.entitlements"; sourceTree = "<group>"; };
+		AAC4C7852ADDFFAD00487E0A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		AADD77C629A3E278005D0955 /* CertificateDecoderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateDecoderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -199,6 +202,7 @@
 				AA21523F2975DF5F0072F6CA /* SecIdentityTests.swift */,
 				AA2152402975DF5F0072F6CA /* DistinguishedNameParserTests.swift */,
 				AA2152412975DF5F0072F6CA /* SecKeyPairTests.swift */,
+				AAC4C7852ADDFFAD00487E0A /* Utils.swift */,
 			);
 			name = Tests;
 			path = ../Tests;
@@ -423,6 +427,7 @@
 				AA2152452975DF5F0072F6CA /* OIDTests.swift in Sources */,
 				AA2152462975DF5F0072F6CA /* DistinguishedNameComposerTests.swift in Sources */,
 				AA2152492975DF5F0072F6CA /* SecKeyTests.swift in Sources */,
+				AAC4C7862ADDFFAD00487E0A /* Utils.swift in Sources */,
 				AA21524D2975DF5F0072F6CA /* SecIdentityTests.swift in Sources */,
 				AA21524A2975DF5F0072F6CA /* SecCertificateTests.swift in Sources */,
 				AA21524E2975DF5F0072F6CA /* DistinguishedNameParserTests.swift in Sources */,
@@ -452,6 +457,7 @@
 				AA5768EE2975E87C00142200 /* DistinguishedNameParserTests.swift in Sources */,
 				AA5768E72975E87C00142200 /* SecIdentityTests.swift in Sources */,
 				AA5768EC2975E87C00142200 /* DigestTests.swift in Sources */,
+				AAC4C7872ADDFFAD00487E0A /* Utils.swift in Sources */,
 				AA5768E82975E87C00142200 /* CryptorTests.swift in Sources */,
 				AA5768E22975E87C00142200 /* DistinguishedNameComposerTests.swift in Sources */,
 				AA5768ED2975E87C00142200 /* CertificateBuilderECTests.swift in Sources */,
@@ -607,10 +613,10 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldHost/ShieldHost.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -644,10 +650,10 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShieldHost/ShieldHost.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -685,7 +691,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
@@ -711,7 +717,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHostTests;
@@ -734,7 +740,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShieldHost Watch App/ShieldHost Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
@@ -761,7 +767,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ShieldHost Watch App/ShieldHost Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
@@ -789,7 +795,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
@@ -805,7 +811,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_KEY_CFBundleDisplayName = ShieldHost;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.outfoxx.ShieldHost;
@@ -823,7 +829,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
@@ -843,7 +849,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7J5T2VZQJW;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.outfoxx.ShieldHost-Watch-AppTests";
