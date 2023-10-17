@@ -87,6 +87,8 @@ public struct SecKeyPair {
     public enum Flag {
       /// Generate the key pair in the secure enclave.
       case secureEnclave
+      /// Should the key be saved in the keychain automatically.
+      case permanent
     }
 
     /// Type of key pair to generate ``SecKeyType/ec`` or ``SecKeyType/rsa``.
@@ -120,36 +122,45 @@ public struct SecKeyPair {
     ///
     /// - Parameters:
     ///   - label: User-visible label of the keys (optional).
-    ///   - flat: Flags controlling the generation of the key pair.
+    ///   - flags: Flags controlling the generation of the key pair.
+    ///   - accessibility: Accessibility of the generated key pair.
     /// - Returns: Generated key pair.
     /// - Throws: Errors are thrown when the key generation of persistence to the kaychain fails.
     ///
-    public func generate(label: String? = nil, flags: Set<Flag> = []) throws -> SecKeyPair {
+    public func generate(
+      label: String? = nil,
+      flags: Set<Flag> = [.permanent],
+      accessibility: SecAccessibility = .default
+    ) throws -> SecKeyPair {
       guard let type = type else { fatalError("missing key type") }
       guard let keySize = keySize else { fatalError("missing key size") }
 
-      var attrs: [CFString: Any] = [
-        kSecAttrKeyType: type.systemValue,
-        kSecAttrKeySizeInBits: keySize,
-        kSecAttrIsPermanent: true,
+      let isPermanent = flags.contains(.permanent) || flags.contains(.secureEnclave) || accessibility != .default
+
+      var attrs: [String: Any] = [
+        kSecAttrKeyType as String: type.systemValue,
+        kSecAttrKeySizeInBits as String: keySize,
+        kSecAttrIsPermanent as String: isPermanent,
+        kSecAttrAccessible as String: accessibility.attr,
+        kSecUseDataProtectionKeychain as String: true,
       ]
 
       if let label = label {
-        attrs[kSecAttrLabel] = label
+        attrs[kSecAttrLabel as String] = label
       }
 
       if flags.contains(.secureEnclave) {
-        attrs[kSecAttrTokenID] = kSecAttrTokenIDSecureEnclave
+        attrs[kSecAttrTokenID as String] = kSecAttrTokenIDSecureEnclave
       }
 
       var error: Unmanaged<CFError>?
 
       guard let privateKey = SecKeyCreateRandomKey(attrs as CFDictionary, &error) else {
-          throw SecKeyPair.Error.generateFailed
+        throw error?.takeRetainedValue() ?? SecKeyPair.Error.generateFailed
       }
 
       guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
-          throw SecKeyPair.Error.failedToCopyPublicKeyFromPrivateKey
+        throw SecKeyPair.Error.failedToCopyPublicKeyFromPrivateKey
       }
 
       return SecKeyPair(privateKey: privateKey, publicKey: publicKey)
@@ -223,10 +234,10 @@ public struct SecKeyPair {
   ///
   /// - Throws: Errors are thrown if either of the keys could not be saved.
   ///
-  public func save() throws {
+  public func save(accessibility: SecAccessibility = .default) throws {
 
-    try privateKey.save()
-    try publicKey.save()
+    try privateKey.save(accessibility: accessibility)
+    try publicKey.save(accessibility: accessibility)
   }
 
   /// Delete the public and private key from the `Keychain`.
@@ -619,12 +630,12 @@ private extension SecKey {
     return PrivateKeyInfo(version: .zero,
                           privateKeyAlgorithm: .init(algorithm: iso.memberBody.us.ansix962.keyType.ecPublicKey.oid,
                                                      parameters: ASN1.objectIdentifier(curveOID.fields)),
-                                    privateKey: privateKeyData)
+                          privateKey: privateKeyData)
   }
 
   func getECCurveAndNumberSize() throws -> (OID, Int) {
 
-    switch try attributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
+    switch try keyAttributes()[kSecAttrKeySizeInBits as String] as? Int ?? 0 {
     case 192:
       // P-192, secp192r1
       return (iso.memberBody.us.ansix962.curves.prime.prime192v1.oid, 24)

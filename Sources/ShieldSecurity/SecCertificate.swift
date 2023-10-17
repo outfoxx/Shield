@@ -29,6 +29,7 @@ public enum SecCertificateError: Int, Error {
   case trustValidationError = 5
   case publicKeyRetrievalFailed = 6
   case parsingFailed = 7
+  case saveDuplicate = 8
 }
 
 
@@ -224,49 +225,52 @@ public extension SecCertificate {
 
   func attributes() throws -> [String: Any] {
 
-    #if os(iOS) || os(watchOS) || os(tvOS)
-
-      let query = [
-        kSecReturnAttributes as String: kCFBooleanTrue!,
-        kSecValueRef as String: self,
-      ] as [String: Any] as CFDictionary
-
-      var data: CFTypeRef?
-
-      let status = SecItemCopyMatching(query as CFDictionary, &data)
-      if status != errSecSuccess {
-        throw SecCertificateError.queryFailed
-      }
-
-    #elseif os(macOS)
-
-      let query: [String: Any] = [
-        kSecReturnAttributes as String: kCFBooleanTrue!,
-        kSecUseItemList as String: [self] as CFArray,
-      ]
-
-      var data: AnyObject?
-
-      let status = SecItemCopyMatching(query as CFDictionary, &data)
-      if status != errSecSuccess {
-        throw SecCertificateError.queryFailed
-      }
-
-    #endif
-
-    return data as! [String: Any] // swiftlint:disable:this force_cast
-  }
-
-  func save() throws {
-
-    let query = [
-      kSecClass as String: kSecClassCertificate,
+    let query: [String: Any] = [
+      kSecReturnAttributes as String: true,
       kSecValueRef as String: self,
-    ] as [String: Any] as CFDictionary
+      kSecUseDataProtectionKeychain as String: true,
+    ]
 
     var data: CFTypeRef?
+    let status = SecItemCopyMatching(query as CFDictionary, &data)
 
-    let status = SecItemAdd(query, &data)
+    guard status == errSecSuccess, let attrs = data as? [String: Any] else {
+      throw SecCertificateError.queryFailed
+    }
+
+    return attrs
+  }
+
+  func save(accessibility: SecAccessibility = .default) throws {
+
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassCertificate,
+      kSecAttrLabel as String: UUID().uuidString,
+      kSecValueRef as String: self,
+      kSecAttrAccessible as String: accessibility.attr,
+      kSecUseDataProtectionKeychain as String: true,
+    ]
+
+    var data: CFTypeRef?
+    let status = SecItemAdd(query as CFDictionary, &data)
+
+    if status == errSecDuplicateItem {
+      throw SecCertificateError.saveDuplicate
+    }
+    else if status != errSecSuccess {
+      throw SecCertificateError.saveFailed
+    }
+  }
+
+  func delete() throws {
+
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassCertificate,
+      kSecValueRef as String: self,
+      kSecUseDataProtectionKeychain as String: true,
+    ]
+
+    let status = SecItemDelete(query as CFDictionary)
 
     if status != errSecSuccess {
       throw SecCertificateError.saveFailed

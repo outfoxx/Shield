@@ -25,35 +25,40 @@ public extension SecIdentity {
     case copyCertificateFailed
   }
 
-  static func create(certificate: SecCertificate, keyPair: SecKeyPair) throws -> SecIdentity {
+  static func create(
+    certificate: SecCertificate,
+    keyPair: SecKeyPair,
+    accessibility: SecAccessibility = .default
+  ) throws -> SecIdentity {
 
-    return try create(certificate: certificate, privateKey: keyPair.privateKey)
+    return try create(certificate: certificate, privateKey: keyPair.privateKey, accessibility: accessibility)
   }
 
-  static func create(certificate: SecCertificate, privateKey: SecKey) throws -> SecIdentity {
+  static func create(
+    certificate: SecCertificate,
+    privateKey: SecKey,
+    accessibility: SecAccessibility = .default
+  ) throws -> SecIdentity {
 
     do {
-      try privateKey.save()
-    }
-    catch SecKey.Error.saveDuplicate {
-      // Allowable...
+      do {
+        try privateKey.save(accessibility: accessibility)
+      }
+      catch SecKey.Error.saveDuplicate {
+        // Allowable...
+      }
+
+      do {
+        try certificate.save(accessibility: accessibility)
+      }
+      catch SecKey.Error.saveDuplicate {
+        // Allowable...
+      }
     }
     catch {
-      throw Error.saveFailed
-    }
-
-    let query: [String: Any] = [
-      kSecClass as String: kSecClassCertificate,
-      kSecAttrLabel as String: UUID().uuidString,
-      kSecValueRef as String: certificate,
-    ]
-
-    var data: CFTypeRef?
-
-    let status = SecItemAdd(query as CFDictionary, &data)
-
-    if status != errSecSuccess {
       try? privateKey.delete()
+      try? certificate.delete()
+
       throw Error.saveFailed
     }
 

@@ -16,18 +16,14 @@ import XCTest
 class CertificationRequestBuilderTests: XCTestCase {
 
   static let outputEnabled = false
-  static var keyPair: SecKeyPair!
+  var keyPair: SecKeyPair!
 
-  override class func setUp() {
-    // Keys are comparatively slow to generate... so we do it once
-    guard let keyPair = try? SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test") else {
-      return XCTFail("Key pair generation failed")
-    }
-    Self.keyPair = keyPair
+  override func setUpWithError() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
   }
 
-  override class func tearDown() {
-    try? keyPair.delete()
+  override func tearDownWithError() throws {
+    try? keyPair?.delete()
   }
 
   func testBuildParse() throws {
@@ -36,9 +32,9 @@ class CertificationRequestBuilderTests: XCTestCase {
     let csr =
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .extendedKeyUsage(keyPurposes: [keyPurpose.clientAuth.oid, keyPurpose.serverAuth.oid], isCritical: true)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(csr)
 
@@ -73,9 +69,9 @@ class CertificationRequestBuilderTests: XCTestCase {
       try CertificationRequest.Builder()
         .subject(name: NameBuilder().add("Outfox Signing", forTypeName: "CN").name)
         .addAlternativeNames(names: sans)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .extendedKeyUsage(keyPurposes: [keyPurpose.clientAuth.oid, keyPurpose.serverAuth.oid], isCritical: true)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
 
     output(csr)
 

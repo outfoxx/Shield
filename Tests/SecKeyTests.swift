@@ -8,13 +8,55 @@
 //  Distributed under the MIT License, See LICENSE for details.
 //
 
+import Security
 @testable import Shield
 import XCTest
 
 class SecKeyTests: XCTestCase {
 
+  func testAttributesFailForNonPermanentKeys() throws {
+    let keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+    defer { try? keyPair.delete() }
+
+    XCTAssertNoThrow(try keyPair.privateKey.keyAttributes())
+    XCTAssertThrowsError(try keyPair.privateKey.attributes())
+  }
+
+  func testSaveAcccessibilityUnlocked() throws {
+    // Check entitlement
+    try generateTestKeyPairChecked(type: .ec, keySize: 256).delete()
+
+    let keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+    defer { try? keyPair.delete() }
+
+    try keyPair.save(accessibility: .unlocked(afterFirst: false, shared: true))
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleWhenUnlocked as String)
+  }
+
+  func testGenerateAccessibilityUnlocked() throws {
+    let keyPair = try generateTestKeyPairChecked(type: .ec,
+                                                 keySize: 256,
+                                                 accessibility: .unlocked(afterFirst: false, shared: true))
+    defer { try? keyPair.delete() }
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleWhenUnlocked as String)
+  }
+
+  func testGenerateAccessibilityAfterFirstUnlockNotShared() throws {
+    let keyPair = try generateTestKeyPairChecked(type: .ec,
+                                                 keySize: 256,
+                                                 accessibility: .unlocked(afterFirst: true, shared: false))
+    defer { try? keyPair.delete() }
+
+    let attrs = try keyPair.privateKey.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
+  }
+
   func testRSA() throws {
-    let keyPair = try SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test")
+    let keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
     defer { try? keyPair.delete() }
 
     print("Checking: RSA Encrypt/Decrypt")
@@ -36,7 +78,8 @@ class SecKeyTests: XCTestCase {
   }
 
   func testEC() throws {
-    let keyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate(label: "Test")
+    let keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+    defer { try? keyPair.delete() }
 
     print("Checking: EC Encrypt/Decrypt")
     testFailedEncryptError(keyPair)
@@ -58,7 +101,7 @@ class SecKeyTests: XCTestCase {
   func testECGeneration() throws {
     try [192, 256, 384, 521].forEach { keySize in
 
-      let keyPair = try SecKeyPair.Builder(type: .ec, keySize: keySize).generate(label: "Test")
+      let keyPair = try generateTestKeyPairChecked(type: .ec, keySize: keySize, flags: [])
       defer { try? keyPair.delete() }
 
       _ = try AlgorithmIdentifier(publicKey: keyPair.publicKey)

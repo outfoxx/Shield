@@ -14,19 +14,78 @@ import XCTest
 class SecCertificateTests: XCTestCase {
 
   static let outputEnabled = false
-  static var keyPair: SecKeyPair!
+  var keyPair: SecKeyPair!
 
-  override class func setUp() {
-    // Keys are comparatively slow to generate... so we do it once
-    guard let keyPair = try? SecKeyPair.Builder(type: .rsa, keySize: 2048).generate(label: "Test") else {
-      return XCTFail("Key pair generation failed")
+  override func setUpWithError() throws {
+    keyPair = try generateTestKeyPairChecked(type: .rsa, keySize: 2048, flags: [])
+  }
+
+  override func tearDownWithError() throws {
+    try? keyPair?.delete()
+  }
+
+  func testAttributesFailForNonPermanentCerts() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    let cert = try SecCertificate.from(data: certData)
+    XCTAssertThrowsError(try cert.attributes())
+  }
+
+  func testSaveAcccessibilityUnlockedNotShared() throws {
+
+    let subjectName = try NameBuilder()
+      .add("Unit Testing", forTypeName: "CN")
+      .add("123456", forTypeName: "UID")
+      .name
+
+    let issuerName = try NameBuilder()
+      .add("Test Issuer", forTypeName: "CN")
+      .name
+
+    let certData =
+      try Certificate.Builder()
+        .subject(name: subjectName)
+        .issuer(name: issuerName)
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
+        .valid(for: 86400 * 5)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+        .encoded()
+
+    output(certData)
+
+    let cert = try SecCertificate.from(data: certData)
+    defer { try? cert.delete() }
+
+    do {
+      try cert.save(accessibility: .unlocked(afterFirst: true, shared: false))
     }
-    Self.keyPair = keyPair
+    catch SecCertificateError.saveFailed {
+      #if os(macOS)
+      throw XCTSkip("Missing keychain entitlement")
+      #endif
+    }
+
+    let attrs = try cert.attributes()
+    XCTAssertEqual(attrs[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
   }
 
-  override class func tearDown() {
-    try? keyPair.delete()
-  }
 
   func testCertificateProperties() throws {
 
@@ -43,9 +102,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     output(certData)
@@ -71,16 +130,16 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     output(certData)
 
     let cert = try SecCertificate.from(data: certData)
 
-    XCTAssertEqual(try cert.publicKey?.encode(), try Self.keyPair.publicKey.encode())
+    XCTAssertEqual(try cert.publicKey?.encode(), try keyPair.publicKey.encode())
   }
 
   func testPEM() throws {
@@ -98,9 +157,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let certSec = try SecCertificate.from(data: certData)
@@ -124,9 +183,9 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: subjectName)
         .issuer(name: issuerName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
 
     let certSec = try SecCertificate.from(data: certData)
@@ -140,25 +199,25 @@ class SecCertificateTests: XCTestCase {
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
     let rootID = try Random.generate(count: 10)
     let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
-    let rootKeyHash = try Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1)
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
     let rootCertData =
     try Certificate.Builder()
       .serialNumber(rootSerialNumber)
       .subject(name: rootName, uniqueID: rootID)
       .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
-      .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
       .subjectKeyIdentifier(rootKeyHash)
       .issuer(name: rootName)
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .basicConstraints(ca: true)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(rootCertData)
 
     let rootCert = try SecCertificate.from(data: rootCertData)
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -175,7 +234,7 @@ class SecCertificateTests: XCTestCase {
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(certData)
 
@@ -206,25 +265,25 @@ class SecCertificateTests: XCTestCase {
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
     let rootID = try Random.generate(count: 10)
     let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
-    let rootKeyHash = try Digester.digest(Self.keyPair.encodedPublicKey(), using: .sha1)
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
     let rootCertData =
     try Certificate.Builder()
       .serialNumber(rootSerialNumber)
       .subject(name: rootName, uniqueID: rootID)
       .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
-      .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign, .cRLSign])
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
       .subjectKeyIdentifier(rootKeyHash)
       .issuer(name: rootName)
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .basicConstraints(ca: true)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(rootCertData)
 
     let rootCert = try SecCertificate.from(data: rootCertData)
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -241,7 +300,7 @@ class SecCertificateTests: XCTestCase {
       .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
       .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
       .valid(for: 86400 * 5)
-      .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
       .encoded()
     output(certData)
 
@@ -262,13 +321,13 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -310,13 +369,13 @@ class SecCertificateTests: XCTestCase {
       try Certificate.Builder()
         .subject(name: rootName)
         .issuer(name: rootName)
-        .publicKey(keyPair: Self.keyPair, usage: [.keyCertSign])
+        .publicKey(keyPair: keyPair, usage: [.keyCertSign])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 
-    let certKeyPair = try SecKeyPair.Builder(type: .ec, keySize: 256).generate()
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
     defer { try? certKeyPair.delete() }
 
     let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
@@ -327,7 +386,7 @@ class SecCertificateTests: XCTestCase {
         .issuer(name: rootName)
         .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment])
         .valid(for: 86400 * 5)
-        .build(signingKey: Self.keyPair.privateKey, digestAlgorithm: .sha256)
+        .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
         .encoded()
     )
 
