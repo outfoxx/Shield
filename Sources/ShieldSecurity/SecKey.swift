@@ -204,7 +204,16 @@ public extension SecKey {
 
   func delete() throws {
 
-    try SecKey.delete(persistentReference: try persistentReference())
+    let query: [String: Any] = [
+      kSecClass as String: kSecClassKey,
+      kSecValueRef as String: self,
+      kSecUseDataProtectionKeychain as String: true,
+    ]
+
+    let status = SecItemDelete(query as CFDictionary)
+    if status != errSecSuccess {
+      throw Error.deleteFailed
+    }
   }
 
   static func delete(persistentReference ref: Data) throws {
