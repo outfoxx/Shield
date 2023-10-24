@@ -194,6 +194,56 @@ class SecCertificateTests: XCTestCase {
     XCTAssertEqual(certSec.derEncoded, try SecCertificate.load(der: certDer).derEncoded)
   }
 
+  func testCheckTrust() throws {
+
+    let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
+    let rootID = try Random.generate(count: 10)
+    let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
+    let rootCertData =
+    try Certificate.Builder()
+      .serialNumber(rootSerialNumber)
+      .subject(name: rootName, uniqueID: rootID)
+      .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
+      .subjectKeyIdentifier(rootKeyHash)
+      .issuer(name: rootName)
+      .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .basicConstraints(ca: true)
+      .valid(for: 86400 * 5)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+      .encoded()
+    output(rootCertData)
+
+    let rootCert = try SecCertificate.from(data: rootCertData)
+
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+    defer { try? certKeyPair.delete() }
+
+    let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
+    let certID = try Random.generate(count: 10)
+
+    let certData =
+    try Certificate.Builder()
+      .serialNumber(Certificate.Builder.randomSerialNumber())
+      .subject(name: certName, uniqueID: certID)
+      .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.cert"))
+      .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment, .digitalSignature])
+      .computeSubjectKeyIdentifier()
+      .issuer(name: rootName)
+      .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
+      .valid(for: 86400 * 5)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+      .encoded()
+    output(certData)
+
+
+    let cert = try SecCertificate.from(data: certData)
+
+    XCTAssertNoThrow(try cert.checkTrust(trustedCertificates: [rootCert]))
+  }
+
   func testValidatedPublicKey() throws {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
@@ -260,6 +310,61 @@ class SecCertificateTests: XCTestCase {
   }
 
 #if swift(>=5.5)
+  func testCheckTrustAsync() async throws {
+
+    let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
+    let rootID = try Random.generate(count: 10)
+    let rootSerialNumber = try Certificate.Builder.randomSerialNumber()
+    let rootKeyHash = try Digester.digest(keyPair.encodedPublicKey(), using: .sha1)
+    let rootCertData =
+    try Certificate.Builder()
+      .serialNumber(rootSerialNumber)
+      .subject(name: rootName, uniqueID: rootID)
+      .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .publicKey(keyPair: keyPair, usage: [.keyCertSign, .cRLSign])
+      .subjectKeyIdentifier(rootKeyHash)
+      .issuer(name: rootName)
+      .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .basicConstraints(ca: true)
+      .valid(for: 86400 * 5)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+      .encoded()
+    output(rootCertData)
+
+    let rootCert = try SecCertificate.from(data: rootCertData)
+
+    let certKeyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+    defer { try? certKeyPair.delete() }
+
+    let certName = try NameBuilder().add("Unit Testing", forTypeName: "CN").name
+    let certID = try Random.generate(count: 10)
+
+    let certData =
+    try Certificate.Builder()
+      .serialNumber(Certificate.Builder.randomSerialNumber())
+      .subject(name: certName, uniqueID: certID)
+      .subjectAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.cert"))
+      .publicKey(keyPair: certKeyPair, usage: [.keyEncipherment, .digitalSignature])
+      .computeSubjectKeyIdentifier()
+      .issuer(name: rootName)
+      .issuerAlternativeNames(names: .dnsName("io.outfoxx.shield.tests.ca"))
+      .authorityKeyIdentifier(rootKeyHash, certIssuer: [.directoryName(rootName)], certSerialNumber: rootSerialNumber)
+      .valid(for: 86400 * 5)
+      .build(signingKey: keyPair.privateKey, digestAlgorithm: .sha256)
+      .encoded()
+    output(certData)
+
+
+    let cert = try SecCertificate.from(data: certData)
+
+    do {
+      try await cert.checkTrust(trustedCertificates: [rootCert])
+    }
+    catch {
+      XCTFail("Unexpected error: \(error)")
+    }
+  }
+
   func testValidatedPublicKeyAsync() async throws {
 
     let rootName = try NameBuilder().add("Unit Testing Root", forTypeName: "CN").name
