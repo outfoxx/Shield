@@ -27,7 +27,7 @@ Shield has documentation describing the modules and some basic reference documen
 
 #### Note
 The documentation is currently lacking due to issues with Swift DocC surrounding multi-module packages and extension
-methods. They will be rememdied soon with an upcoming releases of Swift.
+methods. They will be remedied soon with an upcoming releases of Swift.
 
 License
 --------
