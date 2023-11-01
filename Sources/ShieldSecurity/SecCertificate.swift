@@ -100,6 +100,22 @@ public extension SecCertificate {
   }
 #endif
 
+  func checkTrust(trustedCertificates: [SecCertificate]) throws {
+
+    let trust = try createCertificateValidationTrust(anchorCertificates: trustedCertificates)
+
+    try evaluateTrust(trust)
+  }
+
+#if swift(>=5.5)
+  func checkTrust(trustedCertificates: [SecCertificate]) async throws {
+
+    let trust = try createCertificateValidationTrust(anchorCertificates: trustedCertificates)
+
+    try await evaluateTrust(trust)
+  }
+#endif
+
   private func createCertificateValidationTrust(anchorCertificates: [SecCertificate]) throws -> SecTrust {
 
     let policy = SecPolicyCreateBasicX509()
