@@ -333,7 +333,7 @@ public struct SecKeyPair {
     case bits256 = 32
   }
 
-  /// Encodes the key pair's private key in PKCS#8 format and then encrypts it using PBKDF and packages
+  /// Encodes the key pair's private key in PKCS#8 format and then encrypts it using PBKDF and packages it
   /// into PKCS#8 encrypted format.
   ///
   /// With the exported key and original password, ``import(data:password:)``
@@ -407,6 +407,34 @@ public struct SecKeyPair {
     return encryptedPrivateKeyInfoData
   }
 
+  /// Encodes the key pair's private key in PKCS#8 format and then encrypts it using PBKDF and packages it
+  /// into PKCS#8 encrypted format, and finally encodes in in PEM format.
+  ///
+  /// With the exported key and original password, ``import(data:password:)``
+  /// can be used to recover the original `SecKey`.
+  ///
+  /// - Parameters:
+  ///   - password: Password use for key encryption.
+  ///   - derivedKeySize: PBKDF target key size.
+  ///   - psuedoRandomAlgorithm: Which psuedo random algorithm should be used with PBKDF.
+  ///   - keyDerivationTiming: Time PBKDF function should take to generate encryption key.
+  /// - Returns: Encrypted PKCS#8 encoded private key.
+  ///
+  public func exportPEM(
+    password: String,
+    derivedKeySize: ExportKeySize = exportDerivedKeySizeDefault,
+    psuedoRandomAlgorithm: PBKDF.PsuedoRandomAlgorithm = exportPsuedoRandomAlgorithmDefault,
+    keyDerivationTiming: TimeInterval = exportKeyDerivationTimingDefault
+  ) throws -> String {
+
+    let der = try export(password: password,
+                         derivedKeySize: derivedKeySize,
+                         psuedoRandomAlgorithm: psuedoRandomAlgorithm,
+                         keyDerivationTiming: keyDerivationTiming)
+
+    return PEM.write(kind: .pkcs8PrivateKey, data: der)
+  }
+
   /// Encodes the key pair's private key in PKCS#8 format.
   ///
   /// With the exported key and original password, ``import(data:password:)``
@@ -417,6 +445,19 @@ public struct SecKeyPair {
   public func export() throws -> Data {
 
     return try privateKey.encodePKCS8()
+  }
+
+  /// Encodes the key pair's private key in PKCS#8 format and encodes it in PEM.
+  ///
+  /// The exported key, ``import(data:)`` can be used to recover the original `SecKey`.
+  ///
+  /// - Returns: Encoded encrypted key and PBKDF paraemters.
+  ///
+  public func exportPEM() throws -> String {
+
+    let data =  try privateKey.encodePKCS8()
+
+    return PEM.write(kind: .pkcs8PrivateKey, data: data)
   }
 
   /// Decrypts an encrypted PKCS#8 encrypted private key and builds a complete key pair.
@@ -433,6 +474,29 @@ public struct SecKeyPair {
   @available(*, deprecated, message: "Use import(data:password:) instead")
   public static func `import`(fromData data: Data, withPassword password: String) throws -> SecKeyPair {
     return try self.import(data: data, password: password)
+  }
+
+  /// Decrypts a PEM guarded, encrypted, PKCS#8 encrypted private key and builds a complete key pair.
+  ///
+  /// This is the reverse operation of ``export(password:derivedKeyLength:keyDerivationTiming:)``.
+  ///
+  /// - Note: Only supports PKCS#8's PBES2 sceheme using PBKDF2 for key derivation.
+  ///
+  /// - Parameters:
+  ///   - pem: PEM guarded exported private key.
+  ///   - password: Password used during key export.
+  /// - Returns: ``SecKeyPair`` for the decrypted & decoded private key.
+  ///
+  public static func `import`(pem: String, password: String) throws -> SecKeyPair {
+
+    guard
+      let (kind, data) = PEM.read(pem: pem).first,
+      kind == .pkcs8PrivateKey
+    else {
+      throw SecKeyPair.Error.invalidEncodedPrivateKey
+    }
+
+    return try `import`(data: data, password: password)
   }
 
   /// Decrypts an encrypted PKCS#8 encrypted private key and builds a complete key pair.
@@ -500,6 +564,24 @@ public struct SecKeyPair {
   @available(*, deprecated, message: "Use import(data:) instead")
   public static func `import`(fromData data: Data) throws -> SecKeyPair {
     return try self.import(data: data)
+  }
+
+  /// Decodes a PEM guarded PKCS#8 encoded private key and builds a complete key pair.
+  ///
+  /// - Parameters:
+  ///   - pem: PEM guarded exported private key.
+  /// - Returns: ``SecKeyPair`` for the decrypted & decoded private key.
+  ///
+  public static func `import`(pem: String) throws -> SecKeyPair {
+
+    guard
+      let (kind, data) = PEM.read(pem: pem).first,
+      kind == .pkcs8PrivateKey
+    else {
+      throw SecKeyPair.Error.invalidEncodedPrivateKey
+    }
+
+    return try `import`(data: data)
   }
 
   /// Decodes a PKCS#8 encoded private key and builds a complete key pair.
