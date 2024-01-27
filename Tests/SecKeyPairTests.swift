@@ -212,6 +212,24 @@ class SecKeyPairTests: XCTestCase {
     XCTAssertThrowsError(try SecKeyPair.import(data: exportedKeyData, password: "456"))
   }
 
+  func testImportExportPEM() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+
+    let exportedKeyData = try keyPair.exportPEM()
+
+    XCTAssertNoThrow(try SecKeyPair.import(pem: exportedKeyData))
+  }
+
+  func testImportExportEncryptedPEM() throws {
+    keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 256, flags: [])
+
+    let exportedKeyData = try keyPair.exportPEM(password: "123")
+
+    _ = try SecKeyPair.import(pem: exportedKeyData, password: "123")
+
+    XCTAssertThrowsError(try SecKeyPair.import(pem: exportedKeyData, password: "456"))
+  }
+
   func testImportExportEC192() throws {
     keyPair = try generateTestKeyPairChecked(type: .ec, keySize: 192, flags: [])
 

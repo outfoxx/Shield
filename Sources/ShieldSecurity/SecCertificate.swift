@@ -227,8 +227,7 @@ public extension SecCertificate {
   }
 
   var pemEncoded: String {
-    let pem = derEncoded.base64EncodedString().chunks(ofCount: 64).joined(separator: "\n")
-    return "-----BEGIN CERTIFICATE-----\n\(pem)\n-----END CERTIFICATE-----"
+    PEM.write(kind: .certificate, data: derEncoded)
   }
 
   var derEncoded: Data {
@@ -362,21 +361,19 @@ public extension SecCertificate {
     return try load(pem: certsPEM)
   }
 
-  private static let pemRegex =
-    Regex(#"-----BEGIN CERTIFICATE-----\s*([a-zA-Z0-9\s/+]+=*)\s*-----END CERTIFICATE-----"#)
-  private static let pemWhitespaceRegex = Regex(#"[\n\t\s]+"#)
+  static func load(pem: String, strict: Bool = false) throws -> [SecCertificate] {
 
-  static func load(pem: String) throws -> [SecCertificate] {
+    return try PEM.read(pem: pem)
+      .compactMap { (kind, data) in
 
-    return try pemRegex.allMatches(in: pem)
-      .map { match in
+        guard kind == .certificate else {
+          if strict {
+            throw SecCertificateError.loadFailed
+          }
+          return nil
+        }
 
-        guard
-          let capture = match.captures.first,
-          let base64Data = capture?.replacingAll(matching: pemWhitespaceRegex, with: ""),
-          let data = Data(base64Encoded: base64Data),
-          let cert = SecCertificateCreateWithData(nil, data as CFData)
-        else {
+        guard let cert = SecCertificateCreateWithData(nil, data as CFData) else {
           throw SecCertificateError.loadFailed
         }
 
